@@ -5,7 +5,7 @@ Same procedure as every year, Eric.
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
-image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="coverage report"]
+image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[link="https://gitlab.example.com/jhinrichsen/adventofcode2023/badges/<branch>/coverage.svg",title="coverage report"]
 
 
 My take on https://adventofcode.com/2023/ in Go. As usual, i don't particularly
