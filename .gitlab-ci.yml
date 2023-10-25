@@ -1,3 +1,5 @@
+image: golang:1.21
+
 # You can override the included template(s) by including variable overrides
 # SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
@@ -8,22 +10,22 @@
 stages:
 - test
 sast:
-  stage: test
+    stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
 
 test-job:
-  stage: test
-  except:
-    - README.adoc
-  before_script:
-    - make setup
-  script:
-    - make lint test
-  coverage: '/coverage: \d+\.\d+%/'
-  artifacts:
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
+    stage: test
+    except:
+        - README.adoc
+    before_script:
+        - make setup
+    script:
+        - make lint test
+    coverage: '/coverage: \d+\.\d+%/'
+    artifacts:
+        reports:
+            coverage_report:
+                coverage_format: cobertura
+                path: coverage.xml
 
