@@ -1,12 +1,13 @@
 = Advent of code 2023
 
-Same procedure as every year, Eric.
-
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg",title="coverage report"]
 
+
+[quote, me]
+Same procedure as every year, Eric.
 
 My take on https://adventofcode.com/2023/ in Go. As usual, i don't particularly
 care if i provide my solutions _fast_, i try to be _correct_ on the first
@@ -17,6 +18,26 @@ benchmarks.
 Expected results are hard coded into the unit tests, so unless you are peeking
 for a solution avoid looking at those.
 
+== Environment
+
+- Go 1.21.3
+- vim, vim-go, gopls, fed by an HHKB
+- VisualStudio Code for complex debugging scenarios
+- Fedora 38 @ AMD Ryzen 5 3400G on a Gigabyte B450
+- OSX @ 16" Macbook Pro 2019
+
+I'd love to try one of those Risc-V boards but can't decide between
+https://github.com/openwch/ch32v003[a bare metal 48 MHz]
+- probably requiring tinygo - or a full fledge
+https://www.sifive.com/cores/performance-p870-p870a[multicore GHz monster].
+
+== Project structure
+
+Each day lives separately in a `day{{.n}}.go` and `day{{.n}}_test.go` file.
+Unit test data, both examples and puzzle input, is in
+`testdata/day{{.n}}.txt`, and `testdata/day{{.n}}_example.txt`.
+
+== Overview
 
 Number of tries for a correct answer:
 
@@ -49,4 +70,5 @@ Number of tries for a correct answer:
 | 25  |        |
 |===
 
+== Daily dose
 
