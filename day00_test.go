@@ -15,3 +15,38 @@ func TestDay00Part1Example(t *testing.T) {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
+
+func TestDay00Part1(t *testing.T) {
+	const want = 0
+	lines, err := linesFromFilename(filename(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := Day00(lines)
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
+}
+
+func BenchmarkDay00Part1(b *testing.B) {
+	lines, err := linesFromFilename(filename(0))
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = Day00(lines)
+	}
+}
+
+func TestDay00Part2(t *testing.T) {
+	const want = 0
+	lines, err := linesFromFilename(filename(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := Day00(lines)
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
+}
