@@ -1,6 +1,6 @@
 module adventofcode2023
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/boumenot/gocover-cobertura v1.2.0 // indirect
