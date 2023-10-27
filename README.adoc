@@ -9,6 +9,8 @@ image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[l
 [quote, me]
 Same procedure as every year, Eric.
 
+image::img/gitlab-history.png[]
+
 My take on https://adventofcode.com/2023/ in Go. As usual, i don't particularly
 care if i provide my solutions _fast_, i try to be _correct_ on the first
 answer, and care for being runtime efficient.
