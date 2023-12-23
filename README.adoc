@@ -1,5 +1,27 @@
 = Advent of code 2023
 
+Same procedure as every year, Eric.
+
+== Day 1 Trebuchet?!
+
+Writing a custom one-pass parser for V2 because why not.
+----
+goos: darwin
+goarch: amd64
+pkg: adventofcode2023
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkDay01V1
+BenchmarkDay01V1-16       	    5516	    214078 ns/op	    5006 B/op	    2207 allocs/op
+BenchmarkDay01V2
+BenchmarkDay01V2-16       	   21414	     55737 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay01Large
+BenchmarkDay01Large-16    	     462	   2582112 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	adventofcode2023	4.568s
+----
+Solving part 1 takes 55 μs.
+Processing a 1 MB sam= Advent of code 2023
+
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
