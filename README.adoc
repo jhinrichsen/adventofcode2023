@@ -2,25 +2,7 @@
 
 Same procedure as every year, Eric.
 
-== Day 1 Trebuchet?!
-
-Writing a custom one-pass parser for V2 because why not.
-----
-goos: darwin
-goarch: amd64
-pkg: adventofcode2023
-cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
-BenchmarkDay01V1
-BenchmarkDay01V1-16       	    5516	    214078 ns/op	    5006 B/op	    2207 allocs/op
-BenchmarkDay01V2
-BenchmarkDay01V2-16       	   21414	     55737 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay01Large
-BenchmarkDay01Large-16    	     462	   2582112 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	adventofcode2023	4.568s
-----
-Solving part 1 takes 55 μs.
-Processing a 1 MB sam= Advent of code 2023
+ Advent of code 2023
 
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
@@ -67,8 +49,8 @@ Number of tries for a correct answer:
 
 |===
 | Day | part 1 | part 2
-| 1   |        |
-| 2   |        |
+| 1   |   1    |  3
+| 2   |   1    |  1
 | 3   |        |
 | 4   |        |
 | 5   |        |
@@ -94,5 +76,50 @@ Number of tries for a correct answer:
 | 25  |        |
 |===
 
-== Daily dose
+== Day 1 Trebuchet?!
 
+Writing a custom one-pass parser for V2 because why not.
+----
+goos: darwin
+goarch: amd64
+pkg: adventofcode2023
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkDay01V1
+BenchmarkDay01V1-16       	    5516	    214078 ns/op	    5006 B/op	    2207 allocs/op
+BenchmarkDay01V2
+BenchmarkDay01V2-16       	   21414	     55737 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay01Large
+BenchmarkDay01Large-16    	     462	   2582112 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	adventofcode2023	4.568s
+----
+Solving part 1 takes 55 μs.
+
+== Day 3
+
+Looks like a flood fill, aka seed fill.
+Doing my homework on the internet, lots of recursive solutions.
+I personally avoid recursion, because it will blow up in your face,
+right when the beeper goes on alert in the middle of deep sleep.
+
+https://github.com/erich666/GraphicsGems/blob/master/gems/SeedFill.c[Heckbert]
+has a solid looking implementation as part of his "Graphic Gems" Series in part 1, `A SEED FILL ALGORITHM`.
+This one is also referenced by Wikipedia as `Span Filling`.
+
+https://lodev.org/cgtutor/floodfill.html[Lode Vandevenne] has an interesting looking `Scanline Floodfill Algorithm With Stack (floodFillScanlineStack)`.
+
+Then there's Windows C++ Code by https://www.codeproject.com/Articles/6017/QuickFill-An-efficient-flood-fill-algorithm[John R Shaw].
+
+http://unity3dmc.blogspot.com/2017/02/ultimate-3d-floodfill-scanline.html[This] one claims to be 1000 times faster than anything else, but looks kinda weird.
+
+https://en.wikipedia.org/wiki/Flood_fill#Walk-based_filling_(Fixed-memory_method)[Wikipedia] describes an O(1) memory `Walk-based filling (Fixed-memory method)`, but it is only valid for 4-connected, and we need 8-connected because diagonals count as well.
+
+A version from 2007 named `A Linear-Time Constant-Space Algorithm for the Boundary Fill Problem` looks very efficient.
+The pseudo-code provided is a real pseudo, as in
+
+----
+next.blockednodes:={u|dist(u,next)==1 && u.color!=black}
+----
+
+The newest publication i found is https://arxiv.org/abs/1906.03366[Scan-flood Fill(SCAFF): an Efficient Automatic Precise Region Filling Algorithm for Complicated Regions] by Yixuan He, Tianyi Hu, Delu Zeng.
+It mentions large scale auto-learning.
