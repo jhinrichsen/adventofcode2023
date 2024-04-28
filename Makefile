@@ -21,7 +21,7 @@ lint:
 .PHONY: test
 test:
 	$(GO) test -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
-	# $(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
+	$(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
 
 prof:
 	$(GO) -bench=. -benchmem -memprofile mprofile.out -cpuprofile cprofile.out
