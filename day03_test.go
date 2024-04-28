@@ -6,7 +6,7 @@ import (
 
 func TestDay03Part1Example(t *testing.T) {
 	const want = 4361
-	lines, err := linesFromFilename(exampleFilename(0))
+	lines, err := linesFromFilename(exampleFilename(3))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -17,8 +17,8 @@ func TestDay03Part1Example(t *testing.T) {
 }
 
 func TestDay03Part1(t *testing.T) {
-	const want = 0
-	lines, err := linesFromFilename(filename(0))
+	const want = 538121 // too low
+	lines, err := linesFromFilename(filename(3))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func TestDay03Part1(t *testing.T) {
 }
 
 func BenchmarkDay03Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(0))
+	lines, err := linesFromFilename(filename(3))
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func BenchmarkDay03Part1(b *testing.B) {
 
 func TestDay03Part2(t *testing.T) {
 	const want = 0
-	lines, err := linesFromFilename(filename(0))
+	lines, err := linesFromFilename(filename(3))
 	if err != nil {
 		t.Fatal(err)
 	}
