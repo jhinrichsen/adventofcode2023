@@ -130,3 +130,52 @@ Thinking again, KISS to the rescue. Just parse numbers, and check if the C8 envi
 It took me three turns to make the algorithm work. Yes, numbers can end directly at the end of the line.
 
 image::img/day03.png[]
+
+
+=== Power Mode 'Balanced'
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay03Part1-16    	   19702	     57430 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   41658	     32092 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   41925	     28282 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   42114	     29990 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   38536	     28438 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	gitlab.com/jhinrichsen/adventofcode2023	7.829s
+----
+
+=== Power Mode 'Power Saver'
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay03Part1-16    	   10586	    111056 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   10000	    101209 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   10000	    112834 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   10000	    115926 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   10000	    101594 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	gitlab.com/jhinrichsen/adventofcode2023	6.504s
+----
+
+=== Power Mode 'Performance'
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay03Part1-16    	   42468	     30711 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   38066	     30958 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   42180	     28016 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   37698	     31678 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   41976	     30219 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	gitlab.com/jhinrichsen/adventofcode2023	7.645s
+----
