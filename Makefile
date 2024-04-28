@@ -1,4 +1,5 @@
-GO = CGO_ENABLED=0 go
+# GO = CGO_ENABLED=0 go
+GO = go
 
 .PHONY: all
 all: lint test
@@ -20,7 +21,7 @@ lint:
 .PHONY: test
 test:
 	$(GO) test -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
-	$(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
+	# $(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
 
 prof:
 	$(GO) -bench=. -benchmem -memprofile mprofile.out -cpuprofile cprofile.out

@@ -51,7 +51,7 @@ Number of tries for a correct answer:
 | Day | part 1 | part 2
 | 1   |   1    |  3
 | 2   |   1    |  1
-| 3   |        |
+| 3   |   3    |
 | 4   |        |
 | 5   |        |
 | 6   |        |
@@ -123,3 +123,10 @@ next.blockednodes:={u|dist(u,next)==1 && u.color!=black}
 
 The newest publication i found is https://arxiv.org/abs/1906.03366[Scan-flood Fill(SCAFF): an Efficient Automatic Precise Region Filling Algorithm for Complicated Regions] by Yixuan He, Tianyi Hu, Delu Zeng.
 It mentions large scale auto-learning.
+
+But then we would have to XOR the whole thing because we need those numbers that are reachable, not islands.
+Thinking again, KISS to the rescue. Just parse numbers, and check if the C8 environment contains any special characters.
+
+It took me three turns to make the algorithm work. Yes, numbers can end directly at the end of the line.
+
+image::img/day03.png[]
