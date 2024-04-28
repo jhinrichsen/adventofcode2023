@@ -1,6 +1,6 @@
 module gitlab.com/jhinrichsen/adventofcode2023
 
-go 1.21
+go 1.22
 
 require github.com/fatih/color v1.16.0
 
