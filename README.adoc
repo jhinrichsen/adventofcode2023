@@ -51,7 +51,7 @@ Number of tries for a correct answer:
 | Day | part 1 | part 2
 | 1   |   1    |  3
 | 2   |   1    |  1
-| 3   |   3    |
+| 3   |   3    |  2
 | 4   |        |
 | 5   |        |
 | 6   |        |
@@ -178,4 +178,23 @@ BenchmarkDay03Part1-16    	   37698	     31678 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   41976	     30219 ns/op	       0 B/op	       0 allocs/op
 PASS
 ok  	gitlab.com/jhinrichsen/adventofcode2023	7.645s
+----
+
+=== Part 2
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay03Part2-16             74426             15353 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             78756             15988 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77714             15708 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             72922             15024 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77499             15244 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74164             16153 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74095             15557 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77061             15753 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74888             15874 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             71414             16128 ns/op               0 B/op          0 allocs/op
 ----
