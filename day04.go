@@ -57,16 +57,16 @@ func day04(wins []uint, part1 bool) uint {
 		return points
 	}
 
-	var ns = make([]uint, len(wins)) // number of scratchcards
+	// in the beginning, there is one instance of every card
+	var ns = make([]uint, len(wins))
 	for i := range ns {
-		ns[i] = 1 // in the beginning, there is one instance of every card
+		ns[i] = 1
 	}
 
-	for i, v := range ns {
-		n := wins[i]
-		for j := range n {
-			idx := j + 1
-			ns[idx] += 1
+	for i := range ns {
+		for j := range wins[i] {
+			idx := 1 + uint(i) + j
+			ns[idx] += ns[i]
 		}
 	}
 
