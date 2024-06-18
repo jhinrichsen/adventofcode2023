@@ -26,7 +26,7 @@ for a solution avoid looking at those.
 
 == Environment
 
-- Go 1.21.3
+- Go 1.21, 1.22
 - vim, vim-go, gopls, fed by an HHKB
 - VisualStudio Code for complex debugging scenarios
 - Fedora 38 @ AMD Ryzen 5 3400G on a Gigabyte B450
@@ -95,7 +95,7 @@ ok  	adventofcode2023	4.568s
 ----
 Solving part 1 takes 55 μs.
 
-== Day 3
+== Day 3 Gear Ratios
 
 Looks like a flood fill, aka seed fill.
 Doing my homework on the internet, lots of recursive solutions.
@@ -186,7 +186,7 @@ ok  	gitlab.com/jhinrichsen/adventofcode2023	7.645s
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay03Part2-16             74426             15353 ns/op               0 B/op          0 allocs/op
 BenchmarkDay03Part2-16             78756             15988 ns/op               0 B/op          0 allocs/op
 BenchmarkDay03Part2-16             77714             15708 ns/op               0 B/op          0 allocs/op
@@ -215,3 +215,24 @@ BenchmarkDay03Part2-16    	   33032	     33603 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part2-16    	   36066	     33785 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part2-16    	   35368	     33881 ns/op	       0 B/op	       0 allocs/op
 ----
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay03Part2-8   	   29594	     39583 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   30244	     39643 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   31123	     40310 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   27504	     38278 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   26856	     40871 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   28608	     39918 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   28083	     40723 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   28372	     40097 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   27661	     40784 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-8   	   30015	     41826 ns/op	       0 B/op	       0 allocs/op
+----
+
+== Day 4 Scratchcards
+
+
