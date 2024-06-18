@@ -1,10 +1,7 @@
 package adventofcode2023
 
 import (
-	"fmt"
 	"testing"
-
-	"github.com/fatih/color"
 )
 
 func TestDay03Part1Example(t *testing.T) {
@@ -33,7 +30,7 @@ func TestDay03Part1(t *testing.T) {
 	}
 }
 
-func TestDay03Part1ColoredOutput(t *testing.T) {
+func TestColoredOutput(t *testing.T) {
 	const want = 539713
 	lines, err := linesFromFilename(filename(3))
 	if err != nil {
@@ -102,11 +99,4 @@ func BenchmarkDay03Part2(b *testing.B) {
 	for range b.N {
 		_ = Day03Part2(lines)
 	}
-}
-
-func TestColoredOutput(t *testing.T) {
-	color.Set(color.FgGreen)
-	fmt.Println("Hello")
-	fmt.Println("world")
-	color.Unset()
 }

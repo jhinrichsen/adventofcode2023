@@ -20,7 +20,7 @@ lint:
 
 .PHONY: test
 test:
-	$(GO) test -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
+	$(GO) test -run=Day -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
 	$(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
 
 prof:
