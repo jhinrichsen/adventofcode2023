@@ -198,3 +198,20 @@ BenchmarkDay03Part2-16             77061             15753 ns/op               0
 BenchmarkDay03Part2-16             74888             15874 ns/op               0 B/op          0 allocs/op
 BenchmarkDay03Part2-16             71414             16128 ns/op               0 B/op          0 allocs/op
 ----
+
+----
+goos: darwin
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkDay03Part2-16    	   34120	     35665 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35691	     33231 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   36195	     33311 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35734	     35594 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35541	     33427 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35611	     33519 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35823	     34799 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   33032	     33603 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   36066	     33785 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   35368	     33881 ns/op	       0 B/op	       0 allocs/op
+----
