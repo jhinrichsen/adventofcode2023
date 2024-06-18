@@ -45,21 +45,6 @@ func BenchmarkDay04Part1V1(b *testing.B) {
 	}
 }
 
-func TestDay04Part2V1(t *testing.T) {
-	const want = 0
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day04Part1V1(lines)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
 func testDay04Example(t *testing.T, part1 bool, want uint) {
 	lines, err := linesFromFilename(exampleFilename(4))
 	if err != nil {
