@@ -1,29 +1,29 @@
 package adventofcode2023
 
 import (
-	"slices"
+	"math"
 	"strings"
 )
 
-func Day05(lines []string) (uint, error) {
+func Day05(lines []string, part1 bool) (uint, error) {
 	seeds, err := lineAsNumbers(lines[0][len("seeds: "):])
 	if err != nil {
 		return 0, err
 	}
+
 	rrs, err := parseDay05(lines[2:])
 	if err != nil {
 		return 0, err
 	}
 
-	var results []uint
+	var n0 uint = math.MaxUint
 	for _, seed := range seeds {
 		n := uint(seed)
 		for i := range rrs {
 			n = rrs[i].Do(n)
 		}
-		results = append(results, n)
+		n0 = min(n0, n)
 	}
-	n0 := min(slices.Min(results))
 	return n0, nil
 }
 
