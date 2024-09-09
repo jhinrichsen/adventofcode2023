@@ -17,12 +17,32 @@ func Day05(lines []string, part1 bool) (uint, error) {
 	}
 
 	var n0 uint = math.MaxUint
-	for _, seed := range seeds {
-		n := uint(seed)
-		for i := range rrs {
-			n = rrs[i].Do(n)
+	if part1 {
+		// iterative brute force
+		for _, seed := range seeds {
+			n := uint(seed)
+			for i := range rrs {
+				n = rrs[i].Do(n)
+			}
+			n0 = min(n0, n)
 		}
-		n0 = min(n0, n)
+	} else {
+		var total int
+		// for part 2, the iterative approach is not going anywhere
+		// estimated runtime is around 41 days
+		//  => do not iterate single seeds, but consolidate consecutive ranges
+
+		for i := 0; i < len(seeds); i += 2 {
+			// fmt.Printf("seed range: [%d..%d] = %d\n", seeds[i], seeds[i]+seeds[i+1], seeds[i+1])
+			total += seeds[i+1]
+			// fmt.Printf("total: %d\n", total)
+			/*
+				for j := seeds[i]; j < seeds[i]+seeds[i+1]; j++ {
+					n := all(uint(j))
+					n0 = min(n0, n)
+				}
+			*/
+		}
 	}
 	return n0, nil
 }
@@ -83,4 +103,60 @@ func (a Ranges) Find(n uint) Range {
 		}
 	}
 	return IdentityRange
+}
+
+func Merge(r1, r2 Range) Ranges {
+	// case 1: equal
+	if r1.Min == r2.Min && r1.Max == r2.Max {
+		return Ranges{Range{r1.Min, r1.Max, r1.Delta + r2.Delta}}
+	}
+
+	// swap predicates
+	p1 := r1.Min > r2.Min
+	p2 := r1.Min == r2.Min && r1.Max < r2.Max // case 4
+	if p1 || p2 {
+		tmp := r1
+		r1 = r2
+		r2 = tmp
+	}
+
+	// case 2: non overlapping
+	if r1.Max < r2.Min {
+		return Ranges{
+			r1, r2,
+		}
+	}
+
+	// case 3: inside
+	if r1.Min < r2.Min && r1.Max > r2.Max {
+		return Ranges{Range{r1.Min, r2.Min - 1, r1.Delta},
+			Range{r2.Min, r2.Max, r1.Delta + r2.Delta},
+			Range{r2.Max + 1, r1.Max, r1.Delta}}
+	}
+
+	// case 4
+	if r1.Min == r2.Min && r1.Max > r2.Max {
+		return Ranges{
+			Range{r1.Min, r2.Max, r1.Delta + r2.Delta},
+			Range{r2.Max + 1, r1.Max, r1.Delta},
+		}
+	}
+
+	// case 5
+	if r1.Min < r2.Min && r1.Max < r2.Max {
+		return Ranges{
+			Range{r1.Min, r2.Min - 1, r1.Delta},
+			Range{r2.Min, r1.Max, r1.Delta + r2.Delta},
+			Range{r1.Max + 1, r2.Max, r2.Delta},
+		}
+	}
+
+	// case 6
+	if r1.Min < r2.Min && r1.Max == r2.Max {
+		return Ranges{
+			Range{r1.Min, r2.Min, r1.Delta},
+			Range{r2.Min + 1, r1.Max, r1.Delta + r2.Delta},
+		}
+	}
+	panic("unimplemented case")
 }
