@@ -9,7 +9,7 @@ clean:
 	rm \
 		coverage.txt \
 		coverage.xml \
-		quality \
+		gl-code-quality-report.json \
 		govulncheck.sarif \
 		junit.xml \
 		staticcheck.json \
@@ -41,7 +41,7 @@ test:
 	$(GO) test -run=Day
 
 .PHONY: sast
-sast: coverage.xml quality.json govulncheck.sarif junit.xml
+sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
 
 coverage.txt test.log &:
 	echo "grouped target: " $@
@@ -59,7 +59,7 @@ coverage.xml: coverage.txt
 	gocover-cobertura < $< > $@
 
 # Gitlab code quality report
-quality.json: staticcheck.json
+gl-code-quality-report.json: staticcheck.json
 	which golint-convert || $(GO) install github.com/banyansecurity/golint-convert
 	golint-convert > $@
 

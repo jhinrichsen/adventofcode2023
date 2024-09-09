@@ -14,15 +14,16 @@ sast:
 include:
     - template: Security/SAST.gitlab-ci.yml
 
+# name of code quality report seems to be fixed
 test-job:
     stage: test
     script:
         - make --version
-        - make -r coverage.xml junit.xml quality.json 
+        - make -r coverage.xml junit.xml gl-code-quality-report.json
     coverage: '/coverage: \d+\.\d+%/'
     artifacts:
         reports:
-            codequality: quality.json
+            codequality: gl-code-quality-report.json
             coverage_report:
                 coverage_format: cobertura
                 path: coverage.xml
@@ -31,7 +32,7 @@ test-job:
         paths:
           - coverage.xml
           - junit.xml
-          - quality.json
+          - gl-code-quality-report.json
 
 # include coverage from test.log so it does not get lost
 vuln-report:
