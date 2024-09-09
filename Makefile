@@ -8,7 +8,7 @@ clean:
 	$(GO) clean # remove test results from previous runs so that tests are executed
 	rm \
 		coverage.txt \
-		coverge.xml \
+		coverage.xml \
 		gl-code-quality-report \
 		govulncheck.sarif \
 		junit.xml \
