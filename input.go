@@ -65,7 +65,6 @@ func linesAsNumbers(lines []string) ([]int, error) {
 	return is, nil
 }
 
-/* commented out until used, otherwise staticcheck complains
 func numbersFromFilename(filename string) ([]int, error) {
 	ls, err := linesFromFilename(filename)
 	if err != nil {
@@ -73,4 +72,3 @@ func numbersFromFilename(filename string) ([]int, error) {
 	}
 	return linesAsNumbers(ls)
 }
-*/
