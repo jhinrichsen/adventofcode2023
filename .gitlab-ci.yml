@@ -17,7 +17,7 @@ include:
 test-job:
     stage: test
     script:
-        - make tidy test
+        - make tidy sast
     coverage: '/coverage: \d+\.\d+%/'
     artifacts:
         reports:

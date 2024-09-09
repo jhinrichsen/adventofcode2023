@@ -37,8 +37,7 @@ prof:
 
 .PHONY: test
 test:
-	-$(GO) test -run=Day -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
-	$(GO) run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
+	$(GO) test -run=Day -coverprofile=coverage.txt -covermode count gitlab.com/jhinrichsen/adventofcode2023
 
 .PHONY: sast
 sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
