@@ -16,12 +16,8 @@ include:
 
 test-job:
     stage: test
-    except:
-        - README.adoc
-    before_script:
-        - make setup
     script:
-        - make lint test
+        - make tidy test
     coverage: '/coverage: \d+\.\d+%/'
     artifacts:
         reports:
