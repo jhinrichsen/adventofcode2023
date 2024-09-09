@@ -283,4 +283,7 @@ func TestDay05MergeRanges(t *testing.T) {
 			fmt.Printf("%+v\n", rs)
 		}
 	*/
+	if len(cs) != 511511 {
+		t.Fatalf("TODO broke %d", len(cs))
+	}
 }
