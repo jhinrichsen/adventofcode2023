@@ -44,7 +44,7 @@ test:
 sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
 
 # Gitlab coverage report
-coverage.xml:
+coverage.xml: coverage.txt
 	# which gocover-cobertura 2>/dev/null || $(GO) install github.com/boumenot/gocover-cobertura
 	which gocover-cobertura || $(GO) install github.com/boumenot/gocover-cobertura
 	gocover-cobertura < $< > $@
