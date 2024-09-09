@@ -6,18 +6,14 @@ all: tidy test
 .PHONY: clean
 clean:
 	$(GO) clean # remove test results from previous runs so that tests are executed
-	rm \
+	-rm \
 		coverage.txt \
 		coverage.xml \
 		gl-code-quality-report.json \
 		govulncheck.sarif \
 		junit.xml \
 		staticcheck.json \
-		test.log \
-
-.PHONY: setup
-setup:
-	$(GO) get github.com/boumenot/gocover-cobertura
+		test.log
 
 .PHONY: bench
 bench:
@@ -44,14 +40,13 @@ test:
 sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
 
 coverage.txt test.log &:
-	echo "grouped target: " $@
 	-$(GO) test -coverprofile=coverage.txt -covermode count -short -v > test.log
 
 # Gitlab test report
 junit.xml: test.log
 	which go-junit-report || $(GO) install github.com/jstemmer/go-junit-report/v2@latest
 	go-junit-report -version
-	go-junit-report -set-exit-code < $< > $@
+	go-junit-report < $< > $@
 
 # Gitlab coverage report
 coverage.xml: coverage.txt
