@@ -54,7 +54,7 @@ Number of tries for a correct answer:
 | 3   |   3    |  2
 | 4   |   1    |  1
 | 5   |   1    |
-| 6   |        |
+| 6   |   1    |  1
 | 7   |        |
 | 8   |        |
 | 9   |        |
@@ -138,7 +138,7 @@ image::img/day03.png[]
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay03Part1-16    	   19702	     57430 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   41658	     32092 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   41925	     28282 ns/op	       0 B/op	       0 allocs/op
@@ -154,7 +154,7 @@ ok  	gitlab.com/jhinrichsen/adventofcode2023	7.829s
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay03Part1-16    	   10586	    111056 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   10000	    101209 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   10000	    112834 ns/op	       0 B/op	       0 allocs/op
@@ -170,7 +170,7 @@ ok  	gitlab.com/jhinrichsen/adventofcode2023	6.504s
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay03Part1-16    	   42468	     30711 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   38066	     30958 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   42180	     28016 ns/op	       0 B/op	       0 allocs/op
@@ -242,6 +242,25 @@ BenchmarkDay03Part2-8   	   30015	     41826 ns/op	       0 B/op	       0 allocs
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay05Part1-16    	   33780	     35607 ns/op	   41464 B/op	     978 allocs/op
 ----
+
+== Day 6 Wait For It
+
+Part 2 ran without any code changes.
+Not sure what the challenge is for part 2.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay06Part1-8   	 5116702	       205.3 ns/op
+BenchmarkDay06Part2-8   	      37	  31458602   ns/op
+PASS
+----
+
+That's just 31 ms.
+
+
