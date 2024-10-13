@@ -55,7 +55,7 @@ Number of tries for a correct answer:
 | 4   |   1    |  1
 | 5   |   1    |
 | 6   |   1    |  1
-| 7   |        |
+| 7   |   1    |
 | 8   |        |
 | 9   |        |
 | 10  |        |
@@ -263,4 +263,13 @@ PASS
 
 That's just 31 ms.
 
+== Day 7 Camel Cards
 
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay07Part1-16    	     494	   2360739 ns/op
+PASS
+----
