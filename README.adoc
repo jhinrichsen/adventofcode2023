@@ -55,7 +55,7 @@ Number of tries for a correct answer:
 | 4   |   1    |  1
 | 5   |   1    |
 | 6   |   1    |  1
-| 7   |   1    |
+| 7   |   1    |  2
 | 8   |        |
 | 9   |        |
 | 10  |        |
@@ -269,7 +269,19 @@ That's just 31 ms.
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay07Part1-16    	     494	   2360739 ns/op
+PASS
+----
+
+For part 2, i was promoting `OnePair` and a Joker to `TwoPairs` instead of `ThreeOfAKind`. Damn.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay07Part1-8   	     220	   4891596 ns/op	   72576 B/op	    1001 allocs/op
+BenchmarkDay07Part2-8   	     222	   5629774 ns/op	   72576 B/op	    1001 allocs/op
 PASS
 ----
