@@ -18,19 +18,17 @@ image::img/gitlab-history.png[]
 My take on https://adventofcode.com/2023/ in Go. As usual, i don't particularly
 care if i provide my solutions _fast_, i try to be _correct_ on the first
 answer, and care for being runtime efficient.
-Most, if not all, puzzles are backed by unit testing the examples, and by some
-benchmarks.
-
-Expected results are hard coded into the unit tests, so unless you are peeking
-
+All puzzles are backed by unit testing the examples and the puzzles.
+Results are hard coded into the unit tests, so you might not want to peek at `_test.go` files.
 
 == Environment
 
-- Go 1.21, 1.22
+- Go 1.22
 - vim, vim-go, gopls, fed by an HHKB
-- VisualStudio Code for complex debugging scenarios
-- Fedora 38 @ AMD Ryzen 5 3400G on a Gigabyte B450
-- OSX @ 16" Macbook Pro 2019
+- VisualStudio Code for debugging
+- Fedora 38, 39, 40 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
+- Fedora 38, 39, 40 @ AMD Ryzen 5 3400G on a Gigabyte B450
+- OSX @ 16" Macbook Pro 2019 (Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz)
 
 I'd love to try one of those Risc-V boards but can't decide between
 https://github.com/openwch/ch32v003[a bare metal 48 MHz]
@@ -285,3 +283,18 @@ BenchmarkDay07Part1-8   	     220	   4891596 ns/op	   72576 B/op	    1001 allocs
 BenchmarkDay07Part2-8   	     222	   5629774 ns/op	   72576 B/op	    1001 allocs/op
 PASS
 ----
+
+To get rid of the memory allocation, pack cards and their bid into a struct, so it is not required to backreference the bid after ranking.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay07Part1-8   	    5211	    222719 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay07Part2-8   	    4837	    233281 ns/op	       0 B/op	       0 allocs/op
+PASS
+----
+
+Thats 230 μs, and no memory allocation.
+
