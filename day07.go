@@ -20,12 +20,16 @@ const (
 	FiveOfAKind
 )
 
-func Day07(hands [][]Card, bids []uint, useJoker bool) (uint, error) {
+type Hand struct {
+	cards []Card
+	bid   uint
+}
+
+func Day07(hands []Hand, useJoker bool) (uint, error) {
 
 	// sort into ascending order
 
-	ranked := copyDeck(hands)
-	slices.SortFunc(ranked, func(a, b []Card) int {
+	slices.SortFunc(hands, func(a, b Hand) int {
 
 		n1 := handType(a, useJoker)
 		n2 := handType(b, useJoker)
@@ -34,10 +38,10 @@ func Day07(hands [][]Card, bids []uint, useJoker bool) (uint, error) {
 		}
 
 		// equal hands: fallback to second ordering rule
-		for i := range a {
-			if a[i] < b[i] {
+		for i := range a.cards {
+			if a.cards[i] < b.cards[i] {
 				return -1
-			} else if a[i] > b[i] {
+			} else if a.cards[i] > b.cards[i] {
 				return 1
 			}
 			// equal, continue with next card
@@ -46,17 +50,9 @@ func Day07(hands [][]Card, bids []uint, useJoker bool) (uint, error) {
 	})
 
 	var total uint
-	for i, r := range ranked {
-		rank := 1 + uint(i) // one-based
-		// go back into original hands to find bid
-		var bid uint
-		for j, h := range hands {
-			if slices.Compare(r, h) == 0 {
-				bid = bids[j]
-				break
-			}
-		}
-		total += rank * bid
+	for i, h := range hands {
+		rank := 1 + uint(i) // rank is one-based
+		total += rank * h.bid
 	}
 	return total, nil
 }
@@ -70,47 +66,42 @@ func copyDeck(matrix [][]Card) [][]Card {
 	return duplicate
 }
 
-func NewDay07(lines []string, part1 bool) ([][]Card, []uint, error) {
-	var (
-		hands [][]Card
-		bids  []uint
-	)
+func NewDay07(lines []string, part1 bool) ([]Hand, error) {
+	hands := make([]Hand, len(lines))
 	for i, line := range lines {
 		parts := strings.Fields(line)
 		if len(parts) != 2 {
-			return nil, nil, fmt.Errorf("want 2 fields but got %d", len(parts))
+			return nil, fmt.Errorf("want 2 fields but got %d", len(parts))
 		}
 
-		// hands
+		// cards
 
-		var hand []Card
 		for j, b := range parts[0] {
 			c, err := card(byte(b), part1)
 			if err != nil {
-				return nil, nil, fmt.Errorf("line %d, card %d: %c is not a valid card", i, j, b)
+				return nil, fmt.Errorf("line %d, card %d: %c is not a valid card", i, j, b)
 			}
-			hand = append(hand, c)
+			hands[i].cards = append(hands[i].cards, c)
 		}
-		hands = append(hands, hand)
 
 		// bids
 
 		n, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return nil, nil, fmt.Errorf("line %d: want numeric column 2 but got %s: %v", i, parts[1], err)
+			return nil, fmt.Errorf("line %d: want numeric column 2 but got %s: %v", i, parts[1], err)
 		}
-		bids = append(bids, uint(n))
+		hands[i].bid = uint(n)
 	}
-	return hands, bids, nil
+	return hands, nil
 }
 
-func handType(hand []Card, useJoker bool) HandType {
+func handType(h Hand, useJoker bool) HandType {
 
 	// sort by count ascending
 
 	const N = 13
 	var cnt [N]int
-	for _, b := range hand {
+	for _, b := range h.cards {
 		if useJoker { // consider joker?
 			if b == 0 { // joker do not count for hand type
 				continue
@@ -146,7 +137,7 @@ func handType(hand []Card, useJoker bool) HandType {
 		return t
 	}
 
-	n := joker(hand)
+	n := joker(h)
 	for i := 0; i < n; i++ {
 		switch t {
 		case FiveOfAKind:
@@ -186,9 +177,13 @@ func card(b byte, joker bool) (Card, error) {
 }
 
 // joker returns number of Joker in hand.
-func joker(hand []Card) (n int) {
-	for _, h := range hand {
-		if h == 0 {
+func joker(h Hand) (n int) {
+
+	// neither slices nor iter packge can Count so far
+
+	const j = 0 // joker is lowest card
+	for _, c := range h.cards {
+		if c == j {
 			n++
 		}
 	}

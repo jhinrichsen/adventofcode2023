@@ -13,11 +13,11 @@ func TestDay07Part1Example(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, bids, joker)
+	got, err := Day07(hands, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,11 +35,11 @@ func TestDay07Part1(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, bids, joker)
+	got, err := Day07(hands, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,13 +54,13 @@ func BenchmarkDay07Part1(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = Day07(hands, bids, joker)
+		_, _ = Day07(hands, joker)
 	}
 }
 
@@ -85,11 +85,11 @@ func TestDay07Part2Example(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, bids, joker)
+	got, err := Day07(hands, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -107,11 +107,11 @@ func TestDay07Part2Example2(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, bids, joker)
+	got, err := Day07(hands, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,11 +130,11 @@ func TestDay07Part2(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, bids, joker)
+	got, err := Day07(hands, joker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,11 +148,11 @@ func TestQ2KJJ(t *testing.T) {
 		want = ThreeOfAKind
 		s    = "Q2KJJ"
 	)
-	hand, err := cards(s)
+	cs, err := cards(s)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := handType(hand, true)
+	got := handType(Hand{cards: cs}, true)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -176,12 +176,12 @@ func BenchmarkDay07Part2(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	hands, bids, err := NewDay07(lines, joker)
+	hands, err := NewDay07(lines, joker)
 	if err != nil {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = Day07(hands, bids, joker)
+		_, _ = Day07(hands, joker)
 	}
 }
