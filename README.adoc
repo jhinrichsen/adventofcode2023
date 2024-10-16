@@ -54,7 +54,7 @@ Number of tries for a correct answer:
 | 5   |   1    |
 | 6   |   1    |  1
 | 7   |   1    |  2
-| 8   |        |
+| 8   |   1    |
 | 9   |        |
 | 10  |        |
 | 11  |        |
@@ -298,3 +298,15 @@ PASS
 
 Thats 230 μs, and no memory allocation.
 
+== Haunted Wasteland
+
+A straight forward puzzle to implement, no algorithm background required.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay08Part1-8   	    1884	    554004 ns/op	       0 B/op	       0 allocs/op
+PASS
+----
