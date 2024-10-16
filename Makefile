@@ -34,7 +34,7 @@ prof:
 
 .PHONY: test
 test:
-	$(GO) test -run=Day
+	$(GO) test -run=Day -vet=all
 
 .PHONY: sast
 sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
