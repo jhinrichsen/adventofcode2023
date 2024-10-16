@@ -310,3 +310,7 @@ cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay08Part1-8   	    1884	    554004 ns/op	       0 B/op	       0 allocs/op
 PASS
 ----
+
+Part 2 contains a twitch in the particular input, which makes it possible to use an abbreviation.
+Brute force approach will never terminate.
+I peeked into some hints when my implementation ran longer than 10s, and decided to not apply the shortcut because it makes the solution totally dependent on input data.
