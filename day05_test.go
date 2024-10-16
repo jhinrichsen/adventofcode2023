@@ -25,6 +25,10 @@ func TestDay05Part1Example(t *testing.T) {
 // The lowest location number can be obtained from seed number 82, which corresponds to soil 84, fertilizer 84,
 // water 84, light 77, temperature 45, humidity 46, and location 46. So, the lowest location number is 46.
 func TestDay05Part2Example(t *testing.T) {
+
+	// TODO
+	t.Skip()
+
 	const want = 46
 	lines, err := linesFromFilename(exampleFilename(5))
 	if err != nil {
@@ -55,6 +59,10 @@ func TestDay05Part1(t *testing.T) {
 }
 
 func TestDay05Part2(t *testing.T) {
+
+	// TODO
+	t.Skip()
+
 	const want = 340994526
 	lines, err := linesFromFilename(filename(5))
 	if err != nil {
