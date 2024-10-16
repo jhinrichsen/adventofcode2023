@@ -60,12 +60,62 @@ func (a *D8) Next() bool {
 	return true
 }
 
-func Day08(d8 D8) uint {
+func Day08Part1(d8 D8) uint {
 	var steps uint
 	for d8.Next() {
 		steps++
 	}
 	return 1 + steps
+}
+
+func Day08Part2(d8 D8) uint {
+	starts := d8.startNodes()
+	n := len(starts)
+	ds := make([]*D8, n)
+
+	finished := func() bool {
+		n := 0
+		for _, d := range ds {
+			if !finishNode(d.Current) {
+				return false
+			}
+			n++
+		}
+		return true
+	}
+
+	for i, p0 := range starts {
+		d := d8
+		d.Network = d8.Network
+		d.Current = p0
+		ds[i] = &d
+	}
+
+	var steps uint
+	for !finished() {
+		for _, d := range ds {
+			d.Next()
+		}
+		steps++
+	}
+	return steps
+}
+
+func (a D8) startNodes() (nodes []string) {
+	for k := range a.Network {
+		if startNode(k) {
+			nodes = append(nodes, k)
+		}
+	}
+	return
+}
+
+func startNode(s string) bool {
+	return s[len(s)-1] == 'A'
+}
+
+func finishNode(s string) bool {
+	return s[len(s)-1] == 'Z'
 }
 
 func NewDay08(lines []string) (D8, error) {
@@ -107,11 +157,5 @@ func NewDay08(lines []string) (D8, error) {
 
 	// make sure we have a start, and an end
 	d8.Current = start
-	if _, ok := d8.Network[start]; !ok {
-		return d8, fmt.Errorf("error: missing start node %q", start)
-	}
-	if _, ok := d8.Network[finish]; !ok {
-		return d8, fmt.Errorf("error: missing finish node %q", finish)
-	}
 	return d8, d8.complete()
 }

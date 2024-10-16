@@ -34,13 +34,13 @@ prof:
 
 .PHONY: test
 test:
-	$(GO) test -run=Day -vet=all
+	$(GO) test -run=Day -short -vet=all
 
 .PHONY: sast
 sast: coverage.xml gl-code-quality-report.json govulncheck.sarif junit.xml
 
 coverage.txt test.log &:
-	-$(GO) test -coverprofile=coverage.txt -covermode count -short -v > test.log
+	-$(GO) test -coverprofile=coverage.txt -covermode count -short -v | test.log
 
 # Gitlab test report
 junit.xml: test.log
