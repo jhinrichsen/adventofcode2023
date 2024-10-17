@@ -23,7 +23,7 @@ bench:
 tidy:
 	test -z $(gofmt -l .)
 	$(GO) vet
-	staticcheck || $(GO) install honnef.co/go/tools/cmd/staticcheck@latest
+	which staticcheck || $(GO) install honnef.co/go/tools/cmd/staticcheck@latest
 	staticcheck -version
 	staticcheck
 
