@@ -1,9 +1,5 @@
 = Advent of code 2023
 
-Same procedure as every year, Eric.
-
- Advent of code 2023
-
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
@@ -55,7 +51,7 @@ Number of tries for a correct answer:
 | 6   |   1    |  1
 | 7   |   1    |  2
 | 8   |   1    |
-| 9   |        |
+| 9   |   1    |
 | 10  |        |
 | 11  |        |
 | 12  |        |
@@ -88,8 +84,6 @@ BenchmarkDay01V2
 BenchmarkDay01V2-16       	   21414	     55737 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay01Large
 BenchmarkDay01Large-16    	     462	   2582112 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	adventofcode2023	4.568s
 ----
 Solving part 1 takes 55 μs.
 
@@ -142,8 +136,6 @@ BenchmarkDay03Part1-16    	   41658	     32092 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   41925	     28282 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   42114	     29990 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   38536	     28438 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	gitlab.com/jhinrichsen/adventofcode2023	7.829s
 ----
 
 === Power Mode 'Power Saver'
@@ -158,8 +150,6 @@ BenchmarkDay03Part1-16    	   10000	    101209 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   10000	    112834 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   10000	    115926 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   10000	    101594 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	gitlab.com/jhinrichsen/adventofcode2023	6.504s
 ----
 
 === Power Mode 'Performance'
@@ -174,8 +164,6 @@ BenchmarkDay03Part1-16    	   38066	     30958 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   42180	     28016 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   37698	     31678 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay03Part1-16    	   41976	     30219 ns/op	       0 B/op	       0 allocs/op
-PASS
-ok  	gitlab.com/jhinrichsen/adventofcode2023	7.645s
 ----
 
 === Part 2
@@ -256,7 +244,6 @@ pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay06Part1-8   	 5116702	       205.3 ns/op
 BenchmarkDay06Part2-8   	      37	  31458602   ns/op
-PASS
 ----
 
 That's just 31 ms.
@@ -269,7 +256,6 @@ goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay07Part1-16    	     494	   2360739 ns/op
-PASS
 ----
 
 For part 2, i was promoting `OnePair` and a Joker to `TwoPairs` instead of `ThreeOfAKind`. Damn.
@@ -281,7 +267,6 @@ pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay07Part1-8   	     220	   4891596 ns/op	   72576 B/op	    1001 allocs/op
 BenchmarkDay07Part2-8   	     222	   5629774 ns/op	   72576 B/op	    1001 allocs/op
-PASS
 ----
 
 To get rid of the memory allocation, pack cards and their bid into a struct, so it is not required to backreference the bid after ranking.
@@ -293,7 +278,6 @@ pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay07Part1-8   	    5211	    222719 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay07Part2-8   	    4837	    233281 ns/op	       0 B/op	       0 allocs/op
-PASS
 ----
 
 Thats 230 μs, and no memory allocation.
@@ -308,9 +292,121 @@ goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay08Part1-8   	    1884	    554004 ns/op	       0 B/op	       0 allocs/op
-PASS
 ----
 
 Part 2 contains a twitch in the particular input, which makes it possible to use an abbreviation.
 Brute force approach will never terminate.
 I peeked into some hints when my implementation ran longer than 10s, and decided to not apply the shortcut because it makes the solution totally dependent on input data.
+
+== Mirage Maintenance
+
+These timings include parsing the puzzle input:
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09Part1-8   	    5962	    378392 ns/op	   70400 B/op	     200 allocs/op
+----
+
+The corresponding CPU profile shows that most of the time is spent parsing.
+
+image::img/profile09-01.svg[Embedded,800,opts=inline]
+
+Spinning a custom parser:
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09V1Part1-8   	    6135	    398102 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V2Part1-8   	    9898	    113864 ns/op	       0 B/op	       0 allocs/op
+----
+
+400% faster, and no more memory allocations.
+
+image::img/profile09-02.svg[Embedded,800,opts=inline]
+
+Function names from the parser's state machine are mangled, such as `func1`.
+
+----
+ROUTINE ======================== gitlab.com/jhinrichsen/adventofcode2023.Day09V2.func1 in /home/jot/repos/adventofcode2023/day09.go <1>
+     430ms      430ms (flat, cum) 19.46% of Total
+         .          .     74:	clear := func() { <2>
+         .          .     75:		for y := range ns {
+     430ms      430ms     76:			for x := range ns[y] {
+         .          .     77:				ns[y][x] = -1
+         .          .     78:			}
+         .          .     79:		}
+         .          .     80:	}
+         .          .     81:	clear()
+----
+<1> mangled function name
+<2> function name
+
+The `clear()/ func1` function helped to make sure all (x/y) positions are correct, it can safely be removed now.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09V2Part1-8   	   14719	     83811 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-8   	   13400	     84512 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-8   	   13508	     84898 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-8   	   14628	     84776 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-8   	   14185	     84671 ns/op	       0 B/op	       0 allocs/op
+----
+
+As suggested, removing `clear()/ func1` shaves off another 20% from 114 to 84 μs.
+20% is spent in an inlined function building numbers from digits:
+
+----
+ROUTINE ======================== gitlab.com/jhinrichsen/adventofcode2023.Day09V2.func2 in /home/jot/repos/adventofcode2023/day09.go
+     1.84s      1.84s (flat, cum) 19.70% of Total
+         .          .     79:	digit := func(d int) {
+     1.84s      1.84s     80:		n = 10*n + d
+         .          .     81:	}
+----
+
+ChatGPT 4o confirms that this is already pretty optimized, and slightly suggests trying bit shifting `(n << 3) + (n << 1) + d`.
+The Go compiler decides to take another route, the disassembly for `n = 10 * n + d` on AMD looks like this:
+
+----
+     170ms      170ms     50f6ca: MOVQ 0x4e220(SP), DI                    ;gitlab.com/jhinrichsen/adventofcode2023.Day09V2 day09.go:80
+     980ms      980ms     50f6d2: LEAQ 0(DI)(DI*4), DI
+      90ms       90ms     50f6d6: LEAQ 0(SI)(DI*2), SI
+     600ms      600ms     50f6da: MOVQ SI, 0x4e220(SP)
+----
+
+`DI + DI * 4` (5) and then `SI + DI * 2` (10 * DI + SI).
+Well, compiler people know way better than me, so i leave it like that.
+
+For part 2, i had to add a single line, and BÄM
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09Part2-8   	   13662	     86871 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-8   	   12366	     86868 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-8   	   13159	     88358 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-8   	   13674	     89267 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-8   	   12960	     89872 ns/op	       0 B/op	       0 allocs/op
+----
+
+This one line for part 2 adds 3% runtime penalty.
+
+----
+name          old time/op    new time/op    delta
+Day09Part2-8    87.2µs ± 2%    89.4µs ± 3%   ~     (p=0.095 n=5+5)
+
+name          old alloc/op   new alloc/op   delta
+Day09Part2-8     0.00B          0.00B        ~     (all equal)
+
+name          old allocs/op  new allocs/op  delta
+Day09Part2-8      0.00           0.00        ~     (all equal)
+----
