@@ -51,7 +51,7 @@ Number of tries for a correct answer:
 | 6   |   1    |  1
 | 7   |   1    |  2
 | 8   |   1    |
-| 9   |   1    |
+| 9   |   1    |  1
 | 10  |        |
 | 11  |        |
 | 12  |        |
@@ -73,6 +73,7 @@ Number of tries for a correct answer:
 == Day 1 Trebuchet?!
 
 Writing a custom one-pass parser for V2 because why not.
+
 ----
 goos: darwin
 goarch: amd64
