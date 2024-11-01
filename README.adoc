@@ -411,3 +411,58 @@ Day09Part2-8     0.00B          0.00B        ~     (all equal)
 name          old allocs/op  new allocs/op  delta
 Day09Part2-8      0.00           0.00        ~     (all equal)
 ----
+
+Framework 16" in Performance Mode:
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay09V1Part1-16    	   13080	     91186 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	   13360	     90379 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	   13119	     91153 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	   13088	     91441 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	   13124	     91989 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V2Part1-16    	   28809	     41317 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	   29056	     41194 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	   28704	     41308 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	   28743	     41222 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	   29160	     41331 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   27960	     42377 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28038	     42533 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28312	     42262 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28311	     42283 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28095	     42474 ns/op	       0 B/op	       0 allocs/op
+----
+
+and in Power Saver Mode:
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay09V1Part1-16    	    3446	    298572 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	    3676	    296005 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	    3806	    294459 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	    3470	    297215 ns/op	   70400 B/op	     200 allocs/op
+BenchmarkDay09V1Part1-16    	    3666	    297516 ns/op	   70400 B/op	     200 allocs/op
+
+BenchmarkDay09V2Part1-16    	    7330	    143001 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	    7080	    148411 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09V2Part1-16    	    8065	    135634 ns/op	       0 B/op	       0 allocs/op <1>
+BenchmarkDay09V2Part1-16    	   28040	     40523 ns/op	       0 B/op	       0 allocs/op <2>
+BenchmarkDay09V2Part1-16    	   29444	     40772 ns/op	       0 B/op	       0 allocs/op
+
+BenchmarkDay09Part2-16      	   28267	     42077 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28153	     42776 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   27757	     44260 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28194	     41942 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 allocs/op
+----
+<1> right before turbo
+<2> in turbo
+
+Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
+Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
