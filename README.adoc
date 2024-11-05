@@ -42,7 +42,7 @@ Unit test data, both examples and puzzle input, is in
 Number of tries for a correct answer:
 
 |===
-| Day | part 1 | part 2
+| Day | Part 1 | Part 2
 | 1   |   1    |  3
 | 2   |   1    |  1
 | 3   |   3    |  2
@@ -466,3 +466,71 @@ BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 al
 
 Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
 Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
+
+== Day10 Pipe Maze
+
+I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
+Right down to the location of the input puzzle file, and its filename.
+Plus a unit test that uses the example puzzle input.
+The resulting code is pretty standard stuff, at least junior Go developer.
+
+But then, running the tests `panic()`s.
+
+----
+$ go test -run=Day10
+--- FAIL: TestDay10Part1ExampleChatGPT (0.00s)
+panic: runtime error: index out of range [0] with length 0 [recovered]
+	panic: runtime error: index out of range [0] with length 0
+----
+
+Seems as if some structure is not properly initialized.
+`LoadGridFromFile` contains solid line parser code with a twist.
+
+----
+        var grid *Day10Grid <1>
+        scanner := bufio.NewScanner(file)
+        y := 0
+        for scanner.Scan() {
+                line := scanner.Text()
+                if grid == nil { <1>
+                        grid = Day10NewGrid(len(line), 0) <2>
+                }
+                grid.height++ <3>
+                for x, char := range line {
+                        grid.SetExits(x, y, string(char)) <4>
+                }
+                y++
+        }
+
+        return grid, scanner.Err()
+----
+<1> declaration for lazy initialization of a 2D grid until width is known
+<2> initializes correct width, but height 0
+<3> increasing the height afterwards, this will work because underlying type is an int
+<4> trying to store exit of cells, but no cells inside the grid have been allocated
+
+Manually fixing the incorrect memory management, we get a test result.
+It is not the expected 4 steps, but `with a distance of 2 steps`.
+
+ChatGPT applies a standard BFS, and instead of counting the steps as in
+
+----
+-L|F7        .....
+7S-7|        .S12.
+L|7||        .1.3.
+-L-J|        .234.
+L|-JF        .....
+----
+
+it tracks the distance to S.
+
+----
+-L|F7        .....
+7S-7|        .S...
+L|7||        ..1..
+-L-J|        ...2.
+L|-JF        .....
+----
+
+I am trying different prompts, but cannot get ChatGPT off the BFS.
+
