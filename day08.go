@@ -33,10 +33,10 @@ type D8 struct {
 func (a D8) complete() error {
 	for k, v := range a.Network {
 		if _, ok := a.Network[v.A]; !ok {
-			return fmt.Errorf("Node %q references left node %q which does not exist", k, v.A)
+			return fmt.Errorf("node %q references left node %q which does not exist", k, v.A)
 		}
 		if _, ok := a.Network[v.B]; !ok {
-			return fmt.Errorf("Node %q references right node %q which does not exist", k, v.A)
+			return fmt.Errorf("node %q references right node %q which does not exist", k, v.A)
 		}
 	}
 	return nil

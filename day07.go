@@ -57,15 +57,6 @@ func Day07(hands []Hand, useJoker bool) (uint, error) {
 	return total, nil
 }
 
-func copyDeck(matrix [][]Card) [][]Card {
-	duplicate := make([][]Card, len(matrix))
-	for i := range matrix {
-		duplicate[i] = make([]Card, len(matrix[i]))
-		copy(duplicate[i], matrix[i])
-	}
-	return duplicate
-}
-
 func NewDay07(lines []string, part1 bool) ([]Hand, error) {
 	hands := make([]Hand, len(lines))
 	for i, line := range lines {
@@ -173,7 +164,7 @@ func card(b byte, joker bool) (Card, error) {
 			return Card(i), nil
 		}
 	}
-	return Card(0), fmt.Errorf("Unknown card: want one of %+v but got %c", cards, b)
+	return Card(0), fmt.Errorf("unknown card: want one of %+v but got %c", cards, b)
 }
 
 // joker returns number of Joker in hand.
