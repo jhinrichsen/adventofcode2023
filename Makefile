@@ -50,12 +50,12 @@ junit.xml: test.log
 
 # Gitlab coverage report
 coverage.xml: coverage.txt
-	which gocover-cobertura || $(GO) install github.com/boumenot/gocover-cobertura
+	which gocover-cobertura || $(GO) install github.com/boumenot/gocover-cobertura@latest
 	gocover-cobertura < $< > $@
 
 # Gitlab code quality report
 gl-code-quality-report.json: staticcheck.json
-	which golint-convert || $(GO) install github.com/banyansecurity/golint-convert
+	which golint-convert || $(GO) install github.com/banyansecurity/golint-convert@latest
 	golint-convert > $@
 
 staticcheck.json:

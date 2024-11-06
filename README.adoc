@@ -52,7 +52,7 @@ Number of tries for a correct answer:
 | 7   |   1    |  2
 | 8   |   1    |
 | 9   |   1    |  1
-| 10  |        |
+| 10  |   1    |
 | 11  |        |
 | 12  |        |
 | 13  |        |
@@ -533,4 +533,148 @@ L|-JF        .....
 ----
 
 I am trying different prompts, but cannot get ChatGPT off the BFS.
+Gemini to the rescue? Not really.
+The code looks a little bit more friendly, but this is just a matter of taste i guess.
+Nevertheless, the result is also wrong.
+Instead of 4, ChatGPT calculates 2, Gemini 6.
+
+Rolling my own version...
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay10Part1-8   	   11338	    106754 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay10Part1-8   	   11493	    107613 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay10Part1-8   	   11535	    101549 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay10Part1-8   	   10000	    105559 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay10Part1-8   	   10000	    103705 ns/op	       0 B/op	       0 allocs/op
+----
+
+
+Benchmarking different implementation of `opposite()` direction:
+
+----
+ 19 func opposite1(d direction) direction {
+ 20         switch d {
+ 21         case North:
+ 22                 return South
+ 23         case South:
+ 24                 return North
+ 25         case West:
+ 26                 return East
+ 27         case East:
+ 28                 return West
+ 29         }
+ 30         return d
+ 31 }
+ 32
+
+TEXT command-line-arguments.opposite1(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:20		0x61ac			3c02			CMPL AL, $0x2		
+  day10.go:23		0x61ae			7714			JA 0x61c4		
+  day10.go:21		0x61b0			3c01			CMPL AL, $0x1		
+  day10.go:21		0x61b2			740a			JE 0x61be		
+  day10.go:20		0x61b4			3c02			CMPL AL, $0x2		
+  day10.go:23		0x61b6			7518			JNE 0x61d0		
+  day10.go:24		0x61b8			b801000000		MOVL $0x1, AX		
+  day10.go:24		0x61bd			c3			RET			
+  day10.go:22		0x61be			b802000000		MOVL $0x2, AX		
+  day10.go:22		0x61c3			c3			RET			
+  day10.go:25		0x61c4			3c04			CMPL AL, $0x4		
+  day10.go:25		0x61c6			740f			JE 0x61d7		
+  day10.go:25		0x61c8			0f1f4000		NOPL 0(AX)		
+  day10.go:27		0x61cc			3c08			CMPL AL, $0x8		
+  day10.go:27		0x61ce			7401			JE 0x61d1		
+  day10.go:30		0x61d0			c3			RET			
+  day10.go:28		0x61d1			b804000000		MOVL $0x4, AX		
+  day10.go:28		0x61d6			c3			RET			
+  day10.go:26		0x61d7			b808000000		MOVL $0x8, AX		
+  day10.go:26		0x61dc			c3			RET			
+----
+
+----
+ 33 func opposite2(d direction) direction {
+ 34         switch d {
+ 35         case North:
+ 36                 d = South
+ 37         case South:
+ 38                 d = North
+ 39         case West:
+ 40                 d = East
+ 41         case East:
+ 42                 d = West
+ 43         }
+ 44         return d
+ 45 }
+
+TEXT command-line-arguments.opposite2(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:34		0x61dd			3c02			CMPL AL, $0x2
+  day10.go:37		0x61df			7716			JA 0x61f7
+  day10.go:35		0x61e1			3c01			CMPL AL, $0x1
+  day10.go:35		0x61e3			7507			JNE 0x61ec
+  day10.go:35		0x61e5			b802000000		MOVL $0x2, AX
+  day10.go:36		0x61ea			eb1f			JMP 0x620b
+  day10.go:34		0x61ec			3c02			CMPL AL, $0x2
+  day10.go:37		0x61ee			751b			JNE 0x620b
+  day10.go:37		0x61f0			b801000000		MOVL $0x1, AX
+  day10.go:38		0x61f5			eb14			JMP 0x620b
+  day10.go:39		0x61f7			3c04			CMPL AL, $0x4
+  day10.go:39		0x61f9			7507			JNE 0x6202
+  day10.go:39		0x61fb			b808000000		MOVL $0x8, AX
+  day10.go:40		0x6200			eb09			JMP 0x620b
+  day10.go:41		0x6202			3c08			CMPL AL, $0x8
+  day10.go:41		0x6204			7505			JNE 0x620b
+  day10.go:41		0x6206			b804000000		MOVL $0x4, AX
+  day10.go:44		0x620b			c3			RET
+----
+
+Comparing `opposite1()` against `opposite2()` reveals no performance impact.
+
+----
+$ benchstat opposite1.bench opposite2.bench
+name        old time/op    new time/op    delta
+Opposite-8    1.58µs ± 4%    1.58µs ± 7%   ~     (p=0.591 n=10+10)
+----
+
+For the next implementation, we calculate the bit position, and shift between corresponding pairs (N <-> S, W <-> E).
+
+----
+ 47 func opposite3(in direction) direction {
+ 48         var out direction
+ 49         bitPosition := bits.Len8(uint8(in))
+ 50         if bitPosition%2 == 0 {
+ 51                 out = in >> 1
+ 52         } else {
+ 53                 out = in << 1
+ 54         }
+ 55         return out
+ 56 }
+
+TEXT command-line-arguments.opposite3(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:49		0x620c			0fb6c8			MOVZX AL, CX
+  day10.go:49		0x620f			8d0c09			LEAL 0(CX)(CX*1), CX
+  day10.go:49		0x6212			8d4901			LEAL 0x1(CX), CX
+  day10.go:49		0x6215			0fbdc9			BSRL CX, CX <1>
+  day10.go:50		0x6218			0fbae100		BTL $0x0, CX <2>
+  day10.go:50		0x621c			7204			JB 0x6222
+  day10.go:51		0x621e			d0e8			SHRL $0x1, AL
+  day10.go:51		0x6220			eb02			JMP 0x6224
+  day10.go:53		0x6222			d1e0			SHLL $0x1, AX
+  day10.go:55		0x6224			c3			RET
+----
+<1> Bit Scan Reverse
+<2> Bit Test, n % 2 == 0
+
+Now this one flies
+
+----
+$ benchstat opposite1.bench opposite3.bench
+name        old time/op    new time/op    delta
+Opposite-8    1.58µs ± 4%    0.31µs ± 3%  -80.70%  (p=0.000 n=10+9)
+----
+
+Although, to be honest, there's not much difference in total runtime because it is called exactly once for each step through the maze,
+which gives it O(n) complexity.
 
