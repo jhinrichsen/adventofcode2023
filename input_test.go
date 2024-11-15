@@ -1,6 +1,10 @@
 package adventofcode2023
 
 import (
+	"bufio"
+	"bytes"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -29,5 +33,75 @@ func TestLinesLinesAsNumbers(t *testing.T) {
 		if want != got {
 			t.Fatalf("line %d: want %d but got %d", i, want, got)
 		}
+	}
+}
+
+func BenchmarkBytesFromFilename(b *testing.B) {
+	filenames, err := filepath.Glob("testdata/*.txt")
+	if err != nil {
+		b.Fatal(err)
+	}
+	readall := func() {
+		for i := range filenames {
+			_, _ = bytesFromFilename(filenames[i])
+		}
+	}
+	// warm-up cache
+	readall()
+	b.ResetTimer()
+	for range b.N {
+		readall()
+	}
+}
+
+func BenchmarkLinesFromFilename(b *testing.B) {
+	filenames, err := filepath.Glob("testdata/*.txt")
+	if err != nil {
+		b.Fatal(err)
+	}
+	readall := func() {
+		for i := range filenames {
+			_, _ = linesFromFilename(filenames[i])
+		}
+	}
+	// warm-up cache
+	readall()
+	b.ResetTimer()
+	for range b.N {
+		readall()
+	}
+}
+
+const MAGIC_LONGEST_LINE = 307
+
+func TestLongestLine(t *testing.T) {
+	filenames, err := filepath.Glob("testdata/*.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var got uint
+	for i := range filenames {
+		buf, err := os.ReadFile(filenames[i])
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		scanner := bufio.NewScanner(bytes.NewReader(buf))
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			lineLength := uint(len(line))
+			if lineLength > got {
+				got = lineLength
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if MAGIC_LONGEST_LINE != got {
+		t.Fatalf("want %d but got %d", MAGIC_LONGEST_LINE, got)
 	}
 }

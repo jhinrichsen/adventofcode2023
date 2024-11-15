@@ -678,3 +678,112 @@ Opposite-8    1.58µs ± 4%    0.31µs ± 3%  -80.70%  (p=0.000 n=10+9)
 Although, to be honest, there's not much difference in total runtime because it is called exactly once for each step through the maze,
 which gives it O(n) complexity.
 
+For part 2, the way through the maze needs to be marked so that a floodfill algorithm can be used.
+Instead of copying the maze into another data structure, i want to keep track of touched cells while traversing.
+The puzzle input is passed as []string, which are immutable in Go, so input type is changed from `[]string` to `[][]byte`.
+While we're at it, why not memory map the puzzle input using `syscall.Mmap()`.
+Then, in one sweep, use `unsafe.Slice()` to have `[]byte` pointers into the first dimension of the backing buffer.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics    
+BenchmarkDay10PrepareInputV1-8             12436             99907 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             10000            101277 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             10000            102784 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             12861            100193 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             11898             96631 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV2-8             19634             57425 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             21196             49831 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             22878             51329 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             20284             54254 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             22527             53402 ns/op            3792 B/op          5 allocs/op
+----
+
+Runtime down 50%, byte allocation down 92%, allocations down 97%.
+'old' is V1, 'new' is V2:
+
+----
+name                  old time/op    new time/op    delta
+Day10PrepareInputV-8    99.0µs ± 4%    52.6µs ± 6%  -46.85%  (p=0.008 n=5+5)
+
+name                  old alloc/op   new alloc/op   delta
+Day10PrepareInputV-8    48.5kB ± 0%     3.8kB ± 0%  -92.18%  (p=0.008 n=5+5)
+
+name                  old allocs/op  new allocs/op  delta
+Day10PrepareInputV-8       153 ± 0%         5 ± 0%  -96.73%  (p=0.008 n=5+5)
+----
+
+Let's check where these remaining allocations come from.
+`go build -gcflage="m"` to the rescue:
+
+----
+   176	func bytesFromMappedFilename(filename string) ([][]byte, error) { <1>
+   177		f, err := os.Open(filename) <2>
+   178		if err != nil {
+   179			return nil, err
+   180		}
+   181		defer f.Close() <3> <4>
+   182	
+   183		// Get the file size
+   184		stat, err := f.Stat()
+   185		if err != nil {
+   186			return nil, err
+   187		}
+   188	
+   189		size := int(stat.Size())
+   190		if size == 0 {
+   191			return nil, err
+   192		}
+   193	
+   194		// Memory map the file
+   195		data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_SHARED) <5> <6>
+   196		if err != nil {
+   197			return nil, err
+   198		}
+   199	
+   200		// Defer unmapping the memory
+   201		defer func() { <7> <8>
+   202			_ = syscall.Munmap(data) <9>
+   203		}()
+   204	
+   205		// Pre-allocate a fixed array for lines
+   206		var lines [MaxLines][]byte <10>
+   207		lineIndex := 0
+   208	
+   209		start := 0
+   210		for i := 0; i < size; i++ {
+   211			if data[i] == '\n' {
+   212				lines[lineIndex] = unsafe.Slice(&data[start], i-start)
+   213				lineIndex++
+   214				start = i + 1
+   215			}
+   216		}
+   217	
+   218		// Handle the last line if it doesn't end with a newline
+   219		if start < size {
+   220			lines[lineIndex] = unsafe.Slice(&data[start], size-start)
+   221			lineIndex++
+   222		}
+   223		return lines[:lineIndex], nil
+   224	
+   225	}
+----
+<1> leaking param: filename
+<2> inlining call to os.Open
+<3> inlining call to os.(*File).Close
+<4> can inline bytesFromMappedFilename.deferwrap1
+<5> inlining call to syscall.Mmap
+<6> inlining call to os.(*File).Fd
+<7> can inline bytesFromMappedFilename.func1
+<8> func literal does not escape
+<9> inlining call to syscall.Munmap
+<10> moved to heap: lines
+
+The parameter `filename` is leaking, because it is
+
+- passed to `os.Open()`, a file handle is returned, which is then passed to
+- `syscall.Mmap()`, which may hold a back reference.
+
+The compiler doesn`t know about `syscall.Munmap()`, so it makes sure the original string is kept unchanged.

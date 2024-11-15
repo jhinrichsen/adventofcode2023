@@ -74,3 +74,40 @@ func numbersFromFilename(filename string) ([]int, error) {
 	return linesAsNumbers(ls)
 }
 */
+
+// bytesFromFilename reads newline separated lines from a file and returns them as [][]byte.
+// casting string([]byte) has a runtime overhead because of internal memory allocation.
+// len() is the number of lines, len([0]) is the length of the first line.
+// Both indices start at top left and go bottom right.
+//
+// A..
+// ...
+// .Z.
+// [0][0] == A
+// [2][1] == Z
+
+func bytesFromFilename(filename string) ([][]byte, error) {
+	buf, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var result [][]byte
+	start := 0
+	l := len(buf)
+
+	for i := 0; i < l; i++ {
+		if buf[i] == '\n' {
+			result = append(result, append([]byte(nil), buf[start:i]...))
+			start = i + 1
+		}
+	}
+
+	// Check if there's any remaining text after the last newline
+	if start < l {
+		// Append the last line if it didn't end with a newline
+		result = append(result, append([]byte(nil), buf[start:]...))
+	}
+
+	return result, nil
+}

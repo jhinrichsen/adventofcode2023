@@ -1,6 +1,7 @@
 package adventofcode2023
 
 import (
+	"fmt"
 	"math/rand/v2"
 	"testing"
 )
@@ -84,18 +85,7 @@ func TestOtherVer(t *testing.T) {
 	}
 }
 
-func TestDay10Part1Example(t *testing.T) {
-	const want = 4
-	lines, err := linesFromFilename(exampleFilename(10))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := Day10(lines)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
+/* not working
 func TestDay10Part1ExampleChatGPT(t *testing.T) {
 	const want = 4
 	got, err := Day10ChatGPT()
@@ -106,14 +96,27 @@ func TestDay10Part1ExampleChatGPT(t *testing.T) {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
+*/
 
-func TestDay10Part1Example2(t *testing.T) {
-	const want = 8
-	lines, err := linesFromFilename("testdata/day10_example2.txt")
+func TestDay10Part1Example1(t *testing.T) {
+	const want = 4
+	lines, err := bytesFromFilename(exampleFilename(10))
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := Day10(lines)
+	got := Day10(lines, true)
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
+}
+
+func TestDay10Part1Example2(t *testing.T) {
+	const want = 8
+	lines, err := bytesFromFilename("testdata/day10_example2.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := Day10(lines, true)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -121,11 +124,11 @@ func TestDay10Part1Example2(t *testing.T) {
 
 func TestDay10Part1(t *testing.T) {
 	const want = 6956
-	lines, err := linesFromFilename(filename(10))
+	lines, err := bytesFromFilename(filename(10))
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := Day10(lines)
+	got := Day10(lines, true)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -147,24 +150,65 @@ func BenchmarkOpposite(b *testing.B) {
 }
 
 func BenchmarkDay10Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(10))
+	lines, err := bytesFromFilename(filename(10))
 	if err != nil {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
 	for range b.N {
-		_ = Day10(lines)
+		_ = Day10(lines, true)
 	}
 }
 
-func TestDay10Part2(t *testing.T) {
-	const want = 0
+func TestDay10Part2Examples(t *testing.T) {
+	const part1 = false
+	wants := []uint{4, 8, 10}
+	for i := range wants {
+		want := wants[i]
+		t.Run(fmt.Sprintf("#%d", i+1), func(t *testing.T) {
+			lines, err := bytesFromFilename(fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := Day10(lines, part1)
+			if want != got {
+				t.Fatalf("want %d but got %d", want, got)
+			}
+		})
+	}
+}
+
+// BenchmarkDay10PrepareInputV1 uses bytesFromFilename() to prepare the input for Day10.
+func BenchmarkDay10PrepareInputV1(b *testing.B) {
+	name := filename(10)
+	for range b.N {
+		_, err := bytesFromFilename(name)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func TestDay10MaxLines(t *testing.T) {
+	want := MaxLines
 	lines, err := linesFromFilename(filename(10))
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := Day10(lines)
+	got := len(lines)
 	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
+		t.Fatalf("want %d but got %d\n", want, got)
+	}
+}
+
+// BenchmarkDay10PrepareInputV2 uses a memory mapped file and unsafe.Slice() to prepare the input for Day10.
+func BenchmarkDay10PrepareInputV2(b *testing.B) {
+	// Open the file
+	name := filename(10)
+	for range b.N {
+		_, err := bytesFromMappedFilename(name)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }

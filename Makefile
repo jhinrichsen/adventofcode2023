@@ -27,10 +27,12 @@ tidy:
 	staticcheck -version
 	staticcheck
 
+cpu.profile:
+	$(GO) test -run=^$ -bench=Day10Part1$ -benchmem -memprofile mem.profile -cpuprofile $@
+
 .PHONY: prof
-prof:
-	$(GO) test -bench=. -benchmem -memprofile mprofile.out -cpuprofile cprofile.out
-	$(GO) pprof cpu.profile
+prof: cpu.profile
+	$(GO) tool pprof $^
 
 .PHONY: test
 test:
