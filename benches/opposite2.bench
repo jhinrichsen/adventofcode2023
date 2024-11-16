@@ -1,0 +1,16 @@
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics    
+BenchmarkOpposite-8   	  695049	      1550 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  782472	      1697 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  678960	      1561 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  757572	      1553 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  677812	      1552 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  760608	      1624 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  775958	      1544 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  755856	      1563 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  735358	      1628 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOpposite-8   	  758181	      1531 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	gitlab.com/jhinrichsen/adventofcode2023	16.496s

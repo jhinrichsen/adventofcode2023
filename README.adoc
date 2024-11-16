@@ -19,12 +19,13 @@ Results are hard coded into the unit tests, so you might not want to peek at `_t
 
 == Environment
 
-- Go 1.22
+- Go 1.22, 1.23
 - vim, vim-go, gopls, fed by an HHKB
 - VisualStudio Code for debugging
 - Fedora 38, 39, 40 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
 - Fedora 38, 39, 40 @ AMD Ryzen 5 3400G on a Gigabyte B450
 - OSX @ 16" Macbook Pro 2019 (Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz)
+- Prompts: Tabnine, ChatGPT, Gemini
 
 I'd love to try one of those Risc-V boards but can't decide between
 https://github.com/openwch/ch32v003[a bare metal 48 MHz]

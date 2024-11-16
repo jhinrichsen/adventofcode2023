@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"image"
 	"math/bits"
-	"os"
-	"syscall"
-	"unsafe"
 )
 
 type direction uint8
@@ -77,7 +74,7 @@ func other(idx byte, d direction) direction {
 	return connects[idx] & ^d
 }
 
-func Day10(lines [][]byte, part1 bool) uint {
+func Day10(lines [][]byte, part1 bool) (uint, error) {
 	const (
 		markChar   = '1'
 		unmarkChar = '0'
@@ -146,7 +143,7 @@ func Day10(lines [][]byte, part1 bool) uint {
 
 	if part1 {
 		// we made a complete trip, so the farthest point in our journey is
-		return steps / 2
+		return steps / 2, nil
 	}
 
 	// reset all non-marked fields
@@ -160,65 +157,5 @@ func Day10(lines [][]byte, part1 bool) uint {
 	for y := range lines {
 		fmt.Println(lines[y])
 	}
-	return 42
-}
-
-const MaxLines = 140
-
-// ChatGPT prompt:
-// Implement one function in Go.
-// Given a filename, use syscall.Mmap() to read the file into memory.
-// Then, use unsafe.Slice() to convert newline separated lines into [][]byte.
-// Do not use make().
-// Do not use append().
-//
-// Then, as always, manual tuning...
-func bytesFromMappedFilename(filename string) ([][]byte, error) {
-	name := filename
-	f, err := os.Open(name)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	// Get the file size
-	stat, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	size := int(stat.Size())
-	if size == 0 {
-		return nil, err
-	}
-
-	// Memory map the file
-	data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_SHARED)
-	if err != nil {
-		return nil, err
-	}
-
-	// Defer unmapping the memory
-	defer syscall.Munmap(data)
-
-	// Pre-allocate a fixed array for lines
-	var lines [MaxLines][]byte
-	lineIndex := 0
-
-	start := 0
-	for i := 0; i < size; i++ {
-		if data[i] == '\n' {
-			lines[lineIndex] = unsafe.Slice(&data[start], i-start)
-			lineIndex++
-			start = i + 1
-		}
-	}
-
-	// Handle the last line if it doesn't end with a newline
-	if start < size {
-		lines[lineIndex] = unsafe.Slice(&data[start], size-start)
-		lineIndex++
-	}
-	return lines[:lineIndex], nil
-
+	return 42, nil
 }

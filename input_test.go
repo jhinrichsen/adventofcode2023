@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
@@ -18,21 +19,15 @@ func TestLinesFromFilename(t *testing.T) {
 	}
 }
 
-func TestLinesLinesAsNumbers(t *testing.T) {
+func TestLinesAsNumbers(t *testing.T) {
 	sample := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	ints, err := linesAsNumbers(sample)
+	want := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	got, err := linesAsNumbers(sample)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(ints) != len(sample) {
-		t.Fatalf("want %d numbers but got %d", len(sample), len(ints))
-	}
-	for i := range sample {
-		want := i + 1 // entries are 1-based
-		got := ints[i]
-		if want != got {
-			t.Fatalf("line %d: want %d but got %d", i, want, got)
-		}
+	if !slices.Equal(want, got) {
+		t.Fatalf("want %v but got %v", want, got)
 	}
 }
 
@@ -72,15 +67,13 @@ func BenchmarkLinesFromFilename(b *testing.B) {
 	}
 }
 
-const MAGIC_LONGEST_LINE = 307
-
-func TestLongestLine(t *testing.T) {
+func TestMagicConstants(t *testing.T) {
 	filenames, err := filepath.Glob("testdata/*.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var got uint
+	var gotLongestLine, gotMaxLines uint
 	for i := range filenames {
 		buf, err := os.ReadFile(filenames[i])
 		if err != nil {
@@ -92,16 +85,20 @@ func TestLongestLine(t *testing.T) {
 		for scanner.Scan() {
 			line := scanner.Text()
 			lineLength := uint(len(line))
-			if lineLength > got {
-				got = lineLength
+			if lineLength > gotLongestLine {
+				gotLongestLine = lineLength
 			}
+			gotMaxLines++
 		}
 
 		if err := scanner.Err(); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if MAGIC_LONGEST_LINE != got {
-		t.Fatalf("want %d but got %d", MAGIC_LONGEST_LINE, got)
+	if MagicMaxLines != gotMaxLines {
+		t.Fatalf("want %d but got %d", MagicMaxLines, gotMaxLines)
+	}
+	if MagicLongestLine != gotLongestLine {
+		t.Fatalf("want %d but got %d", MagicLongestLine, gotLongestLine)
 	}
 }
