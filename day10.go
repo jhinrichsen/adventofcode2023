@@ -76,12 +76,54 @@ func other(idx byte, d direction) direction {
 
 func Day10(lines [][]byte, part1 bool) (uint, error) {
 	const (
-		markChar   = '1'
-		unmarkChar = '0'
-		startChar  = 'S'
+		startChar = 'S'
 	)
+	part2 := !part1
+	var notFound = image.Point{-1, -1}
 
-	r := image.Rectangle{image.Point{0, 0}, image.Point{len(lines), len(lines[0])}}
+	dim := image.Rectangle{image.Point{0, 0}, image.Point{len(lines[0]), len(lines)}}
+
+	var vertices uint
+	var poly []image.Point
+	in := func(p image.Point) bool {
+		for i := range poly {
+			if p == poly[i] {
+				return true
+			}
+		}
+		return false
+	}
+
+	track := func(p image.Point) {
+		vertices++ // keep a separate counter for part 1
+		if part2 {
+			poly = append(poly, p)
+		}
+
+		const TRACE_PATH = false
+		if TRACE_PATH {
+			fmt.Println()
+			for y := range lines {
+				for x := range lines[0] {
+					p_ := image.Point{x, y}
+					if p == p_ {
+						fmt.Printf("*")
+					} else if in(p_) {
+						fmt.Printf("@")
+					} else {
+						fmt.Printf("%s", string(lines[y][x]))
+					}
+				}
+				fmt.Println()
+			}
+			fmt.Println()
+		}
+
+		const TRACE_POINTS = false
+		if TRACE_POINTS {
+			fmt.Printf("%s\n", p)
+		}
+	}
 
 	start := func() image.Point {
 		for y := range lines {
@@ -91,8 +133,12 @@ func Day10(lines [][]byte, part1 bool) (uint, error) {
 				}
 			}
 		}
-		panic(fmt.Sprintf("puzzle has no starting point %c", startChar))
+		return notFound
 	}()
+	if start == notFound {
+		return 0, fmt.Errorf("error: no starting point")
+	}
+	track(start)
 
 	next, d := func(start image.Point) (image.Point, direction) {
 		for _, e := range []struct {
@@ -100,13 +146,13 @@ func Day10(lines [][]byte, part1 bool) (uint, error) {
 			d direction
 		}{
 			{image.Point{start.X, start.Y - 1}, South},
+			{image.Point{start.X + 1, start.Y}, West},
 			{image.Point{start.X, start.Y + 1}, North},
 			{image.Point{start.X - 1, start.Y}, East},
-			{image.Point{start.X + 1, start.Y}, West},
 		} {
 			// precondition 1: must be on board
 			// no puzzle has the starting point at the border, but why not just write some more generic code?
-			if !e.p.In(r) {
+			if !e.p.In(dim) {
 				continue
 			}
 
@@ -116,11 +162,14 @@ func Day10(lines [][]byte, part1 bool) (uint, error) {
 				return e.p, other(lines[e.p.Y][e.p.X], e.d)
 			}
 		}
-		panic(fmt.Sprintf("error: no connecting tile from starting point %v", start))
+		return notFound, 0
 	}(start)
+	if next == notFound {
+		return 0, fmt.Errorf("error: no connecting tile from starting point %v", start)
+	}
+	track(next)
 
-	var steps uint
-	for steps = 1; next != start; steps++ {
+	for next != start {
 		var delta image.Point
 		switch d {
 		case North:
@@ -134,28 +183,42 @@ func Day10(lines [][]byte, part1 bool) (uint, error) {
 		}
 
 		next = next.Add(delta)
+		track(next) // in the last step, close polygon => poly[0] == poly[N]
 		d = other(lines[next.Y][next.X], opposite1(d))
-
-		if !part1 {
-			lines[next.Y][next.X] = markChar
-		}
 	}
 
 	if part1 {
-		// we made a complete trip, so the farthest point in our journey is
-		return steps / 2, nil
+		// we counted a complete round trip, so the farthest point in our journey is
+		return (vertices - 1) / 2, nil
 	}
 
-	// reset all non-marked fields
+	const TRACE_GRID = false
+	var inside uint
 	for y := range lines {
-		for x := range lines[0] {
-			if lines[y][x] != markChar {
-				lines[y][x] = unmarkChar
+		for x := range lines[y] {
+			p := image.Point{x, y}
+			// do not count the polygon itself, only embedded points
+			if in(p) {
+				if TRACE_GRID {
+					fmt.Printf("-")
+				}
+			} else {
+				n := wnPnPoly(p, poly)
+				if n == 1 {
+					inside++
+					if TRACE_GRID {
+						fmt.Printf("1")
+					}
+				} else {
+					if TRACE_GRID {
+						fmt.Printf("0")
+					}
+				}
 			}
 		}
+		if TRACE_GRID {
+			fmt.Println()
+		}
 	}
-	for y := range lines {
-		fmt.Println(lines[y])
-	}
-	return 42, nil
+	return inside, nil
 }

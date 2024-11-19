@@ -146,7 +146,7 @@ func DayAdapterV2(day func([][]byte, bool) (uint, error), filename string, part1
 	}
 
 	// Memory map the file
-	data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_SHARED)
+	data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_PRIVATE)
 	if err != nil {
 		return 0, err
 	}

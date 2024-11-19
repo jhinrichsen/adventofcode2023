@@ -3,6 +3,8 @@ package adventofcode2023
 import (
 	"bufio"
 	"fmt"
+	"image"
+	"math"
 	"os"
 )
 
@@ -154,4 +156,49 @@ func Day10ChatGPT() (uint, error) {
 	farthestX, farthestY, maxDistance := grid.FindFarthestCell()
 	fmt.Printf("Farthest cell from S is at (%d, %d) with a distance of %d steps.\n", farthestX, farthestY, maxDistance)
 	return uint(maxDistance), nil
+}
+
+// IsPointInPolygonStrict determines if a point is strictly inside a polygon
+// Points on the edge of the polygon are NOT considered inside.
+func IsPointInPolygonStrict(point image.Point, polygon []image.Point) bool {
+	n := len(polygon)
+	if n < 3 {
+		return false // A polygon must have at least 3 points
+	}
+
+	inside := false
+	for i, j := 0, n-1; i < n; j, i = i, i+1 {
+		pi := polygon[i]
+		pj := polygon[j]
+
+		// Check if point lies on the edge
+		if isPointOnLine(point, pj, pi) {
+			return false // Point is on the boundary
+		}
+
+		// Ray-casting algorithm
+		intersect := ((pi.Y > point.Y) != (pj.Y > point.Y)) &&
+			(float64(point.X) < float64(pj.X-pi.X)*(float64(point.Y-pi.Y)/float64(pj.Y-pi.Y))+float64(pi.X))
+		if intersect {
+			inside = !inside
+		}
+	}
+	return inside
+}
+
+// isPointOnLine checks if a point lies exactly on a line segment
+func isPointOnLine(point, start, end image.Point) bool {
+	// Check if the point is on the line segment using cross product and bounds
+	crossProduct := (point.Y-start.Y)*(end.X-start.X) - (point.X-start.X)*(end.Y-start.Y)
+	if math.Abs(float64(crossProduct)) > 1e-9 {
+		return false // Not collinear
+	}
+
+	dotProduct := (point.X-start.X)*(end.X-start.X) + (point.Y-start.Y)*(end.Y-start.Y)
+	if dotProduct < 0 {
+		return false // Not within segment bounds
+	}
+
+	squaredLength := (end.X-start.X)*(end.X-start.X) + (end.Y-start.Y)*(end.Y-start.Y)
+	return dotProduct <= squaredLength
 }

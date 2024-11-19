@@ -53,7 +53,7 @@ Number of tries for a correct answer:
 | 7   |   1    |  2
 | 8   |   1    |
 | 9   |   1    |  1
-| 10  |   1    |
+| 10  |   1    |  1
 | 11  |        |
 | 12  |        |
 | 13  |        |
@@ -468,7 +468,7 @@ BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 al
 Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
 Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
 
-== Day10 Pipe Maze
+== Day 10 Pipe Maze
 
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
 Right down to the location of the input puzzle file, and its filename.
@@ -689,7 +689,7 @@ Then, in one sweep, use `unsafe.Slice()` to have `[]byte` pointers into the firs
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics    
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay10PrepareInputV1-8             12436             99907 ns/op           48504 B/op        153 allocs/op
 BenchmarkDay10PrepareInputV1-8             10000            101277 ns/op           48504 B/op        153 allocs/op
 BenchmarkDay10PrepareInputV1-8             10000            102784 ns/op           48504 B/op        153 allocs/op
@@ -726,33 +726,33 @@ Let's check where these remaining allocations come from.
    179			return nil, err
    180		}
    181		defer f.Close() <3> <4>
-   182	
+   182
    183		// Get the file size
    184		stat, err := f.Stat()
    185		if err != nil {
    186			return nil, err
    187		}
-   188	
+   188
    189		size := int(stat.Size())
    190		if size == 0 {
    191			return nil, err
    192		}
-   193	
+   193
    194		// Memory map the file
    195		data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_SHARED) <5> <6>
    196		if err != nil {
    197			return nil, err
    198		}
-   199	
+   199
    200		// Defer unmapping the memory
    201		defer func() { <7> <8>
    202			_ = syscall.Munmap(data) <9>
    203		}()
-   204	
+   204
    205		// Pre-allocate a fixed array for lines
    206		var lines [MaxLines][]byte <10>
    207		lineIndex := 0
-   208	
+   208
    209		start := 0
    210		for i := 0; i < size; i++ {
    211			if data[i] == '\n' {
@@ -761,14 +761,14 @@ Let's check where these remaining allocations come from.
    214				start = i + 1
    215			}
    216		}
-   217	
+   217
    218		// Handle the last line if it doesn't end with a newline
    219		if start < size {
    220			lines[lineIndex] = unsafe.Slice(&data[start], size-start)
    221			lineIndex++
    222		}
    223		return lines[:lineIndex], nil
-   224	
+   224
    225	}
 ----
 <1> leaking param: filename
@@ -788,3 +788,93 @@ The parameter `filename` is leaking, because it is
 - `syscall.Mmap()`, which may hold a back reference.
 
 The compiler doesn`t know about `syscall.Munmap()`, so it makes sure the original string is kept unchanged.
+
+=== Holes
+
+Now, analyzing failing example unit tests, i see that flood fill doesn't cut it.
+The examples contain _holes_, cells that are completely surrounded by the path, but still count as `outside`.
+Vanilla flood fill cannot handle holes -> research.
+
+Wikipedia mentions a
+https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html[`winding number`]
+Algorithm by Dan Sunday, 2001.
+
+It works for examples #1, #2, and #4, but fails for #3.
+
+=== ChatGPT
+
+No matter what i prompt, i cannot make ChatGPT 4o step through the maze correctly.
+It stumbles around, and usually stops near somewhere close to the border of the grid.
+
+But when given the coordinates, it correctly determines the number of embedded cells _without generating any code_.
+
+image::img/day10_example4_poly_tiles.png[Example #4: embedded cells]
+
+Quite impressive. Focussing on the path through the maze:
+
+image::img/day10_example4_poly_tiles_enclosed.png[Example #4: pipeline]
+
+So, for the failing example #3, AOC expects 8 embedded cells.
+
+----
+O···············OOOO
+O···············OOOO
+O··O············OOOO
+··············1···OO
+····O··111·········O
+OOOO···11···········
+OOOO··1·······1·····
+OOOOO············O··
+OOOO·····O··O····OOO
+OOOO·····O··O····OOO
+----
+
+My polygon is correct:
+
+image::img/day10_example3_poly_tiles_enclosed.png[Example #3: pipeline]
+
+So it seems `wnPnPoly` does not consider some edge cases we have here.
+Instead of `8`, it returns `0`.
+
+There's a newer publication from 2018, https://www.dgp.toronto.edu/projects/fast-winding-numbers/[Fast winding numbers].
+But the https://github.com/libigl/libigl[implementation] for `igl::fast_winding_number` is way too much code.
+I will need to find a simpler solution.
+I let ChatGPT translate some code from Matlib to Go, functions `IsPointInPolygonStrict` and
+`IsPointOnLine`, and a corresponding unit test, but that fails miserably.
+
+----
+--- FAIL: TestIsPointInPolygonStrict (0.00s)
+    day10_chatgpt_test.go:75: Expected strictly inside points, but found none
+    day10_chatgpt_test.go:77: Points strictly inside: []
+FAIL
+----
+
+So i end up with generating a polygon of 13_913 ( <- proper Go notation) vertices and 
+ask ChatGPT to show the polygon.
+
+image::img/tilt.png[]
+
+So, let's just give wnPnPoly one shot, although one example fails.
+
+
+image::img/day10.png[Success]
+
+Duh.
+Well, for AOC this will be fine.
+Better not load that code into a Taurus.
+
+=== Benchmark
+
+---
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics    
+BenchmarkDay10Part2-8   	       7	 156833521 ns/op	  918669 B/op	      25 allocs/op
+BenchmarkDay10Part2-8   	       7	 156975458 ns/op	  918683 B/op	      26 allocs/op
+BenchmarkDay10Part2-8   	       7	 159191464 ns/op	  919382 B/op	      26 allocs/op
+BenchmarkDay10Part2-8   	       7	 151711689 ns/op	  918669 B/op	      25 allocs/op
+BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs/op
+---
+
+That's 157 ms, too slow. Said flying object will move 51 m in this time.
