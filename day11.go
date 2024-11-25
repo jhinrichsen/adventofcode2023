@@ -4,21 +4,13 @@ import (
 	"image"
 )
 
-// nPairs returns number of nPairs for N points.
-func nPairs(points uint) uint {
-	if points < 2 {
-		return 0
-	}
-	return (points * (points - 1)) / 2
-}
-
-func Day11(grid [][]byte) uint {
-	const (
-		galaxy   = '#'
-		plain    = 0
-		expanded = plain + 1
-	)
+func Day11(grid [][]byte, expansion uint) uint {
+	const galaxy = '#'
 	dimX, dimY := len(grid[0]), len(grid)
+
+	if expansion > 1 {
+		expansion--
+	}
 
 	// Find all points with the galaxy symbol
 	var points []image.Point
@@ -32,16 +24,16 @@ func Day11(grid [][]byte) uint {
 
 	// mark all rows as expanded
 	for y := range dimY {
-		grid[y][0] = expanded
+		grid[y][0] = 1
 	}
 	// mark all columns as expanded
 	for x := range dimX {
-		grid[0][x] = expanded
+		grid[0][x] = 1
 	}
 	// unset cols and rows that contain galaxies
 	for _, p := range points {
-		grid[0][p.X] = plain
-		grid[p.Y][0] = plain
+		grid[0][p.X] = 0
+		grid[p.Y][0] = 0
 	}
 
 	var total uint
@@ -58,13 +50,13 @@ func Day11(grid [][]byte) uint {
 			// Add expanded spaces (horizontal)
 			x0, x1 := min(p1.X, p2.X), max(p1.X, p2.X)
 			for x := x0; x < x1; x++ {
-				total += uint(grid[0][x])
+				total += uint(grid[0][x]) * expansion
 			}
 
 			// Add expanded spaces (vertical)
 			y0, y1 := min(p1.Y, p2.Y), max(p1.Y, p2.Y)
 			for y := y0; y < y1; y++ {
-				total += uint(grid[y][0])
+				total += uint(grid[y][0]) * expansion
 			}
 		}
 	}
@@ -76,14 +68,4 @@ func abs(n int) uint {
 		return uint(-n)
 	}
 	return uint(n)
-}
-
-func sign[T int | int8 | int16 | int32 | int64](n T) int {
-	if n < 0 {
-		return -1
-	}
-	if n > 0 {
-		return 1
-	}
-	return 0
 }

@@ -54,7 +54,7 @@ Number of tries for a correct answer:
 | 8   |   1    |
 | 9   |   1    |  1
 | 10  |   1    |  1
-| 11  |   1    |
+| 11  |   1    |  1
 | 12  |        |
 | 13  |        |
 | 14  |        |
@@ -881,6 +881,7 @@ BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs
 That's 157 ms, too slow. Said flying object will move 51 m in this time.
 =======
 == Day 11: Cosmos Expansion
+=== Part 1
 
 Possible alternative implementations:
 
@@ -985,4 +986,8 @@ Day11Part1-16         39.0 ± 0%      10.0 ± 0%      10.0 ± 0%      10.0 ± 0%
 ----
 
 Down from 10.5 to 4.0 ms.
->>>>>>> 689d2f9 (perf(day11): optimize part 1)
+
+=== Part 2
+
+No changes other than the introduction of a factor.
+Same O(n) as part 1, so same performance.
