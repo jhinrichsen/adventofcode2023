@@ -13,75 +13,60 @@ func nPairs(points uint) uint {
 }
 
 func Day11(grid [][]byte) uint {
-	const galaxy = '#'
-	dimX, dimY := len(grid[0]), len(grid)
-
-	points := func() []image.Point {
-		var ps []image.Point
-		for y := range dimY {
-			for x := range dimX {
-				if grid[y][x] == galaxy {
-					ps = append(ps, image.Point{x, y})
-				}
-			}
-		}
-		return ps
-	}()
-
-	// reuse grid to highlight expanded rows and cols in [0]
 	const (
-		plain    = '0'
+		galaxy   = '#'
+		plain    = 0
 		expanded = plain + 1
 	)
+	dimX, dimY := len(grid[0]), len(grid)
+
+	// Find all points with the galaxy symbol
+	var points []image.Point
+	for y := range dimY {
+		for x := range dimX {
+			if grid[y][x] == galaxy {
+				points = append(points, image.Point{X: x, Y: y})
+			}
+		}
+	}
+
+	// mark all rows as expanded
 	for y := range dimY {
 		grid[y][0] = expanded
 	}
+	// mark all columns as expanded
 	for x := range dimX {
 		grid[0][x] = expanded
 	}
+	// unset cols and rows that contain galaxies
 	for _, p := range points {
 		grid[0][p.X] = plain
 		grid[p.Y][0] = plain
 	}
 
-	// travel and count
-	pairs := func() [][2]image.Point {
-		var pairs [][2]image.Point
+	var total uint
+	for i := range points {
+		p1 := points[i]
+		for j := i + 1; j < len(points); j++ {
+			p2 := points[j]
 
-		// generate all unique pairs
-		for i := 0; i < len(points); i++ {
-			for j := i + 1; j < len(points); j++ {
-				pairs = append(pairs, [2]image.Point{points[i], points[j]})
+			// Manhattan distance
+			dx := abs(p2.X - p1.X)
+			dy := abs(p2.Y - p1.Y)
+			total += uint(dx + dy)
+
+			// Add expanded spaces (horizontal)
+			x0, x1 := min(p1.X, p2.X), max(p1.X, p2.X)
+			for x := x0; x < x1; x++ {
+				total += uint(grid[0][x])
+			}
+
+			// Add expanded spaces (vertical)
+			y0, y1 := min(p1.Y, p2.Y), max(p1.Y, p2.Y)
+			for y := y0; y < y1; y++ {
+				total += uint(grid[y][0])
 			}
 		}
-
-		return pairs
-	}()
-	var total uint
-	var steps uint
-	for i := range pairs {
-		p1 := pairs[i][0]
-		p2 := pairs[i][1]
-		dx := abs(p2.X - p1.X)
-		dy := abs(p2.Y - p1.Y)
-		// manhattan distance
-		steps = uint(dx + dy)
-
-		// add expanded spaces
-		// 1. horizontally
-		x0 := uint(min(p1.X, p2.X))
-		x1 := x0 + dx
-		for x := x0; x < x1; x++ {
-			steps += uint(grid[0][x] - plain)
-		}
-		// 2. vertically
-		y0 := uint(min(p1.Y, p2.Y))
-		y1 := y0 + dy
-		for y := y0; y < y1; y++ {
-			steps += uint(grid[y][0] - plain)
-		}
-
-		total += steps
 	}
 	return total
 }
