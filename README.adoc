@@ -22,8 +22,8 @@ Results are hard coded into the unit tests, so you might not want to peek at `_t
 - Go 1.22, 1.23
 - vim, vim-go, gopls, fed by an HHKB
 - VisualStudio Code for debugging
-- Fedora 38, 39, 40 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
-- Fedora 38, 39, 40 @ AMD Ryzen 5 3400G on a Gigabyte B450
+- Fedora up to 41 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
+- Fedora up to 41 @ custom build (AMD Ryzen 5 3400G on a Gigabyte B450)
 - OSX @ 16" Macbook Pro 2019 (Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz)
 - Prompts: Tabnine, ChatGPT, Gemini
 
@@ -54,7 +54,7 @@ Number of tries for a correct answer:
 | 8   |   1    |
 | 9   |   1    |  1
 | 10  |   1    |  1
-| 11  |        |
+| 11  |   1    |
 | 12  |        |
 | 13  |        |
 | 14  |        |
@@ -789,6 +789,7 @@ The parameter `filename` is leaking, because it is
 
 The compiler doesn`t know about `syscall.Munmap()`, so it makes sure the original string is kept unchanged.
 
+<<<<<<< HEAD
 === Holes
 
 Now, analyzing failing example unit tests, i see that flood fill doesn't cut it.
@@ -878,3 +879,110 @@ BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs
 ---
 
 That's 157 ms, too slow. Said flying object will move 51 m in this time.
+=======
+== Day 11: Cosmos Expansion
+
+Possible alternative implementations:
+
+- Literally expand the existing grid, and then use a line draw algo to count points. Drawback: many heap allocations
+- Use Dijkstra's `shortest path` or an A* implementation, giving regular cells +1, and expanded cells +2. Drawback: runs long time.
+
+- On further thought, we need to cross all expanded spaces exactly once when traversing from P~1~ to P~2~. Use a stright manhattan distance as a baseline, and add horizontal and vertical expanded spaces while crossing.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay11Part1-16    	     109	  10496351 ns/op	16419453 B/op	      39 allocs/op
+BenchmarkDay11Part1-16    	     100	  10961495 ns/op	16419441 B/op	      39 allocs/op
+BenchmarkDay11Part1-16    	      88	  11417915 ns/op	16419422 B/op	      39 allocs/op
+BenchmarkDay11Part1-16    	     108	  11328097 ns/op	16419430 B/op	      39 allocs/op
+BenchmarkDay11Part1-16    	     105	  11440845 ns/op	16419426 B/op	      39 allocs/op
+PASS
+----
+
+Thats 10.5 ms, with _LOTS_ of memory allocations.
+These stem from closures inside the Day11 implementation, such as
+
+----
+func Day11(grid [][]byte) uint {
+        ...
+        points := func() []image.Point { <1>
+                var ps []image.Point
+                for y ... {
+                        for x ... {
+                                ps = append(ps, ...)
+                        }
+                }
+                return ps
+        }()
+        ...
+        pairs := func() [][2]image.Point { <2>
+                var pairs [][2]image.Point
+                for i... {
+                        for j ... {
+                                pairs = append(pairs, ...)
+
+                        }
+                }
+        }()
+        ...
+}
+----
+<1> parse grid to detect galaxies (`'#'`)
+<2> create a unique list of galaxy pairs (1->3, 2->7, ...)
+
+Let's see if and how ChatGPT can squeeze some performance out of this code.
+
+* It shows alternative code that compiles, and runs, and has the same test results as before. Good.
+* It also unrolls the closures into straight `for` loops. Good.
+
+After ChatGPTs suggestions:
+
+----
+name           old time/op    new time/op    delta
+Day11Part1-16    10.5ms ± 7%     4.7ms ± 5%  -55.46%  (p=0.008 n=5+5)
+
+name           old alloc/op   new alloc/op   delta
+Day11Part1-16    16.4MB ± 0%     0.0MB ± 0%  -99.90%  (p=0.008 n=5+5)
+
+name           old allocs/op  new allocs/op  delta
+Day11Part1-16      39.0 ± 0%      10.0 ± 0%  -74.36%  (p=0.008 n=5+5)
+----
+
+Runtime down by 50%, garbage collection down close to nothing, 39 allocations down to 10.
+
+However, it does not seem to know about Go's new `range` operator, it unrolls the loop, which should not have any performance impact.
+
+[source, diff]
+----
+-       for x := range dimX {
++       for x := 0; x < dimX; x++ {
+----
+
+It also changes what i consider idiomatic Go code, a zero slice and `append()` operations, to
+
+[source, diff]
+----
+- var points []image.Point
++ points := []image.Point{}
+----
+
+There's two more little improvements.
+- Two counter, one for the number of points between galaxies, and one for the total, can be combined.
+- Using the expanded step count `1` and not the more human readable `'1'`.
+
+----
+name \ time/op    day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16       10.5ms ± 7%     4.7ms ± 5%     4.4ms ± 1%     4.0ms ± 1%
+
+name \ alloc/op   day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16       16.4MB ± 0%     0.0MB ± 0%     0.0MB ± 0%     0.0MB ± 0%
+
+name \ allocs/op  day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16         39.0 ± 0%      10.0 ± 0%      10.0 ± 0%      10.0 ± 0%
+----
+
+Down from 10.5 to 4.0 ms.
+>>>>>>> 689d2f9 (perf(day11): optimize part 1)
