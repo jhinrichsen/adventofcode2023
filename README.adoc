@@ -54,7 +54,7 @@ Number of tries for a correct answer:
 | 8   |   1    |
 | 9   |   1    |  1
 | 10  |   1    |
-| 11  |   1    |
+| 11  |   1    |  1
 | 12  |        |
 | 13  |        |
 | 14  |        |
@@ -790,6 +790,7 @@ The parameter `filename` is leaking, because it is
 The compiler doesn`t know about `syscall.Munmap()`, so it makes sure the original string is kept unchanged.
 
 == Day 11: Cosmos Expansion
+=== Part 1
 
 Possible alternative implementations:
 
@@ -894,3 +895,8 @@ Day11Part1-16         39.0 ± 0%      10.0 ± 0%      10.0 ± 0%      10.0 ± 0%
 ----
 
 Down from 10.5 to 4.0 ms.
+
+=== Part 2
+
+No changes other than the introduction of a factor.
+Same O(n) as part 1, so same performance.
