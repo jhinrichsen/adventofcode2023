@@ -55,7 +55,7 @@ Number of tries for a correct answer:
 | 9   |   1    |  1
 | 10  |   1    |
 | 11  |   1    |  1
-| 12  |        |
+| 12  |   1    |
 | 13  |        |
 | 14  |        |
 | 15  |        |
@@ -900,3 +900,90 @@ Down from 10.5 to 4.0 ms.
 
 No changes other than the introduction of a factor.
 Same O(n) as part 1, so same performance.
+
+== Day 12: Hot Springs
+
+=== Part 1
+
+Using a ChatGPT prompt to generate the `validate` function, which checks if one line of input has
+- the correct syntax (format), and
+- correct semantics, i.e. it is well formed with regard to the checksum.
+
+The generated code does not compile.
+
+==== Error #1
+
+The loop value variable `cs` shadows the outer checksum list, and cannot be assigned to.
+
+----
+	cs := make([]int, len(csParts)) <1>
+	for i, cs := range csParts { <2>
+		...
+		cs[i] = val <3>
+	}
+----
+<1> allocate a list of checksums
+<2> iterate comma separated checksums
+<3> assign to the loop var `cs` which shadows the outer `cs` list
+
+==== Error #2
+
+The regular expression is invalid.
+
+----
+	re := regexp.MustCompile(`#++`) <1>
+----
+<1> not a valid regexp in Go
+
+which leads to
+
+----
+panic: regexp: Compile(`#++`): error parsing regexp: invalid nested repetition operator: `++` [recovered]
+----
+
+When asked if `#++` is a valid regular expression, ChatGPT reports
+
+----
+To clarify:
+
+    In Go (and many other regex engines), the regular expression #++ means "match one or more # characters", but this expression can be simplified to #+ (the ++ is redundant and unnecessary).
+    The + quantifier matches one or more of the preceding element (in this case, the # symbol).
+
+Thus, the correct and simpler expression to match one or more consecutive # characters is:
+
+    #+
+----
+
+Again one of those cases, if you know what you are doing, you can lead ChatGPT to the right result.
+
+==== Error #3
+
+One of the table driven tests is correct, but assumed to fail.
+
+----
+		{".###.# 3,1", false},            // Invalid checksum
+----
+
+==== Error #4
+
+When introducing multiple lines of input, unit tests get foobar.
+Marking those as broken, and focusing on the AOC example.
+
+NOTE: These are all easy fixes, but they need to be fixed.
+
+Last but not least, we have a valid solution for part 1.
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay12Part1-16    	       1	9028157768 ns/op	11055737728 B/op	159898391 allocs/op
+BenchmarkDay12Part1-16    	       1	8920444172 ns/op	11052763680 B/op	159897947 allocs/op
+BenchmarkDay12Part1-16    	       1	8828484981 ns/op	11055648928 B/op	159898309 allocs/op
+BenchmarkDay12Part1-16    	       1	8946485053 ns/op	11058248832 B/op	159898634 allocs/op
+BenchmarkDay12Part1-16    	       1	8819827656 ns/op	11059230112 B/op	159898843 allocs/op
+----
+
+That's about 9s, 160,000 memory allocations for a total of 11 GB for mostly AI generated code.
+
