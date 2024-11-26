@@ -8,7 +8,7 @@ import (
 func BrokenTestDay12Part1ExamplesChatGPT(t *testing.T) {
 	tests := []struct {
 		input []string
-		want  int
+		want  uint
 	}{
 		// Test cases with different inputs
 		{
@@ -51,6 +51,26 @@ func BrokenTestDay12Part1ExamplesChatGPT(t *testing.T) {
 	}
 }
 
+func TestDay12IsValidCombination(t *testing.T) {
+	const want = 1
+	valid := []string{
+		"#.#.### 1,1,3",
+		".#...#....###. 1,1,3",
+		".#.###.#.###### 1,3,1,6",
+		"####.#...#... 4,1,1",
+		"#....######..#####. 1,6,5",
+		".###.##....# 3,2,1",
+	}
+	for i := range valid {
+		t.Run(valid[i], func(t *testing.T) {
+			got := Day12([]string{valid[i]})
+			if want != got {
+				t.Fatalf("%s: want %d but got %d", valid[i], want, got)
+			}
+		})
+	}
+}
+
 func TestDay12Part1Example(t *testing.T) {
 	const want = 21
 	lines, err := linesFromFilename(exampleFilename(12))
@@ -81,6 +101,8 @@ func BenchmarkDay12Part1(b *testing.B) {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
+	b.ReportAllocs()
+
 	for range b.N {
 		_ = Day12(lines)
 	}

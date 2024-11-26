@@ -1062,7 +1062,7 @@ Marking those as broken, and focusing on the AOC example.
 
 NOTE: These are all easy fixes, but they need to be fixed.
 
-Last but not least, we have a valid solution for part 1.
+Last but not least, we have a valid solution for part 1, which has `7645760` combinations.
 
 ----
 goos: linux
@@ -1078,3 +1078,85 @@ BenchmarkDay12Part1-16    	       1	8819827656 ns/op	11059230112 B/op	159898843 
 
 That's about 9s, 160,000 memory allocations for a total of 11 GB for mostly AI generated code.
 
+Most of the time is spent in GC and `regexp` package.
+
+----
+(pprof) top10
+Showing nodes accounting for 25.22s, 43.74% of 57.66s total
+Dropped 278 nodes (cum <= 0.29s)
+Showing top 10 nodes out of 134
+      flat  flat%   sum%        cum   cum%
+     4.22s  7.32%  7.32%     16.94s 29.38%  runtime.mallocgc
+     3.96s  6.87% 14.19%      4.75s  8.24%  runtime.findObject
+     3.89s  6.75% 20.93%      3.89s  6.75%  runtime.memclrNoHeapPointers
+     3.11s  5.39% 26.33%      6.05s 10.49%  regexp.(*Regexp).tryBacktrack
+     2.68s  4.65% 30.97%      2.68s  4.65%  runtime.nextFreeFast (inline)
+     1.91s  3.31% 34.29%      1.91s  3.31%  regexp.(*bitState).shouldVisit (inline)
+     1.80s  3.12% 37.41%      9.18s 15.92%  runtime.scanobject
+     1.33s  2.31% 39.72%     11.06s 19.18%  runtime.growslice
+     1.22s  2.12% 41.83%      1.22s  2.12%  runtime.memmove
+     1.10s  1.91% 43.74%      1.74s  3.02%  runtime.(*mspan).writeHeapBitsSmall
+----
+
+image::img/profile12-01.svg[Embedded,800,opts=inline]
+
+==== Performance tweak #1: remove regexp
+
+In `validateCombinations`, remove the regexp based validation with a custom state machine parser.
+
+----
+(pprof) top10
+Showing nodes accounting for 2240ms, 64.18% of 3490ms total
+Dropped 65 nodes (cum <= 17.45ms)
+Showing top 10 nodes out of 102
+      flat  flat%   sum%        cum   cum%
+     550ms 15.76% 15.76%      550ms 15.76%  runtime.memclrNoHeapPointers
+     330ms  9.46% 25.21%      330ms  9.46%  runtime.memmove
+     240ms  6.88% 32.09%      300ms  8.60%  runtime.findObject
+     200ms  5.73% 37.82%      200ms  5.73%  runtime.madvise
+     180ms  5.16% 42.98%      180ms  5.16%  runtime.procyield
+     180ms  5.16% 48.14%      650ms 18.62%  runtime.scanobject
+     170ms  4.87% 53.01%     2030ms 58.17%  gitlab.com/jhinrichsen/adventofcode2023.generateCombinations
+     130ms  3.72% 56.73%      130ms  3.72%  gitlab.com/jhinrichsen/adventofcode2023.isValidCombination
+     130ms  3.72% 60.46%      640ms 18.34%  runtime.concatstrings
+     130ms  3.72% 64.18%      930ms 26.65%  runtime.mallocgc
+----
+
+We can see that the payload is starting to eat our resources, not GC/ runtime, which is a good thing.
+
+==== Performance tweak #2: streamline `generateCombinations`
+
+Renamed to `permute`.
+Instead of slaying strings, we determine how much combinations we have, and copy the original `string` N times as a modifyable `[][]byte`.
+Then, using a period length generator, we toggle high and low values and let them trickle columnwise into place.
+
+Think "Matrix".
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+BenchmarkDay12Part1-16    	       2	 682096490 ns/op	660100384 B/op	15296534 allocs/op
+BenchmarkDay12Part1-16    	       2	 557446960 ns/op	660092560 B/op	15296523 allocs/op
+BenchmarkDay12Part1-16    	       2	 551328090 ns/op	660092896 B/op	15296527 allocs/op
+BenchmarkDay12Part1-16    	       2	 550182100 ns/op	660092808 B/op	15296526 allocs/op
+BenchmarkDay12Part1-16    	       2	 546589624 ns/op	660092752 B/op	15296525 allocs/op
+PASS
+----
+
+Good, we're down to 550 ms.
+
+----
+name           old time/op    new time/op    delta
+Day12Part1-16     8.91s ± 1%     0.56s ± 1%  -93.72%  (p=0.008 n=5+5)
+
+name           old alloc/op   new alloc/op   delta
+Day12Part1-16    11.1GB ± 0%     0.7GB ± 0%  -94.03%  (p=0.008 n=5+5)
+
+name           old allocs/op  new allocs/op  delta
+Day12Part1-16      160M ± 0%       15M ± 0%  -90.43%  (p=0.008 n=5+5)
+----
+
+Compared to the AI generated code, we're down in all categories by a factor between 11 and 16.
+Instead of cloud based CPU costs of one million $, that's just $ 62.500.
