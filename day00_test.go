@@ -34,7 +34,7 @@ func BenchmarkDay00Part1(b *testing.B) {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_ = Day00(lines)
 	}
 }
