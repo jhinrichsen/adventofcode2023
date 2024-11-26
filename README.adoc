@@ -71,7 +71,7 @@ Number of tries for a correct answer:
 | 25  |        |
 |===
 
-== Day 1 Trebuchet?!
+== Day 1: Trebuchet?!
 
 Writing a custom one-pass parser for V2 because why not.
 
@@ -89,7 +89,7 @@ BenchmarkDay01Large-16    	     462	   2582112 ns/op	       0 B/op	       0 allo
 ----
 Solving part 1 takes 55 μs.
 
-== Day 3 Gear Ratios
+== Day 3: Gear Ratios
 
 Looks like a flood fill, aka seed fill.
 Doing my homework on the internet, lots of recursive solutions.
@@ -221,10 +221,10 @@ BenchmarkDay03Part2-8   	   27661	     40784 ns/op	       0 B/op	       0 allocs
 BenchmarkDay03Part2-8   	   30015	     41826 ns/op	       0 B/op	       0 allocs/op
 ----
 
-== Day 4 Scratchcards
+== Day 4: Scratchcards
 
 
-== Day 5 If You Give A Seed A Fertilizer
+== Day 5: If You Give A Seed A Fertilizer
 
 ----
 goos: linux
@@ -234,7 +234,7 @@ cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay05Part1-16    	   33780	     35607 ns/op	   41464 B/op	     978 allocs/op
 ----
 
-== Day 6 Wait For It
+== Day 6: Wait For It
 
 Part 2 ran without any code changes.
 Not sure what the challenge is for part 2.
@@ -250,7 +250,7 @@ BenchmarkDay06Part2-8   	      37	  31458602   ns/op
 
 That's just 31 ms.
 
-== Day 7 Camel Cards
+== Day 7: Camel Cards
 
 ----
 goos: linux
