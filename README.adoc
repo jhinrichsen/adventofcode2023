@@ -899,7 +899,7 @@ Down from 10.5 to 4.0 ms.
 === Part 2
 
 No changes other than the introduction of a factor.
-Same O(n) as part 1, so same performance.
+The implementation is O(1) with regard to the factor, so same performance impact.
 
 == Day 12: Hot Springs
 
