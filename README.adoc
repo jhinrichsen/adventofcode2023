@@ -125,7 +125,6 @@ It took me three turns to make the algorithm work. Yes, numbers can end directly
 
 image::img/day03.png[]
 
-
 === Power Mode 'Balanced'
 
 ----
@@ -300,7 +299,7 @@ Part 2 contains a twitch in the particular input, which makes it possible to use
 Brute force approach will never terminate.
 I peeked into some hints when my implementation ran longer than 10s, and decided to not apply the shortcut because it makes the solution totally dependent on input data.
 
-== Mirage Maintenance
+== Day 9: Mirage Maintenance
 
 These timings include parsing the puzzle input:
 
@@ -468,7 +467,7 @@ BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 al
 Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
 Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
 
-== Day 10 Pipe Maze
+== Day 10: Pipe Maze
 
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
 Right down to the location of the input puzzle file, and its filename.
@@ -552,7 +551,6 @@ BenchmarkDay10Part1-8   	   11535	    101549 ns/op	       0 B/op	       0 allocs
 BenchmarkDay10Part1-8   	   10000	    105559 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay10Part1-8   	   10000	    103705 ns/op	       0 B/op	       0 allocs/op
 ----
-
 
 Benchmarking different implementation of `opposite()` direction:
 
@@ -668,7 +666,7 @@ TEXT command-line-arguments.opposite3(SB) /home/jot/repos/adventofcode2023/day10
 <1> Bit Scan Reverse
 <2> Bit Test, n % 2 == 0
 
-Now this one flies
+Now this one flies.
 
 ----
 $ benchstat opposite1.bench opposite3.bench
@@ -678,6 +676,8 @@ Opposite-8    1.58µs ± 4%    0.31µs ± 3%  -80.70%  (p=0.000 n=10+9)
 
 Although, to be honest, there's not much difference in total runtime because it is called exactly once for each step through the maze,
 which gives it O(n) complexity.
+
+=== Part 2
 
 For part 2, the way through the maze needs to be marked so that a floodfill algorithm can be used.
 Instead of copying the maze into another data structure, i want to keep track of touched cells while traversing.
@@ -879,8 +879,9 @@ BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs
 ---
 
 That's 157 ms, too slow. Said flying object will move 51 m in this time.
-=======
+
 == Day 11: Cosmos Expansion
+
 === Part 1
 
 Possible alternative implementations:
@@ -990,7 +991,7 @@ Down from 10.5 to 4.0 ms.
 === Part 2
 
 No changes other than the introduction of a factor.
-The implementation is O(1) with regard to the factor, so same performance impact.
+Same O(n) as part 1, so same performance.
 
 == Day 12: Hot Springs
 
