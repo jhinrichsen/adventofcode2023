@@ -91,6 +91,8 @@ Solving part 1 takes 55 μs.
 
 == Day 3: Gear Ratios
 
+=== Part 1
+
 Looks like a flood fill, aka seed fill.
 Doing my homework on the internet, lots of recursive solutions.
 I personally avoid recursion, because it will blow up in your face,
@@ -126,7 +128,7 @@ It took me three turns to make the algorithm work. Yes, numbers can end directly
 image::img/day03.png[]
 
 
-=== Power Mode 'Balanced'
+==== Power Mode 'Balanced'
 
 ----
 goos: linux
@@ -140,7 +142,7 @@ BenchmarkDay03Part1-16    	   42114	     29990 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   38536	     28438 ns/op	       0 B/op	       0 allocs/op
 ----
 
-=== Power Mode 'Power Saver'
+==== Power Mode 'Power Saver'
 
 ----
 goos: linux
@@ -154,7 +156,7 @@ BenchmarkDay03Part1-16    	   10000	    115926 ns/op	       0 B/op	       0 allo
 BenchmarkDay03Part1-16    	   10000	    101594 ns/op	       0 B/op	       0 allocs/op
 ----
 
-=== Power Mode 'Performance'
+==== Power Mode 'Performance'
 
 ----
 goos: linux
@@ -237,7 +239,8 @@ BenchmarkDay05Part1-16    	   33780	     35607 ns/op	   41464 B/op	     978 allo
 == Day 6: Wait For It
 
 Part 2 ran without any code changes.
-Not sure what the challenge is for part 2.
+First time i encounter this for any puzzle so far.
+Probably because the initial algorithm was fast enough for brute force.
 
 ----
 goos: linux
@@ -248,9 +251,11 @@ BenchmarkDay06Part1-8   	 5116702	       205.3 ns/op
 BenchmarkDay06Part2-8   	      37	  31458602   ns/op
 ----
 
-That's just 31 ms.
+That's 31 ms.
 
 == Day 7: Camel Cards
+
+=== Part 1
 
 ----
 goos: linux
@@ -260,7 +265,9 @@ cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay07Part1-16    	     494	   2360739 ns/op
 ----
 
-For part 2, i was promoting `OnePair` and a Joker to `TwoPairs` instead of `ThreeOfAKind`. Damn.
+=== Part 2
+
+I was promoting `OnePair` and a Joker to `TwoPairs` instead of `ThreeOfAKind`. Damn.
 
 ----
 goos: linux
@@ -284,7 +291,7 @@ BenchmarkDay07Part2-8   	    4837	    233281 ns/op	       0 B/op	       0 allocs
 
 Thats 230 μs, and no memory allocation.
 
-== Haunted Wasteland
+== Day 8: Haunted Wasteland
 
 A straight forward puzzle to implement, no algorithm background required.
 
@@ -300,7 +307,7 @@ Part 2 contains a twitch in the particular input, which makes it possible to use
 Brute force approach will never terminate.
 I peeked into some hints when my implementation ran longer than 10s, and decided to not apply the shortcut because it makes the solution totally dependent on input data.
 
-== Mirage Maintenance
+== Day 9: Mirage Maintenance
 
 These timings include parsing the puzzle input:
 
@@ -468,7 +475,7 @@ BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 al
 Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
 Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
 
-== Day10 Pipe Maze
+== Day10: Pipe Maze
 
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
 Right down to the location of the input puzzle file, and its filename.
@@ -552,7 +559,6 @@ BenchmarkDay10Part1-8   	   11535	    101549 ns/op	       0 B/op	       0 allocs
 BenchmarkDay10Part1-8   	   10000	    105559 ns/op	       0 B/op	       0 allocs/op
 BenchmarkDay10Part1-8   	   10000	    103705 ns/op	       0 B/op	       0 allocs/op
 ----
-
 
 Benchmarking different implementation of `opposite()` direction:
 
@@ -668,7 +674,7 @@ TEXT command-line-arguments.opposite3(SB) /home/jot/repos/adventofcode2023/day10
 <1> Bit Scan Reverse
 <2> Bit Test, n % 2 == 0
 
-Now this one flies
+Now this one flies.
 
 ----
 $ benchstat opposite1.bench opposite3.bench
@@ -678,6 +684,8 @@ Opposite-8    1.58µs ± 4%    0.31µs ± 3%  -80.70%  (p=0.000 n=10+9)
 
 Although, to be honest, there's not much difference in total runtime because it is called exactly once for each step through the maze,
 which gives it O(n) complexity.
+
+=== Part 2
 
 For part 2, the way through the maze needs to be marked so that a floodfill algorithm can be used.
 Instead of copying the maze into another data structure, i want to keep track of touched cells while traversing.
@@ -790,6 +798,7 @@ The parameter `filename` is leaking, because it is
 The compiler doesn`t know about `syscall.Munmap()`, so it makes sure the original string is kept unchanged.
 
 == Day 11: Cosmos Expansion
+
 === Part 1
 
 Possible alternative implementations:
@@ -845,8 +854,9 @@ func Day11(grid [][]byte) uint {
 
 Let's see if and how ChatGPT can squeeze some performance out of this code.
 
-* It shows alternative code that compiles, and runs, and has the same test results as before. Good.
-* It also unrolls the closures into straight `for` loops. Good.
+- It shows alternative code that compiles, runs, and has the same test results as before. Good.
+
+- It also unrolls the closures into straight `for` loops. Good.
 
 After ChatGPTs suggestions:
 
@@ -880,7 +890,9 @@ It also changes what i consider idiomatic Go code, a zero slice and `append()` o
 ----
 
 There's two more little improvements.
+
 - Two counter, one for the number of points between galaxies, and one for the total, can be combined.
+
 - Using the expanded step count `1` and not the more human readable `'1'`.
 
 ----
