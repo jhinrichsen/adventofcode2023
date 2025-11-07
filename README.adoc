@@ -9,7 +9,7 @@ image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[l
 [quote, me]
 Same procedure as every year, Eric.
 
-image::img/gitlab-history.png[]
+image::static/gitlab-history.png[]
 
 My take on https://adventofcode.com/2023/ in Go. As usual, i don't particularly
 care if i provide my solutions _fast_, i try to be _correct_ on the first
@@ -123,7 +123,7 @@ Thinking again, KISS to the rescue. Just parse numbers, and check if the C8 envi
 
 It took me three turns to make the algorithm work. Yes, numbers can end directly at the end of the line.
 
-image::img/day03.png[]
+image::static/day03.png[]
 
 === Power Mode 'Balanced'
 
@@ -313,7 +313,7 @@ BenchmarkDay09Part1-8   	    5962	    378392 ns/op	   70400 B/op	     200 allocs
 
 The corresponding CPU profile shows that most of the time is spent parsing.
 
-image::img/profile09-01.svg[Embedded,800,opts=inline]
+image::static/profile09-01.svg[Embedded,800,opts=inline]
 
 Spinning a custom parser:
 
@@ -328,7 +328,7 @@ BenchmarkDay09V2Part1-8   	    9898	    113864 ns/op	       0 B/op	       0 allo
 
 400% faster, and no more memory allocations.
 
-image::img/profile09-02.svg[Embedded,800,opts=inline]
+image::static/profile09-02.svg[Embedded,800,opts=inline]
 
 Function names from the parser's state machine are mangled, such as `func1`.
 
@@ -809,11 +809,11 @@ It stumbles around, and usually stops near somewhere close to the border of the 
 
 But when given the coordinates, it correctly determines the number of embedded cells _without generating any code_.
 
-image::img/day10_example4_poly_tiles.png[Example #4: embedded cells]
+image::static/day10_example4_poly_tiles.png[Example #4: embedded cells]
 
 Quite impressive. Focussing on the path through the maze:
 
-image::img/day10_example4_poly_tiles_enclosed.png[Example #4: pipeline]
+image::static/day10_example4_poly_tiles_enclosed.png[Example #4: pipeline]
 
 So, for the failing example #3, AOC expects 8 embedded cells.
 
@@ -832,7 +832,7 @@ OOOO·····O··O····OOO
 
 My polygon is correct:
 
-image::img/day10_example3_poly_tiles_enclosed.png[Example #3: pipeline]
+image::static/day10_example3_poly_tiles_enclosed.png[Example #3: pipeline]
 
 So it seems `wnPnPoly` does not consider some edge cases we have here.
 Instead of `8`, it returns `0`.
@@ -853,12 +853,12 @@ FAIL
 So i end up with generating a polygon of 13_913 ( <- proper Go notation) vertices and 
 ask ChatGPT to show the polygon.
 
-image::img/tilt.png[]
+image::static/tilt.png[]
 
 So, let's just give wnPnPoly one shot, although one example fails.
 
 
-image::img/day10.png[Success]
+image::static/day10.png[Success]
 
 Duh.
 Well, for AOC this will be fine.
@@ -1099,7 +1099,7 @@ Showing top 10 nodes out of 134
      1.10s  1.91% 43.74%      1.74s  3.02%  runtime.(*mspan).writeHeapBitsSmall
 ----
 
-image::img/profile12-01.svg[Embedded,800,opts=inline]
+image::static/profile12-01.svg[Embedded,800,opts=inline]
 
 ==== Performance tweak #1: remove regexp
 
