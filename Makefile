@@ -13,6 +13,7 @@ clean:
 		gl-code-quality-report.json \
 		govulncheck.sarif \
 		junit.xml \
+		README.html \
 		staticcheck.json \
 		test.log
 
@@ -73,6 +74,9 @@ govulncheck.sarif:
 $(BENCH_FILE):
 	@echo "Running benchmarks and saving to $@..."
 	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
+
+README.html: README.adoc
+	asciidoc $^
 
 .PHONY: total
 total: $(BENCH_FILE)

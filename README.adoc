@@ -1,4 +1,6 @@
 = Advent of code 2023
+:doctype: book
+:toc:
 
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
@@ -571,26 +573,26 @@ Benchmarking different implementation of `opposite()` direction:
  32
 
 TEXT command-line-arguments.opposite1(SB) /home/jot/repos/adventofcode2023/day10.go
-  day10.go:20		0x61ac			3c02			CMPL AL, $0x2		
-  day10.go:23		0x61ae			7714			JA 0x61c4		
-  day10.go:21		0x61b0			3c01			CMPL AL, $0x1		
-  day10.go:21		0x61b2			740a			JE 0x61be		
-  day10.go:20		0x61b4			3c02			CMPL AL, $0x2		
-  day10.go:23		0x61b6			7518			JNE 0x61d0		
-  day10.go:24		0x61b8			b801000000		MOVL $0x1, AX		
-  day10.go:24		0x61bd			c3			RET			
-  day10.go:22		0x61be			b802000000		MOVL $0x2, AX		
-  day10.go:22		0x61c3			c3			RET			
-  day10.go:25		0x61c4			3c04			CMPL AL, $0x4		
-  day10.go:25		0x61c6			740f			JE 0x61d7		
-  day10.go:25		0x61c8			0f1f4000		NOPL 0(AX)		
-  day10.go:27		0x61cc			3c08			CMPL AL, $0x8		
-  day10.go:27		0x61ce			7401			JE 0x61d1		
-  day10.go:30		0x61d0			c3			RET			
-  day10.go:28		0x61d1			b804000000		MOVL $0x4, AX		
-  day10.go:28		0x61d6			c3			RET			
-  day10.go:26		0x61d7			b808000000		MOVL $0x8, AX		
-  day10.go:26		0x61dc			c3			RET			
+  day10.go:20		0x61ac			3c02			CMPL AL, $0x2
+  day10.go:23		0x61ae			7714			JA 0x61c4
+  day10.go:21		0x61b0			3c01			CMPL AL, $0x1
+  day10.go:21		0x61b2			740a			JE 0x61be
+  day10.go:20		0x61b4			3c02			CMPL AL, $0x2
+  day10.go:23		0x61b6			7518			JNE 0x61d0
+  day10.go:24		0x61b8			b801000000		MOVL $0x1, AX
+  day10.go:24		0x61bd			c3			RET
+  day10.go:22		0x61be			b802000000		MOVL $0x2, AX
+  day10.go:22		0x61c3			c3			RET
+  day10.go:25		0x61c4			3c04			CMPL AL, $0x4
+  day10.go:25		0x61c6			740f			JE 0x61d7
+  day10.go:25		0x61c8			0f1f4000		NOPL 0(AX)
+  day10.go:27		0x61cc			3c08			CMPL AL, $0x8
+  day10.go:27		0x61ce			7401			JE 0x61d1
+  day10.go:30		0x61d0			c3			RET
+  day10.go:28		0x61d1			b804000000		MOVL $0x4, AX
+  day10.go:28		0x61d6			c3			RET
+  day10.go:26		0x61d7			b808000000		MOVL $0x8, AX
+  day10.go:26		0x61dc			c3			RET
 ----
 
 ----
@@ -850,7 +852,7 @@ I let ChatGPT translate some code from Matlib to Go, functions `IsPointInPolygon
 FAIL
 ----
 
-So i end up with generating a polygon of 13_913 ( <- proper Go notation) vertices and 
+So i end up with generating a polygon of 13_913 ( <- proper Go notation) vertices and
 ask ChatGPT to show the polygon.
 
 image::static/tilt.png[]
@@ -866,17 +868,17 @@ Better not load that code into a Taurus.
 
 === Benchmark
 
----
+----
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics    
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay10Part2-8   	       7	 156833521 ns/op	  918669 B/op	      25 allocs/op
 BenchmarkDay10Part2-8   	       7	 156975458 ns/op	  918683 B/op	      26 allocs/op
 BenchmarkDay10Part2-8   	       7	 159191464 ns/op	  919382 B/op	      26 allocs/op
 BenchmarkDay10Part2-8   	       7	 151711689 ns/op	  918669 B/op	      25 allocs/op
 BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs/op
----
+----
 
 That's 157 ms, too slow. Said flying object will move 51 m in this time.
 
@@ -895,7 +897,7 @@ Possible alternative implementations:
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay11Part1-16    	     109	  10496351 ns/op	16419453 B/op	      39 allocs/op
 BenchmarkDay11Part1-16    	     100	  10961495 ns/op	16419441 B/op	      39 allocs/op
 BenchmarkDay11Part1-16    	      88	  11417915 ns/op	16419422 B/op	      39 allocs/op
@@ -1069,7 +1071,7 @@ Last but not least, we have a valid solution for part 1, which has `7645760` com
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay12Part1-16    	       1	9028157768 ns/op	11055737728 B/op	159898391 allocs/op
 BenchmarkDay12Part1-16    	       1	8920444172 ns/op	11052763680 B/op	159897947 allocs/op
 BenchmarkDay12Part1-16    	       1	8828484981 ns/op	11055648928 B/op	159898309 allocs/op
@@ -1137,7 +1139,7 @@ Think "Matrix".
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics     
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay12Part1-16    	       2	 682096490 ns/op	660100384 B/op	15296534 allocs/op
 BenchmarkDay12Part1-16    	       2	 557446960 ns/op	660092560 B/op	15296523 allocs/op
 BenchmarkDay12Part1-16    	       2	 551328090 ns/op	660092896 B/op	15296527 allocs/op
