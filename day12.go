@@ -214,13 +214,8 @@ func Day12(lines []string, part1 bool) uint {
 		}
 
 		if part1 {
-			// Part 1: Use original permutation approach
-			combinations := permute(pattern)
-			for _, comb := range combinations {
-				if isValid(comb, checksums) {
-					total++
-				}
-			}
+			// Part 1: Use DP approach (faster than permutation)
+			total += countArrangements(pattern, checksums)
 		} else {
 			// Part 2: Use DP approach with unfolded input
 			unfoldedPattern, unfoldedChecksums := unfold(pattern, checksums)

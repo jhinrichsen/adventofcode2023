@@ -1161,3 +1161,36 @@ Day12Part1-16      160M ± 0%       15M ± 0%  -90.43%  (p=0.008 n=5+5)
 
 Compared to the AI generated code, we're down in all categories by a factor between 11 and 16.
 Instead of cloud based CPU costs of one million $, that's just $ 62.500.
+
+==== Performance tweak #3: Dynamic Programming with Memoization
+
+While the permutation approach works for Part 1, it becomes infeasible for Part 2 where inputs are unfolded 5x.
+A pattern with 15 wildcards becomes 2^15 = 32,768 combinations, but unfolded becomes 2^75+ combinations - impossible to enumerate.
+
+The solution: dynamic programming with memoization.
+Instead of generating all possible arrangements, we recursively explore valid placements while caching results for identical subproblems.
+The state space is (position, group_index, group_length), which is much smaller than the exponential number of combinations.
+
+This approach also benefits Part 1, even though brute force permutation was fast enough.
+
+----
+name           old time/op    new time/op    delta
+Day12Part1-16     622.4ms ±65%     4.5ms ± 3%  -99.28%  (p=0.000 n=8+8)
+Day12Part2-16      73.9ms ± 2%    72.9ms ± 4%     ~     (p=0.645 n=8+8)
+
+name           old alloc/op   new alloc/op   delta
+Day12Part1-16     629.5Mi ± 0%     5.5Mi ± 0%  -99.12%  (p=0.000 n=8+8)
+Day12Part2-16      90.7Mi ± 0%    90.7Mi ± 0%     ~     (p=0.536 n=8+8)
+
+name           old allocs/op  new allocs/op  delta
+Day12Part1-16      15.30M ± 0%     0.01M ± 0%  -99.94%  (p=0.000 n=8+8)
+Day12Part2-16      20.15k ± 0%    20.15k ± 0%     ~     (all equal)
+----
+
+The DP approach is:
+- **138x faster** for Part 1 (622ms → 4.5ms)
+- **114x less memory** for Part 1 (629 MiB → 5.5 MiB)
+- **1604x fewer allocations** for Part 1 (15.3M → 9.5k)
+- Makes Part 2 tractable without RAM explosion
+
+Final performance: Part 1 runs in ~5ms, Part 2 in ~73ms.
