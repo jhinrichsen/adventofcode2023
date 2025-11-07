@@ -1,4 +1,5 @@
 GO ?= CGO_ENABLED=0 go
+BENCH_FILE ?= benches/$(shell go env GOOS)-$(shell go env GOARCH)-$(shell lscpu | grep "Model name:" | cut -d: -f2 | xargs | sed 's/ \(CPU\|@\|w\/\).*//' | sed 's/ /_/g').txt
 
 .PHONY: all
 all: tidy test
@@ -68,4 +69,12 @@ govulncheck.sarif:
 	which govulncheck || $(GO) install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck -version
 	govulncheck -format=sarif ./... > $@
+
+$(BENCH_FILE):
+	@echo "Running benchmarks and saving to $@..."
+	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
+
+.PHONY: total
+total: $(BENCH_FILE)
+	awk -f total.awk < $(BENCH_FILE)
 
