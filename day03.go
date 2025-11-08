@@ -6,6 +6,19 @@ import (
 	"github.com/fatih/color"
 )
 
+type Day03Puzzle []string
+
+func NewDay03(lines []string) (Day03Puzzle, error) {
+	return Day03Puzzle(lines), nil
+}
+
+func Day03(puzzle Day03Puzzle, part1 bool) int {
+	if part1 {
+		return Day03Part1([]string(puzzle))
+	}
+	return int(Day03Part2([]string(puzzle)))
+}
+
 func Day03Part1(lines []string) (sum int) {
 	isSurrounded := func(x, y, l int) bool {
 		x1 := max(x-l-1, 0)

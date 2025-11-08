@@ -70,7 +70,7 @@ func BenchmarkDay11Part1(b *testing.B) {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = Day11(bytes, 1)
 	}
 }
@@ -81,7 +81,7 @@ func BenchmarkDay11Part2(b *testing.B) {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = Day11(bytes, 1_000_000)
 	}
 }

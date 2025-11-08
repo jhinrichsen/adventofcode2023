@@ -1,97 +1,77 @@
 package adventofcode2023
 
-import (
-	"fmt"
-	"strconv"
-	"strings"
-)
+type Day02Puzzle []string
 
-type Triple struct {
-	A, B, C uint
+func NewDay02(lines []string) (Day02Puzzle, error) {
+	return Day02Puzzle(lines), nil
 }
 
-func (a Triple) Within(t Triple) bool {
-	return a.A <= t.A && a.B <= t.B && a.C <= t.C
-}
-
-func (a Triple) Power() uint {
-	return a.A * a.B * a.C
-}
-
-func Max(a, b Triple) Triple {
-	return Triple{
-		max(a.A, b.A),
-		max(a.B, b.B),
-		max(a.C, b.C),
-	}
-}
-
-func Day02(ref Triple, lines []string, part1 bool) (uint, error) {
+func Day02(puzzle Day02Puzzle, part1 bool) uint {
 	var sum uint
+	ref := Triple{12, 13, 14}
 
-	if !part1 {
-		ref = Triple{}
-	}
-	for i, line := range lines {
-		game, t, err := parseDay02Line(line)
-		if err != nil {
-			return 0, fmt.Errorf("error parsing line %d: %v", i+1, err)
-		}
+	for _, line := range puzzle {
+		gameID, maxTriple := parseDay02Line(line)
+
 		if part1 {
-			if t.Within(ref) {
-				sum += game
+			if maxTriple.Within(ref) {
+				sum += gameID
 			}
 		} else {
-			sum += t.Power()
+			sum += maxTriple.Power()
 		}
 	}
-	return sum, nil
+	return sum
 }
 
-// returns game ID, r, g, b values
-// format: Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-// colors have no fixed position
-func parseDay02Line(s string) (game uint, t Triple, err error) {
-	parts := strings.Split(s, ":")
-	if len(parts) != 2 {
-		err = fmt.Errorf("want two parts but got %d", len(parts))
-		return
+func parseDay02Line(line string) (uint, Triple) {
+	// Format: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
+	var gameID uint
+	var maxTriple Triple
+
+	i := 5 // skip "Game "
+	// Parse game ID
+	for i < len(line) && line[i] >= '0' && line[i] <= '9' {
+		gameID = gameID*10 + uint(line[i]-'0')
+		i++
 	}
-	var i int
-	i, err = strconv.Atoi(parts[0][5:])
-	if err != nil {
-		return
-	}
-	game = uint(i)
-	turns := strings.Split(parts[1], ";")
-	for _, turn := range turns {
-		cols := strings.Split(turn, ",")
-		for _, col := range cols {
-			colvals := strings.Fields(col)
-			if len(colvals) != 2 {
-				err = fmt.Errorf("want <n> <color> but got %q", col)
-				return
+	i += 2 // skip ": "
+
+	// Parse color reveals
+	var n uint
+	colorStart := 0
+
+	for i < len(line) {
+		c := line[i]
+
+		if c >= '0' && c <= '9' {
+			n = n*10 + uint(c-'0')
+		} else if c == ' ' && n > 0 {
+			// Space after number - color name starts next
+			colorStart = i + 1
+		} else if c == ',' || c == ';' || i == len(line)-1 {
+			// End of color entry
+			if i == len(line)-1 && c != ',' && c != ';' {
+				// Include last character if it's part of color name
+				i++
 			}
-			var i int
-			i, err = strconv.Atoi(colvals[0])
-			if err != nil {
-				err = fmt.Errorf("error parsing %q: %v", colvals, err)
-				return
+
+			if n > 0 && colorStart > 0 {
+				// Determine color by first character (r/g/b are unique)
+				switch line[colorStart] {
+				case 'r': // red
+					maxTriple.A = max(maxTriple.A, n)
+				case 'g': // green
+					maxTriple.B = max(maxTriple.B, n)
+				case 'b': // blue
+					maxTriple.C = max(maxTriple.C, n)
+				}
 			}
-			if i < 0 {
-				panic(fmt.Sprintf("want i >= 0 but got %d", i))
-			}
-			n := uint(i)
-			// cannot have f func of [min|max] because they are builtins
-			switch colvals[1] {
-			case "red":
-				t.A = max(t.A, n)
-			case "green":
-				t.B = max(t.B, n)
-			case "blue":
-				t.C = max(t.C, n)
-			}
+			n = 0
+			colorStart = 0
 		}
+		i++
 	}
-	return
+
+	return gameID, maxTriple
 }

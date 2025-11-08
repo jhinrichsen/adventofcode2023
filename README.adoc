@@ -50,10 +50,10 @@ Number of tries for a correct answer:
 | 2   |   1    |  1
 | 3   |   3    |  2
 | 4   |   1    |  1
-| 5   |   1    |
+| 5   |   1    |  2
 | 6   |   1    |  1
 | 7   |   1    |  2
-| 8   |   1    |
+| 8   |   1    |  2
 | 9   |   1    |  1
 | 10  |   1    |  1
 | 11  |   1    |  1
@@ -235,6 +235,25 @@ cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
 BenchmarkDay05Part1-16    	   33780	     35607 ns/op	   41464 B/op	     978 allocs/op
 ----
 
+=== Part 2
+
+Part 2 reinterprets the seed numbers as ranges (start, length) instead of individual seeds.
+This makes brute force iteration infeasible - the example has 27 seeds, but the real input has billions.
+
+The solution uses range splitting to process entire ranges through each map layer without enumerating individual values. <1>
+When a range overlaps with a map entry, it splits into:
+
+- Unmapped portions (before and after the overlap) that pass through unchanged
+- Overlapped portion that transforms to destination space
+
+Each range tracks its Min/Max values in the current space (seed → soil → ... → location).
+
+----
+Answer: 52210644
+----
+<1> First attempt accumulated deltas (offset transformations) but kept ranges in seed space.
+This produced answer 14209264, which was too low because the final minimum was calculated in the wrong coordinate system.
+
 == Day 6: Wait For It
 
 Part 2 ran without any code changes.
@@ -297,9 +316,23 @@ cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
 BenchmarkDay08Part1-8   	    1884	    554004 ns/op	       0 B/op	       0 allocs/op
 ----
 
-Part 2 contains a twitch in the particular input, which makes it possible to use an abbreviation.
-Brute force approach will never terminate.
-I peeked into some hints when my implementation ran longer than 10s, and decided to not apply the shortcut because it makes the solution totally dependent on input data.
+=== Part 2
+
+Part 2 requires starting at all nodes ending with 'A' simultaneously and moving all "ghosts" in sync until ALL reach nodes ending with 'Z' at the same time.
+
+The naive approach of simulating all ghosts step-by-step works for the example (6 steps) but would never terminate for the actual input - it would need to run for over 18 trillion steps. <1>
+
+The solution exploits a special property of the input: each ghost's path forms a cycle with exactly one Z node at regular intervals. By finding when each ghost first reaches a Z node, we can use the Least Common Multiple (LCM) to calculate when all cycles align.
+
+For each starting node ending in 'A':
+- Follow the path until reaching a node ending in 'Z'
+- Record the number of steps (cycle length)
+- Calculate LCM of all cycle lengths
+
+----
+Answer: 18024643846273
+----
+<1> First attempt used synchronous simulation which ran >10s without completing, making it clear the input requires mathematical insight rather than brute force.
 
 == Day 9: Mirage Maintenance
 

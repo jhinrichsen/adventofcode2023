@@ -6,10 +6,7 @@ import (
 
 func TestDay04Part1V1Example(t *testing.T) {
 	const want = 13
-	lines, err := linesFromFilename(exampleFilename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, exampleFilename(4))
 	got, err := Day04Part1V1(lines)
 	if err != nil {
 		t.Fatal(err)
@@ -21,10 +18,7 @@ func TestDay04Part1V1Example(t *testing.T) {
 
 func TestDay04Part1V1(t *testing.T) {
 	const want = 26218
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, filename(4))
 	got, err := Day04Part1V1(lines)
 	if err != nil {
 		t.Fatal(err)
@@ -35,86 +29,38 @@ func TestDay04Part1V1(t *testing.T) {
 }
 
 func BenchmarkDay04Part1V1(b *testing.B) {
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		b.Fatal(err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	lines := linesFromFilename(b, filename(4))
+	for b.Loop() {
 		_, _ = Day04Part1V1(lines)
 	}
 }
 
-func testDay04Example(t *testing.T, part1 bool, want uint) {
-	lines, err := linesFromFilename(exampleFilename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day04(lines, part1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
 func TestDay04Part1Example(t *testing.T) {
-	testDay04Example(t, true, 13)
+	testSolver(t, 4, exampleFilename, true, Day04, 13)
 }
 
 func TestDay04Part2Example(t *testing.T) {
-	testDay04Example(t, false, 30)
+	testSolver(t, 4, exampleFilename, false, Day04, 30)
 }
 
 func TestDay04Part1(t *testing.T) {
-	const want = 26218
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day04(lines, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 4, filename, true, Day04, 26218)
 }
 
 func TestDay04Part2(t *testing.T) {
-	const want = 9997537
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day04(lines, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 4, filename, false, Day04, 9997537)
 }
 
 func BenchmarkDay04Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		b.Fatal(err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = Day04(lines, true)
+	buf := file(b, 4)
+	for b.Loop() {
+		_, _ = Day04(buf, true)
 	}
 }
 
 func BenchmarkDay04Part2(b *testing.B) {
-	lines, err := linesFromFilename(filename(4))
-	if err != nil {
-		b.Fatal(err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = Day04(lines, false)
+	buf := file(b, 4)
+	for b.Loop() {
+		_, _ = Day04(buf, false)
 	}
 }

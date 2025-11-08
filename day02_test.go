@@ -75,3 +75,15 @@ func TestDay02Part2(t *testing.T) {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
+
+func BenchmarkDay02Part2(b *testing.B) {
+	lines, err := linesFromFilename(filename(2))
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = Day02(day02ExampleTriple, lines, false)
+	}
+}

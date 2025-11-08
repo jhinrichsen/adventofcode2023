@@ -1,9 +1,7 @@
 package adventofcode2023
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -16,31 +14,7 @@ const (
 	MagicLongestLine = 307 // longest line of any puzzle input
 )
 
-func linesFromFilename(filename string) ([]string, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return []string{}, err
-	}
-	return linesFromReader(f)
-}
 
-func linesFromReader(r io.Reader) ([]string, error) {
-	var lines []string
-	sc := bufio.NewScanner(r)
-	for sc.Scan() {
-		line := sc.Text()
-		lines = append(lines, line)
-	}
-	return lines, nil
-}
-
-func exampleFilename(day int) string {
-	return fmt.Sprintf("testdata/day%02d_example.txt", day)
-}
-
-func filename(day int) string {
-	return fmt.Sprintf("testdata/day%02d.txt", day)
-}
 
 func lineAsNumbers(line string) ([]int, error) {
 	var (
@@ -72,15 +46,6 @@ func linesAsNumbers(lines []string) ([]int, error) {
 	return is, nil
 }
 
-/*
-func numbersFromFilename(filename string) ([]int, error) {
-	ls, err := linesFromFilename(filename)
-	if err != nil {
-		return nil, err
-	}
-	return linesAsNumbers(ls)
-}
-*/
 
 func DayAdapterV1(day func([][]byte, bool) (uint, error), filename string, part1 bool) (uint, error) {
 	bs, err := bytesFromFilename(filename)

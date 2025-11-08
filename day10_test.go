@@ -148,7 +148,7 @@ func BenchmarkOpposite(b *testing.B) {
 		ds[i] = 1 << rnd.IntN(4) // [0..3]
 	}
 	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		for _, d := range ds {
 			_ = opposite3(d)
 		}
@@ -179,7 +179,7 @@ func TestDay10Part2Examples(t *testing.T) {
 // BenchmarkDay10Part1V1 includes parsing puzzzle input.
 func BenchmarkDay10Part1V1(b *testing.B) {
 	name := filename(10)
-	for range b.N {
+	for b.Loop() {
 		_, _ = DayAdapterV1(Day10, name, true)
 	}
 }
@@ -187,14 +187,22 @@ func BenchmarkDay10Part1V1(b *testing.B) {
 // BenchmarkDay10Part1V2 includes parsing puzzzle input.
 func BenchmarkDay10Part1V2(b *testing.B) {
 	name := filename(10)
-	for range b.N {
+	for b.Loop() {
+		_, _ = DayAdapterV2(Day10, name, true)
+	}
+}
+
+func BenchmarkDay10Part1(b *testing.B) {
+	name := filename(10)
+	b.ReportAllocs()
+	for b.Loop() {
 		_, _ = DayAdapterV2(Day10, name, true)
 	}
 }
 
 func BenchmarkDay10Part2(b *testing.B) {
 	name := filename(10)
-	for range b.N {
+	for b.Loop() {
 		_, _ = DayAdapterV2(Day10, name, false)
 	}
 }

@@ -9,10 +9,7 @@ import (
 
 func TestDay05Part1Example(t *testing.T) {
 	const want = 35
-	lines, err := linesFromFilename(exampleFilename(5))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, exampleFilename(5))
 	got, err := Day05(lines, true)
 	if err != nil {
 		t.Fatal(err)
@@ -25,15 +22,8 @@ func TestDay05Part1Example(t *testing.T) {
 // The lowest location number can be obtained from seed number 82, which corresponds to soil 84, fertilizer 84,
 // water 84, light 77, temperature 45, humidity 46, and location 46. So, the lowest location number is 46.
 func TestDay05Part2Example(t *testing.T) {
-
-	// TODO
-	t.Skip()
-
 	const want = 46
-	lines, err := linesFromFilename(exampleFilename(5))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, exampleFilename(5))
 	got, err := Day05(lines, false)
 	if err != nil {
 		t.Fatal(err)
@@ -45,10 +35,7 @@ func TestDay05Part2Example(t *testing.T) {
 
 func TestDay05Part1(t *testing.T) {
 	const want = 340994526
-	lines, err := linesFromFilename(filename(5))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, filename(5))
 	got, err := Day05(lines, true)
 	if err != nil {
 		t.Fatal(err)
@@ -59,15 +46,8 @@ func TestDay05Part1(t *testing.T) {
 }
 
 func TestDay05Part2(t *testing.T) {
-
-	// TODO
-	t.Skip()
-
-	const want = 340994526
-	lines, err := linesFromFilename(filename(5))
-	if err != nil {
-		t.Fatal(err)
-	}
+	const want = 52210644
+	lines := linesFromFilename(t, filename(5))
 	got, err := Day05(lines, false)
 	if err != nil {
 		t.Fatal(err)
@@ -78,13 +58,16 @@ func TestDay05Part2(t *testing.T) {
 }
 
 func BenchmarkDay05Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(5))
-	if err != nil {
-		b.Fatal(err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	lines := linesFromFilename(b, filename(5))
+	for b.Loop() {
 		_, _ = Day05(lines, true)
+	}
+}
+
+func BenchmarkDay05Part2(b *testing.B) {
+	lines := linesFromFilename(b, filename(5))
+	for b.Loop() {
+		_, _ = Day05(lines, false)
 	}
 }
 
@@ -239,10 +222,7 @@ func TestDay05MergeOverlapping(t *testing.T) {
 }
 
 func TestDay05MergeRanges(t *testing.T) {
-	lines, err := linesFromFilename(exampleFilename(5))
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := linesFromFilename(t, exampleFilename(5))
 	rrs, err := parseDay05(lines[2:])
 	if err != nil {
 		t.Fatal(err)

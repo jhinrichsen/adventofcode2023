@@ -71,11 +71,11 @@ func TestDay12IsValidCombination(t *testing.T) {
 }
 
 func TestDay12Part1Example(t *testing.T) {
-	testDayPart(t, 12, func(day uint8) string { return exampleFilename(int(day)) }, true, NewDay12, Day12, uint(21))
+	testWithParser(t, 12, exampleFilename, true, NewDay12, Day12, uint(21))
 }
 
 func TestDay12Part1(t *testing.T) {
-	testDayPart(t, 12, func(day uint8) string { return filename(int(day)) }, true, NewDay12, Day12, uint(7939))
+	testWithParser(t, 12, filename, true, NewDay12, Day12, uint(7939))
 }
 
 func TestDay12Part2Examples(t *testing.T) {
@@ -104,7 +104,7 @@ func TestDay12Part2Examples(t *testing.T) {
 func TestDay12Part2Example(t *testing.T) {
 	// Test against example2 file which contains all Part 2 examples
 	// Sum: 1 + 16384 + 1 + 16 + 2500 + 506250 = 525152
-	testDayPart(t, 12, func(day uint8) string {
+	testWithParser(t, 12, func(_ uint8) string {
 		return "testdata/day12_example2.txt"
 	}, false, NewDay12, Day12, uint(525152))
 }
@@ -112,16 +112,13 @@ func TestDay12Part2Example(t *testing.T) {
 // TestDay12Part2 is commented out pending verification of the answer with AoC website.
 // Once verified, uncomment this test and update the expected value.
 // func TestDay12Part2(t *testing.T) {
-// 	testDayPart(t, 12, func(day uint8) string { return filename(int(day)) }, false, NewDay12, Day12, uint(0))
+// 	testWithParser(t, 12, func(day uint8) string { return filename(int(day)) }, false, NewDay12, Day12, uint(0))
 // }
 
 func BenchmarkDay12Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(12))
-	if err != nil {
-		b.Fatal(err)
-	}
+	lines := linesFromFilename(b, filename(12))
 	b.ReportAllocs()
-
+	b.ResetTimer()
 	for b.Loop() {
 		data, _ := NewDay12(lines)
 		_ = Day12(data, true)
@@ -129,12 +126,9 @@ func BenchmarkDay12Part1(b *testing.B) {
 }
 
 func BenchmarkDay12Part2(b *testing.B) {
-	lines, err := linesFromFilename(filename(12))
-	if err != nil {
-		b.Fatal(err)
-	}
+	lines := linesFromFilename(b, filename(12))
 	b.ReportAllocs()
-
+	b.ResetTimer()
 	for b.Loop() {
 		data, _ := NewDay12(lines)
 		_ = Day12(data, false)

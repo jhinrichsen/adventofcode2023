@@ -27,21 +27,29 @@ func Day05(lines []string, part1 bool) (uint, error) {
 			n0 = min(n0, n)
 		}
 	} else {
-		var total int
-		// for part 2, the iterative approach is not going anywhere
-		// estimated runtime is around 41 days
-		//  => do not iterate single seeds, but consolidate consecutive ranges
-
+		// Part 2: process seed ranges instead of individual seeds
+		// Convert seed pairs to ranges
+		var seedRanges []Range
 		for i := 0; i < len(seeds); i += 2 {
-			// fmt.Printf("seed range: [%d..%d] = %d\n", seeds[i], seeds[i]+seeds[i+1], seeds[i+1])
-			total += seeds[i+1]
-			// fmt.Printf("total: %d\n", total)
-			/*
-				for j := seeds[i]; j < seeds[i]+seeds[i+1]; j++ {
-					n := all(uint(j))
-					n0 = min(n0, n)
-				}
-			*/
+			start := uint(seeds[i])
+			length := uint(seeds[i+1])
+			seedRanges = append(seedRanges, Range{
+				Min:   start,
+				Max:   start + length - 1,
+				Delta: 0,
+			})
+		}
+
+		// Process each seed range through all map layers
+		currentRanges := seedRanges
+		for _, mapLayer := range rrs {
+			currentRanges = processRangesThroughMap(currentRanges, mapLayer)
+		}
+
+		// Find minimum location from all final ranges
+		// The ranges are already in location space after processing through all layers
+		for _, r := range currentRanges {
+			n0 = min(n0, r.Min)
 		}
 	}
 	return n0, nil
@@ -159,4 +167,63 @@ func Merge(r1, r2 Range) Ranges {
 		}
 	}
 	panic("unimplemented case")
+}
+
+// processRangesThroughMap takes a set of ranges and processes them through a map layer
+// It transforms the ranges from source space to destination space
+func processRangesThroughMap(inputRanges []Range, mapLayer Ranges) []Range {
+	var result []Range
+
+	for _, inputRange := range inputRanges {
+		// Split the input range based on overlaps with map ranges
+		unmappedRanges := []Range{inputRange}
+		var mappedRanges []Range
+
+		for _, mapRange := range mapLayer {
+			var newUnmapped []Range
+			for _, ur := range unmappedRanges {
+				// Check for overlap between unmapped range and map range
+				if ur.Max < mapRange.Min || ur.Min > mapRange.Max {
+					// No overlap, keep in unmapped
+					newUnmapped = append(newUnmapped, ur)
+					continue
+				}
+
+				// There is overlap, split the range
+				// Before overlap - stays in source space (unmapped)
+				if ur.Min < mapRange.Min {
+					newUnmapped = append(newUnmapped, Range{
+						Min:   ur.Min,
+						Max:   mapRange.Min - 1,
+						Delta: 0,
+					})
+				}
+
+				// Overlapping part - transform to destination space
+				overlapMin := max(ur.Min, mapRange.Min)
+				overlapMax := min(ur.Max, mapRange.Max)
+				mappedRanges = append(mappedRanges, Range{
+					Min:   uint(int(overlapMin) + mapRange.Delta),
+					Max:   uint(int(overlapMax) + mapRange.Delta),
+					Delta: 0,
+				})
+
+				// After overlap - stays in source space (unmapped)
+				if ur.Max > mapRange.Max {
+					newUnmapped = append(newUnmapped, Range{
+						Min:   mapRange.Max + 1,
+						Max:   ur.Max,
+						Delta: 0,
+					})
+				}
+			}
+			unmappedRanges = newUnmapped
+		}
+
+		// Add both mapped and unmapped ranges to result
+		result = append(result, mappedRanges...)
+		result = append(result, unmappedRanges...)
+	}
+
+	return result
 }

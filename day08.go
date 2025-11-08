@@ -10,19 +10,7 @@ const (
 	finish = "ZZZ"
 )
 
-type Tuple[E any] struct {
-	A, B E
-}
-
-func (t Tuple[E]) Len() int {
-	return 2
-}
-
-func (t Tuple[E]) String() string {
-	return fmt.Sprintf("(%v/%v)", t.A, t.B)
-}
-
-type D8 struct {
+type D08Puzzle struct {
 	Instructions string
 	Idx          int // index of next instruction
 	Network      map[string]Tuple[string]
@@ -30,7 +18,7 @@ type D8 struct {
 }
 
 // complete returns nil if the network has all connections.
-func (a D8) complete() error {
+func (a D08Puzzle) complete() error {
 	for k, v := range a.Network {
 		if _, ok := a.Network[v.A]; !ok {
 			return fmt.Errorf("node %q references left node %q which does not exist", k, v.A)
@@ -42,7 +30,7 @@ func (a D8) complete() error {
 	return nil
 }
 
-func (a *D8) Next() bool {
+func (a *D08Puzzle) Next() bool {
 	t := a.Network[a.Current]
 	if a.Instructions[a.Idx] == 'L' {
 		a.Current = t.A
@@ -60,48 +48,69 @@ func (a *D8) Next() bool {
 	return true
 }
 
-func Day08Part1(d8 D8) uint {
-	var steps uint
-	for d8.Next() {
-		steps++
+// next2 moves to the next node without checking for finish (for Part 2)
+func (a *D08Puzzle) next2() {
+	t := a.Network[a.Current]
+	if a.Instructions[a.Idx] == 'L' {
+		a.Current = t.A
+	} else {
+		a.Current = t.B
 	}
-	return 1 + steps
+
+	a.Idx++
+	if a.Idx == len(a.Instructions) {
+		a.Idx = 0
+	}
 }
 
-func Day08Part2(d8 D8) uint {
-	starts := d8.startNodes()
-	n := len(starts)
-	ds := make([]*D8, n)
-
-	finished := func() bool {
-		n := 0
-		for _, d := range ds {
-			if !finishNode(d.Current) {
-				return false
-			}
-			n++
+func Day08(d8 D08Puzzle, part1 bool) uint {
+	if part1 {
+		var steps uint
+		for d8.Next() {
+			steps++
 		}
-		return true
+		return 1 + steps
 	}
 
-	for i, p0 := range starts {
+	starts := d8.startNodes()
+
+	// Find cycle length for each starting node
+	var cycleLengths []uint
+	for _, start := range starts {
 		d := d8
 		d.Network = d8.Network
-		d.Current = p0
-		ds[i] = &d
+		d.Current = start
+
+		var steps uint
+		for !finishNode(d.Current) {
+			d.next2()
+			steps++
+		}
+		cycleLengths = append(cycleLengths, steps)
 	}
 
-	var steps uint
-	for !finished() {
-		for _, d := range ds {
-			d.Next()
-		}
-		steps++
+	// Calculate LCM of all cycle lengths
+	result := cycleLengths[0]
+	for i := 1; i < len(cycleLengths); i++ {
+		result = lcm(result, cycleLengths[i])
 	}
-	return steps
+	return result
 }
 
-func (a D8) startNodes() (nodes []string) {
+// gcd calculates the greatest common divisor
+func gcd(a, b uint) uint {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+// lcm calculates the least common multiple
+func lcm(a, b uint) uint {
+	return a * b / gcd(a, b)
+}
+
+func (a D08Puzzle) startNodes() (nodes []string) {
 	for k := range a.Network {
 		if startNode(k) {
 			nodes = append(nodes, k)
@@ -118,12 +127,12 @@ func finishNode(s string) bool {
 	return s[len(s)-1] == 'Z'
 }
 
-func NewDay08(lines []string) (D8, error) {
+func NewDay08(lines []string) (D08Puzzle, error) {
 	const (
 		minLines = 4 // instructions, empty, 2 nodes
 	)
 
-	var d8 D8
+	var d8 D08Puzzle
 	d8.Network = make(map[string]Tuple[string], len(lines)-2)
 
 	if len(lines) <= minLines {

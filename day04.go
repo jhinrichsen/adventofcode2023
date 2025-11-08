@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Day04Part1V1 is the old version with many allocations (kept for comparison)
 func Day04Part1V1(lines []string) (uint, error) {
 	var points uint
 	m := make(map[uint]bool)
@@ -39,34 +40,45 @@ func Day04Part1V1(lines []string) (uint, error) {
 	return points, nil
 }
 
-func Day04(lines []string, part1 bool) (uint, error) {
-	wins, err := NewDay04(lines)
-	if err != nil {
-		return 0, err
-	}
-
-	return day04(wins, part1), nil
-}
-
-func day04(wins []uint, part1 bool) uint {
+func Day04(buf []byte, part1 bool) (uint, error) {
 	if part1 {
 		var points uint
-		for _, v := range wins {
-			points += A131577(v)
+		lineStart := 0
+		for i := range buf {
+			if buf[i] == '\n' {
+				wins := countWinningNumbers(buf[lineStart:i])
+				points += A131577(wins)
+				lineStart = i + 1
+			}
 		}
-		return points
+		return points, nil
+	}
+
+	// Part 2: Count cards first to preallocate
+	var cardCount uint
+	for i := range buf {
+		if buf[i] == '\n' {
+			cardCount++
+		}
 	}
 
 	// in the beginning, there is one instance of every card
-	var ns = make([]uint, len(wins))
+	ns := make([]uint, cardCount)
 	for i := range ns {
 		ns[i] = 1
 	}
 
-	for i := range ns {
-		for j := range wins[i] {
-			idx := 1 + uint(i) + j
-			ns[idx] += ns[i]
+	lineStart := 0
+	cardIdx := uint(0)
+	for i := range buf {
+		if buf[i] == '\n' {
+			wins := countWinningNumbers(buf[lineStart:i])
+			for j := range wins {
+				idx := 1 + cardIdx + j
+				ns[idx] += ns[cardIdx]
+			}
+			lineStart = i + 1
+			cardIdx++
 		}
 	}
 
@@ -75,45 +87,64 @@ func day04(wins []uint, part1 bool) uint {
 	for _, v := range ns {
 		n += v
 	}
-	return n
+	return n, nil
 }
 
-// NewDay04 returns number of winning numbers for card at given index.
-func NewDay04(lines []string) ([]uint, error) {
-	const (
-		base = 10
-		bits = 8 // values in range [1..99]
-	)
-	var cards []uint
-	m := make(map[uint]bool)
-	for _, line := range lines {
-		clear(m)
-		nocards := strings.Split(line, ":")
-		numbers := strings.Split(nocards[1], "|")
+// countWinningNumbers parses a card line and returns the number of winning numbers
+// Format: "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53"
+func countWinningNumbers(line []byte) uint {
+	var winning [100]bool // numbers are in range 1-99, use index directly
+	var wins uint
 
-		// winning numbers
-		for _, num := range strings.Fields(numbers[0]) {
-			n, err := strconv.ParseUint(num, 10, bits)
-			if err != nil {
-				return nil, err
-			}
-			m[uint(n)] = true
+	// Find the colon (skip "Card N:")
+	i := 0
+	for i < len(line) && line[i] != ':' {
+		i++
+	}
+	i += 2 // skip ": "
+
+	// Parse winning numbers (before |)
+	var num uint
+	hasNum := false
+	for i < len(line) && line[i] != '|' {
+		c := line[i]
+		if c >= '0' && c <= '9' {
+			num = num*10 + uint(c-'0')
+			hasNum = true
+		} else if hasNum {
+			// End of number
+			winning[num] = true
+			num = 0
+			hasNum = false
 		}
+		i++
+	}
+	i++ // skip '|'
 
-		// numbers
-		var wins uint
-		for _, num := range strings.Fields(numbers[1]) {
-			n, err := strconv.ParseUint(num, base, bits)
-			if err != nil {
-				return nil, err
-			}
-			if m[uint(n)] {
+	// Parse our numbers (after |) and count matches
+	num = 0
+	hasNum = false
+	for i < len(line) {
+		c := line[i]
+		if c >= '0' && c <= '9' {
+			num = num*10 + uint(c-'0')
+			hasNum = true
+		} else if hasNum {
+			// End of number - check if it's winning
+			if winning[num] {
 				wins++
 			}
+			num = 0
+			hasNum = false
 		}
-		cards = append(cards, wins)
+		i++
 	}
-	return cards, nil
+	// Check last number
+	if hasNum && winning[num] {
+		wins++
+	}
+
+	return wins
 }
 
 // A131577 returns the OEIS sequence [A131577] 'zero followed by powers of 2'.

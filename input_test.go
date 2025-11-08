@@ -2,103 +2,82 @@ package adventofcode2023
 
 import (
 	"bufio"
-	"bytes"
+	"fmt"
+	"io"
 	"os"
-	"path/filepath"
-	"slices"
 	"testing"
 )
 
-func TestLinesFromFilename(t *testing.T) {
-	lines, err := linesFromFilename("testdata/helloworld.txt")
+func linesFromFilename(tb testing.TB, filename string) []string {
+	tb.Helper()
+	f, err := os.Open(filename)
 	if err != nil {
-		t.Fatal(err)
+		tb.Fatal(err)
 	}
-	if len(lines) != 1 {
-		t.Fatalf("want 1 line but got %d", len(lines))
+	lines := linesFromReader(tb, f)
+	if b, ok := tb.(*testing.B); ok {
+		b.ResetTimer()
 	}
+	return lines
 }
 
-func TestLinesAsNumbers(t *testing.T) {
-	sample := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	want := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	got, err := linesAsNumbers(sample)
-	if err != nil {
-		t.Fatal(err)
+func linesFromReader(tb testing.TB, r io.Reader) []string {
+	tb.Helper()
+	var lines []string
+	sc := bufio.NewScanner(r)
+	for sc.Scan() {
+		line := sc.Text()
+		lines = append(lines, line)
 	}
-	if !slices.Equal(want, got) {
-		t.Fatalf("want %v but got %v", want, got)
+	if err := sc.Err(); err != nil {
+		tb.Fatal(err)
 	}
+	return lines
 }
 
-func BenchmarkBytesFromFilename(b *testing.B) {
-	filenames, err := filepath.Glob("testdata/*.txt")
-	if err != nil {
-		b.Fatal(err)
-	}
-	readall := func() {
-		for i := range filenames {
-			_, _ = bytesFromFilename(filenames[i])
-		}
-	}
-	// warm-up cache
-	readall()
-	b.ResetTimer()
-	for range b.N {
-		readall()
-	}
+func exampleFilename(day uint8) string {
+	return fmt.Sprintf("testdata/day%02d_example.txt", int(day))
 }
 
-func BenchmarkLinesFromFilename(b *testing.B) {
-	filenames, err := filepath.Glob("testdata/*.txt")
-	if err != nil {
-		b.Fatal(err)
-	}
-	readall := func() {
-		for i := range filenames {
-			_, _ = linesFromFilename(filenames[i])
-		}
-	}
-	// warm-up cache
-	readall()
-	b.ResetTimer()
-	for range b.N {
-		readall()
-	}
+func filename(day uint8) string {
+	return fmt.Sprintf("testdata/day%02d.txt", int(day))
 }
 
-func TestMagicConstants(t *testing.T) {
-	filenames, err := filepath.Glob("testdata/*.txt")
+// file reads the main input file bytes for day N (zero-padded).
+func file(tb testing.TB, day uint8) []byte {
+	tb.Helper()
+	buf, err := os.ReadFile(filename(day))
 	if err != nil {
-		t.Fatal(err)
+		tb.Fatal(err)
 	}
-
-	var gotLongestLine, gotMaxLines uint
-	for i := range filenames {
-		buf, err := os.ReadFile(filenames[i])
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		scanner := bufio.NewScanner(bytes.NewReader(buf))
-
-		for scanner.Scan() {
-			line := scanner.Text()
-			lineLength := uint(len(line))
-			if lineLength > gotLongestLine {
-				gotLongestLine = lineLength
-			}
-			gotMaxLines++
-		}
-
-		if err := scanner.Err(); err != nil {
-			t.Fatal(err)
-		}
+	if b, ok := tb.(*testing.B); ok {
+		b.ResetTimer()
 	}
-	if MagicMaxLines != gotMaxLines {
-		t.Fatalf("want %d but got %d", MagicMaxLines, gotMaxLines)
+	return buf
+}
+
+// exampleFile reads the example input file bytes for day N (zero-padded).
+func exampleFile(tb testing.TB, day uint8) []byte {
+	tb.Helper()
+	buf, err := os.ReadFile(exampleFilename(day))
+	if err != nil {
+		tb.Fatal(err)
 	}
-	if MagicLongestLine != gotLongestLine {
-		t.Fatalf("want %d but got %d", MagicLongestLine, gotLongestLine)
+	if b, ok := tb.(*testing.B); ok {
+		b.ResetTimer()
 	}
+	return buf
+}
+
+// fileFromFilename reads file bytes using a filename function (e.g., filename or exampleFilename).
+func fileFromFilename(tb testing.TB, filenameFunc func(uint8) string, day uint8) []byte {
+	tb.Helper()
+	buf, err := os.ReadFile(filenameFunc(day))
+	if err != nil {
+		tb.Fatal(err)
+	}
+	if b, ok := tb.(*testing.B); ok {
+		b.ResetTimer()
+	}
+	return buf
 }

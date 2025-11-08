@@ -2,12 +2,12 @@ package adventofcode2023
 
 import "strconv"
 
-func Day01V1(lines []string) (int, error) {
+func Day01V1(lines []string, part1 bool) (uint, error) {
 	isDigit := func(b byte) bool {
 		return '0' <= b && b <= '9'
 	}
 
-	var sum int
+	var sum uint
 	for _, line := range lines {
 		var digits string
 		for i := 0; i < len(line); i++ {
@@ -23,12 +23,12 @@ func Day01V1(lines []string) (int, error) {
 		if err != nil {
 			return sum, err
 		}
-		sum = sum + n
+		sum = sum + uint(n)
 	}
 	return sum, nil
 }
 
-func Day01V2(buf []byte) (sum uint) {
+func Day01(buf []byte, part1 bool) (sum uint) {
 	var first, last byte
 
 	isDigit := func(b byte) bool {
