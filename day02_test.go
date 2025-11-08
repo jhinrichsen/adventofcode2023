@@ -4,86 +4,36 @@ import (
 	"testing"
 )
 
-var day02ExampleTriple = Triple{12, 13, 14}
-
 func TestDay02Part1Example(t *testing.T) {
-	const want = 8
-	lines, err := linesFromFilename(exampleFilename(2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day02(day02ExampleTriple, lines, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testWithParser(t, 2, exampleFilename, true, NewDay02, Day02, 8)
 }
 
 func TestDay02Part1(t *testing.T) {
-	const want = 2207
-	lines, err := linesFromFilename(filename(2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day02(day02ExampleTriple, lines, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
-func BenchmarkDay02Part1(b *testing.B) {
-	lines, err := linesFromFilename(filename(2))
-	if err != nil {
-		b.Fatal(err)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = Day02(day02ExampleTriple, lines, true)
-	}
+	testWithParser(t, 2, filename, true, NewDay02, Day02, 2207)
 }
 
 func TestDay02Part2Example(t *testing.T) {
-	const want = 2286
-	lines, err := linesFromFilename(exampleFilename(2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day02(day02ExampleTriple, lines, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testWithParser(t, 2, exampleFilename, false, NewDay02, Day02, 2286)
 }
+
 func TestDay02Part2(t *testing.T) {
-	const want = 62241
-	lines, err := linesFromFilename(filename(2))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day02(day02ExampleTriple, lines, false)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
+	testWithParser(t, 2, filename, false, NewDay02, Day02, 62241)
+}
+
+func BenchmarkDay02Part1(b *testing.B) {
+	lines := linesFromFilename(b, filename(2))
+	b.ResetTimer()
+	for b.Loop() {
+		puzzle, _ := NewDay02(lines)
+		_ = Day02(puzzle, true)
 	}
 }
 
 func BenchmarkDay02Part2(b *testing.B) {
-	lines, err := linesFromFilename(filename(2))
-	if err != nil {
-		b.Fatal(err)
-	}
+	lines := linesFromFilename(b, filename(2))
 	b.ResetTimer()
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		_, _ = Day02(day02ExampleTriple, lines, false)
+	for b.Loop() {
+		puzzle, _ := NewDay02(lines)
+		_ = Day02(puzzle, false)
 	}
 }
