@@ -227,13 +227,64 @@ BenchmarkDay03Part2-8   	   30015	     41826 ns/op	       0 B/op	       0 allocs
 
 == Day 5: If You Give A Seed A Fertilizer
 
+=== Performance Optimization
+
+Day 05 was optimized by pre-allocating slices in parsing to reduce memory allocations.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic slice growth with `append()` operations without capacity hints:
+- `parseDay05` allocated slices without initial capacity
+- Resulted in multiple reallocations as slices grew
+
 ----
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
-BenchmarkDay05Part1-16    	   33780	     35607 ns/op	   41464 B/op	     978 allocs/op
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay05Part1-16    	   18293	     64980 ns/op	   40960 B/op	     972 allocs/op
+BenchmarkDay05Part2-16    	    3074	    390274 ns/op	  253200 B/op	    8322 allocs/op
 ----
+
+==== Optimization (b1)
+
+Pre-allocated slices with estimated capacities:
+- `parseDay05`: Pre-allocate `rss` with capacity 7 (typical number of map sections)
+- `parseDay05`: Pre-allocate `rs` with capacity 40 per map section
+- `Day05`: Pre-allocate `seedRanges` with exact capacity `len(seeds)/2`
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ benches/day05_bench_b0.txt │   benches/day05_bench_b1_v2.txt    │
+              │           sec/op           │   sec/op     vs base               │
+Day05Part1-16                  64.98µ ± 2%   64.01µ ± 3%  -1.49% (p=0.035 n=10)
+Day05Part2-16                  390.3µ ± 3%   377.6µ ± 2%  -3.25% (p=0.011 n=10)
+geomean                        159.2µ        155.5µ       -2.37%
+
+              │ benches/day05_bench_b0.txt │    benches/day05_bench_b1_v2.txt    │
+              │            B/op            │     B/op      vs base               │
+Day05Part1-16                 40.00Ki ± 0%   37.23Ki ± 0%  -6.91% (p=0.000 n=10)
+Day05Part2-16                 247.3Ki ± 0%   244.0Ki ± 0%  -1.32% (p=0.000 n=10)
+geomean                       99.45Ki        95.32Ki       -4.16%
+
+              │ benches/day05_bench_b0.txt │   benches/day05_bench_b1_v2.txt    │
+              │         allocs/op          │  allocs/op   vs base               │
+Day05Part1-16                   972.0 ± 0%    934.0 ± 0%  -3.91% (p=0.000 n=10)
+Day05Part2-16                  8.322k ± 0%   8.280k ± 0%  -0.50% (p=0.000 n=10)
+geomean                        2.844k        2.781k       -2.22%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 1.49% faster (65.0µs → 64.0µs), 6.91% less memory (40KB → 37KB), 3.91% fewer allocations (972 → 934)
+* **Part 2**: 3.25% faster (390µs → 378µs), 1.32% less memory (247KB → 244KB), 0.50% fewer allocations (8322 → 8280)
+
+The optimization works by eliminating repeated slice reallocations during parsing. By pre-allocating slices with appropriate capacities based on known input patterns, the Go runtime avoids multiple copy operations as slices grow. The parsing phase benefits most from this optimization, as it processes hundreds of numbers across multiple map sections.
 
 === Part 2
 
