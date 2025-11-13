@@ -1229,3 +1229,48 @@ The DP approach is:
 - Makes Part 2 tractable without RAM explosion
 
 Final performance: Part 1 runs in ~5ms, Part 2 in ~73ms.
+
+== Benchmarks
+
+All benchmarks for Advent of Code 2023 solutions (run on Intel(R) Xeon(R) CPU @ 2.60GHz):
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay00Part1-16    	939913101	         1.297 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay01Part1-16    	   40992	     29087 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay01Part2-16    	   40900	     29411 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay02Part1-16    	   65804	     18536 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay02Part2-16    	   63716	     18884 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part1-16    	   20562	     59336 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay03Part2-16    	   42302	     28805 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay04Part1-16    	   28116	     42741 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay04Part2-16    	   20478	     58818 ns/op	    1792 B/op	       1 allocs/op
+BenchmarkDay05Part1-16    	   19119	     63128 ns/op	   40960 B/op	     972 allocs/op
+BenchmarkDay05Part2-16    	    3186	    374142 ns/op	  253202 B/op	    8322 allocs/op
+BenchmarkDay06Part1-16    	 5829315	       207.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay06Part2-16    	      34	  34413278 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay07Part1-16    	    5660	    198390 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay07Part2-16    	    4654	    222379 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDay08Part1-16    	    2176	    542511 ns/op	   57432 B/op	       4 allocs/op
+BenchmarkDay08Part2-16    	     420	   2837891 ns/op	   57792 B/op	      12 allocs/op
+BenchmarkDay09Part1-16    	    8212	    144292 ns/op	  327681 B/op	       1 allocs/op
+BenchmarkDay09Part2-16    	    8452	    154014 ns/op	  327681 B/op	       1 allocs/op
+BenchmarkDay10Part1-16    	    3424	    326933 ns/op	    3792 B/op	       5 allocs/op
+BenchmarkDay10Part2-16    	       5	 210954950 ns/op	  918464 B/op	      25 allocs/op
+BenchmarkDay11Part1-16    	     151	   7894775 ns/op	   16368 B/op	      10 allocs/op
+BenchmarkDay11Part2-16    	     152	   7791367 ns/op	   16368 B/op	      10 allocs/op
+BenchmarkDay12Part1-16    	     166	   7113400 ns/op	 5803886 B/op	   10350 allocs/op
+BenchmarkDay12Part2-16    	      10	 112455039 ns/op	95041446 B/op	   20964 allocs/op
+----
+
+**Performance Highlights:**
+
+* **Fastest**: Day 06 Part 1 - 207.8 ns (sub-microsecond)
+* **Zero allocations**: Days 01, 02, 03 (both parts), 06, 07
+* **Sub-millisecond**: Days 01-04, 06, 07
+* **Most challenging**: Day 06 Part 2 - 34.4 ms, Day 10 Part 2 - 211 ms, Day 12 Part 2 - 112 ms
+
+Total benchmark suite runtime: ~30 seconds
