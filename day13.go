@@ -1,17 +1,13 @@
 package adventofcode2023
 
-type pattern struct {
-	grid []string
-}
-
-func NewDay13(lines []string) []pattern {
-	var patterns []pattern
+func NewDay13(lines []string) [][]string {
+	var grids [][]string
 	var current []string
 
 	for _, line := range lines {
 		if line == "" {
 			if len(current) > 0 {
-				patterns = append(patterns, pattern{grid: current})
+				grids = append(grids, current)
 				current = nil
 			}
 		} else {
@@ -19,36 +15,36 @@ func NewDay13(lines []string) []pattern {
 		}
 	}
 	if len(current) > 0 {
-		patterns = append(patterns, pattern{grid: current})
+		grids = append(grids, current)
 	}
 
-	return patterns
+	return grids
 }
 
-func findVerticalReflection(p pattern) int {
-	if len(p.grid) == 0 || len(p.grid[0]) == 0 {
+func findVerticalReflection(grid []string) int {
+	if len(grid) == 0 || len(grid[0]) == 0 {
 		return 0
 	}
 
-	cols := len(p.grid[0])
+	cols := len(grid[0])
 
 	for col := 1; col < cols; col++ {
-		if isVerticalReflection(p, col) {
+		if isVerticalReflection(grid, col) {
 			return col
 		}
 	}
 	return 0
 }
 
-func isVerticalReflection(p pattern, col int) bool {
-	cols := len(p.grid[0])
+func isVerticalReflection(grid []string, col int) bool {
+	cols := len(grid[0])
 
 	for i := 0; i < min(col, cols-col); i++ {
 		left := col - 1 - i
 		right := col + i
 
-		for row := 0; row < len(p.grid); row++ {
-			if p.grid[row][left] != p.grid[row][right] {
+		for row := 0; row < len(grid); row++ {
+			if grid[row][left] != grid[row][right] {
 				return false
 			}
 		}
@@ -56,45 +52,45 @@ func isVerticalReflection(p pattern, col int) bool {
 	return true
 }
 
-func findHorizontalReflection(p pattern) int {
-	if len(p.grid) == 0 {
+func findHorizontalReflection(grid []string) int {
+	if len(grid) == 0 {
 		return 0
 	}
 
-	rows := len(p.grid)
+	rows := len(grid)
 
 	for row := 1; row < rows; row++ {
-		if isHorizontalReflection(p, row) {
+		if isHorizontalReflection(grid, row) {
 			return row
 		}
 	}
 	return 0
 }
 
-func isHorizontalReflection(p pattern, row int) bool {
-	rows := len(p.grid)
+func isHorizontalReflection(grid []string, row int) bool {
+	rows := len(grid)
 
 	for i := 0; i < min(row, rows-row); i++ {
 		above := row - 1 - i
 		below := row + i
 
-		if p.grid[above] != p.grid[below] {
+		if grid[above] != grid[below] {
 			return false
 		}
 	}
 	return true
 }
 
-func Day13(patterns []pattern, part1 bool) uint {
+func Day13(grids [][]string, part1 bool) uint {
 	if !part1 {
 		return 0
 	}
 
 	var total uint
-	for _, p := range patterns {
-		if vr := findVerticalReflection(p); vr > 0 {
+	for _, grid := range grids {
+		if vr := findVerticalReflection(grid); vr > 0 {
 			total += uint(vr)
-		} else if hr := findHorizontalReflection(p); hr > 0 {
+		} else if hr := findHorizontalReflection(grid); hr > 0 {
 			total += uint(hr * 100)
 		}
 	}
