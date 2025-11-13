@@ -14,8 +14,6 @@ const (
 	MagicLongestLine = 307 // longest line of any puzzle input
 )
 
-
-
 func lineAsNumbers(line string) ([]int, error) {
 	var (
 		n   int
@@ -45,7 +43,6 @@ func linesAsNumbers(lines []string) ([]int, error) {
 	}
 	return is, nil
 }
-
 
 func DayAdapterV1(day func([][]byte, bool) (uint, error), filename string, part1 bool) (uint, error) {
 	bs, err := bytesFromFilename(filename)
