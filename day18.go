@@ -2,12 +2,10 @@ package adventofcode2023
 
 import "strings"
 
-type Day18Puzzle struct {
-	instructions []struct {
-		dir   byte
-		dist  int
-		color string
-	}
+type Day18Puzzle []struct {
+	dir   byte
+	dist  int
+	color string
 }
 
 func NewDay18(lines []string) (Day18Puzzle, error) {
@@ -23,7 +21,7 @@ func NewDay18(lines []string) (Day18Puzzle, error) {
 			dist = dist*10 + int(parts[1][i]-'0')
 		}
 		color := parts[2][2 : len(parts[2])-1]
-		puzzle.instructions = append(puzzle.instructions, struct {
+		puzzle = append(puzzle, struct {
 			dir   byte
 			dist  int
 			color string
@@ -41,7 +39,7 @@ func Day18(puzzle Day18Puzzle, part1 bool) uint {
 	vertices := [][2]int{{0, 0}}
 	perimeter := 0
 
-	for _, inst := range puzzle.instructions {
+	for _, inst := range puzzle {
 		perimeter += inst.dist
 		switch inst.dir {
 		case 'R':
