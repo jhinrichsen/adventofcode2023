@@ -16,6 +16,14 @@ func BenchmarkDay16Part1(b *testing.B) {
 	benchLines(b, 16, true, Day16)
 }
 
+func TestDay16Part2Example(t *testing.T) {
+	testLines(t, 16, exampleFilename, false, Day16, 51)
+}
+
 func TestDay16Part2(t *testing.T) {
-	testLines(t, 16, filename, false, Day16, 0)
+	testLines(t, 16, filename, false, Day16, 7831)
+}
+
+func BenchmarkDay16Part2(b *testing.B) {
+	benchLines(b, 16, false, Day16)
 }
