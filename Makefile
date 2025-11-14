@@ -73,11 +73,13 @@ govulncheck.sarif:
 .PHONY: bench-file
 bench-file:
 	@echo "Running benchmarks..."
-	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem > /tmp/bench-output.txt
-	@CPU_NAME=$$(grep '^cpu:' /tmp/bench-output.txt | head -1 | sed 's/^cpu: //' | sed 's/ CPU.*//' | sed 's/[()@]//g' | sed 's/ /_/g' | sed 's/__*/_/g' | sed 's/_$$//' ); \
+	@TMPFILE=$$(mktemp); \
+	$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem > "$$TMPFILE"; \
+	CPU_NAME=$$(grep '^cpu:' "$$TMPFILE" | head -1 | sed 's/^cpu: //' | sed 's/ CPU.*//' | sed 's/[()@]//g' | sed 's/ /_/g' | sed 's/__*/_/g' | sed 's/_$$//' ); \
 	BENCH_FILE="benches/$$(go env GOOS)-$$(go env GOARCH)-$$CPU_NAME.txt"; \
 	echo "Saving to $$BENCH_FILE..."; \
-	cp /tmp/bench-output.txt "$$BENCH_FILE"; \
+	cp "$$TMPFILE" "$$BENCH_FILE"; \
+	rm -f "$$TMPFILE"; \
 	cat "$$BENCH_FILE"
 
 README.html: README.adoc
