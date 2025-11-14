@@ -146,9 +146,34 @@ func BenchmarkDayXXPart1(b *testing.B) {
 
 **Examples:** Day 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
 
-### Pattern 3: Direct Solver (Rare, for simple problems)
+### Pattern 3: Direct Lines Solver (For in-place line processing)
 
-**When to use:** Parsing and solving are tightly coupled
+**When to use:** Input is line-based but doesn't need parsing into a data structure; solver processes lines directly
+
+**Solver signature:**
+```go
+func DayXX(lines []string, part1 bool) uint
+```
+
+**Test pattern:**
+```go
+func TestDayXXPart1(t *testing.T) {
+    testLines(t, XX, filename, true, DayXX, 12345)
+}
+
+func BenchmarkDayXXPart1(b *testing.B) {
+    lines := linesFromFilename(b, filename(XX))
+    for b.Loop() {
+        _ = DayXX(lines, true)
+    }
+}
+```
+
+**Examples:** Day 13
+
+### Pattern 4: Direct Byte Solver (Rare, for simple problems)
+
+**When to use:** Parsing and solving are tightly coupled with byte-level input
 
 **Solver signature:**
 ```go

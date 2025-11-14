@@ -5,21 +5,11 @@ import (
 )
 
 func TestDay13Part1Example(t *testing.T) {
-	const want = 405
-	lines := linesFromFilename(t, exampleFilename(13))
-	got := Day13(lines, true)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testLines(t, 13, exampleFilename, true, Day13, 405)
 }
 
 func TestDay13Part1(t *testing.T) {
-	const want = 33356
-	lines := linesFromFilename(t, filename(13))
-	got := Day13(lines, true)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testLines(t, 13, filename, true, Day13, 33356)
 }
 
 func BenchmarkDay13Part1(b *testing.B) {
@@ -30,10 +20,5 @@ func BenchmarkDay13Part1(b *testing.B) {
 }
 
 func TestDay13Part2(t *testing.T) {
-	const want = 0
-	lines := linesFromFilename(t, filename(13))
-	got := Day13(lines, false)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testLines(t, 13, filename, false, Day13, 0)
 }

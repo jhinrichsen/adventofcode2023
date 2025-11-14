@@ -43,3 +43,20 @@ func testSolver[R comparable](
 		t.Fatalf("want %v but got %v", want, got)
 	}
 }
+
+// testLines is a generic test helper for day part tests that work directly with []string lines.
+func testLines[R comparable](
+	t *testing.T,
+	day uint8,
+	filenameFunc func(uint8) string,
+	part1 bool,
+	solver func([]string, bool) R,
+	want R,
+) {
+	t.Helper()
+	lines := linesFromFilename(t, filenameFunc(day))
+	got := solver(lines, part1)
+	if want != got {
+		t.Fatalf("want %v but got %v", want, got)
+	}
+}
