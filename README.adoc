@@ -1619,9 +1619,9 @@ BenchmarkDay12Part2-16    	      10	 112455039 ns/op	95041446 B/op	   20964 allo
 
 **Performance Highlights:**
 
-* **Fastest**: Day 06 Part 1 - 207.8 ns (sub-microsecond)
-* **Zero allocations**: Days 01, 02, 03 (both parts), 06, 07
-* **Sub-millisecond**: Days 01-04, 06, 07
-* **Most challenging**: Day 06 Part 2 - 34.4 ms, Day 10 Part 2 - 211 ms, Day 12 Part 2 - 112 ms
+* **Fastest**: Day 06 Part 2 - 11.3 ns (after quadratic formula optimization)
+* **Zero allocations**: Days 01, 02, 03, 04, 06, 07, 09
+* **Sub-millisecond**: Days 01-09, 11
+* **Most challenging**: Day 10 Part 2 - 221 ms, Day 12 Part 2 - 124 ms
 
-Total benchmark suite runtime: ~30 seconds
+**Total actual runtime**: 374.8 ms (0.375 seconds) for all puzzle solutions
