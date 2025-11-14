@@ -73,13 +73,13 @@ govulncheck.sarif:
 	govulncheck -format=sarif ./... > $@
 
 $(BENCH_FILE):
-	@echo "Running benchmarks and saving to $@..."
-	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
+	echo "Running benchmarks and saving to $@..."
+	$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
 
 README.html: README.adoc
 	asciidoc $^
 
 .PHONY: total
 total: $(BENCH_FILE)
-	@awk -f total.awk < $(BENCH_FILE)
+	awk -f total.awk < $(BENCH_FILE)
 
