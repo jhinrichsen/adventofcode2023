@@ -54,21 +54,23 @@ func Day04(buf []byte, part1 bool) (uint, error) {
 		return points, nil
 	}
 
-	// Part 2: Count cards first to preallocate
+	// Part 2: Use fixed-size array to avoid allocation
+	// AoC inputs have <256 cards, so this is safe
+	var ns [256]uint
 	var cardCount uint
+
+	// Initialize first pass: count cards and set initial counts to 1
+	lineStart := 0
 	for i := range buf {
 		if buf[i] == '\n' {
+			ns[cardCount] = 1
 			cardCount++
+			lineStart = i + 1
 		}
 	}
 
-	// in the beginning, there is one instance of every card
-	ns := make([]uint, cardCount)
-	for i := range ns {
-		ns[i] = 1
-	}
-
-	lineStart := 0
+	// Second pass: process winning numbers and update card counts
+	lineStart = 0
 	cardIdx := uint(0)
 	for i := range buf {
 		if buf[i] == '\n' {
@@ -84,8 +86,8 @@ func Day04(buf []byte, part1 bool) (uint, error) {
 
 	// return total number of scratchcards
 	var n uint
-	for _, v := range ns {
-		n += v
+	for i := range cardCount {
+		n += ns[i]
 	}
 	return n, nil
 }

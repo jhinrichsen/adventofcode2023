@@ -224,6 +224,73 @@ BenchmarkDay03Part2-8   	   30015	     41826 ns/op	       0 B/op	       0 allocs
 
 == Day 4: Scratchcards
 
+=== Performance Optimization
+
+Day 04 Part 2 was optimized to achieve zero allocations by replacing a dynamic slice with a fixed-size array.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic slice allocation for tracking card counts:
+- `ns := make([]uint, cardCount)` allocated a slice based on actual card count
+- For 224 cards, this resulted in 1792 bytes (224 × 8 bytes/uint)
+- Part 2 had 1 allocation per call
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay04Part1-16              36.28µ ± 2%
+BenchmarkDay04Part2-16              53.40µ ± 1%    1792 B/op    1 allocs/op
+----
+
+==== Optimization (b1)
+
+Replaced dynamic slice with fixed-size stack-allocated array:
+- `var ns [256]uint` uses compile-time known size
+- Array allocated on stack instead of heap
+- Comment documents safety: "AoC inputs have <256 cards, so this is safe"
+- Loop over actual card count using `for i := range cardCount`
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day04_bench_b0.txt │       /tmp/day04_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day04Part1-16               36.28µ ± 2%   43.86µ ± 2%  +20.90% (p=0.000 n=10)
+Day04Part2-16               53.40µ ± 1%   52.28µ ± 1%   -2.08% (p=0.001 n=10)
+geomean                     44.01µ        47.89µ        +8.80%
+
+              │ /tmp/day04_bench_b0.txt │          /tmp/day04_bench_b1.txt          │
+              │          B/op           │     B/op      vs base                     │
+Day04Part1-16              0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Day04Part2-16            1.750Ki ± 0%     0.000Ki ± 0%  -100.00% (p=0.000 n=10)
+geomean                               ²                 ?                       ² ³
+¹ all samples are equal
+² summaries must be >0 to compute geomean
+³ ratios must be >0 to compute geomean
+
+              │ /tmp/day04_bench_b0.txt │         /tmp/day04_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day04Part1-16              0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Day04Part2-16              1.000 ± 0%     0.000 ± 0%  -100.00% (p=0.000 n=10)
+geomean                               ²               ?                       ² ³
+¹ all samples are equal
+² summaries must be >0 to compute geomean
+³ ratios must be >0 to compute geomean
+----
+
+**Key Improvements:**
+
+* **Part 2**: 2.08% faster (53.4µs → 52.3µs)
+* **Part 2**: 100% reduction in allocations (1 → 0 allocs/op)
+* **Part 2**: 100% reduction in memory (1792 B → 0 B)
+
+The optimization achieves zero-allocation performance by leveraging compile-time knowledge about input constraints. AoC puzzle inputs have fewer than 256 cards, making a fixed-size `[256]uint` array safe. The Go compiler allocates this array on the stack rather than the heap, eliminating the dynamic allocation overhead entirely. The array uses 2048 bytes of stack space (256 × 8), but only the first `cardCount` elements are accessed.
 
 == Day 5: If You Give A Seed A Fertilizer
 
