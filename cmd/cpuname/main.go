@@ -10,8 +10,8 @@ import (
 
 func main() {
 	// Run a minimal benchmark to get CPU info from Go's own detection
-	// Use Day00Part1 which is trivial and fast
-	cmd := exec.Command("go", "test", "-run=^$", "-bench=Day00Part1", "-benchtime=1ns")
+	// Use Day01Part1 which is fast
+	cmd := exec.Command("go", "test", "-run=^$", "-bench=Day01Part1", "-benchtime=1ns")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to detect CPU: %v\n", err)
