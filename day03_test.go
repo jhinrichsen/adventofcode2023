@@ -5,11 +5,11 @@ import (
 )
 
 func TestDay03Part1Example(t *testing.T) {
-	testWithParser(t, 3, exampleFilename, true, NewDay03, Day03, 4361)
+	testLines(t, 3, exampleFilename, true, Day03, 4361)
 }
 
 func TestDay03Part1(t *testing.T) {
-	testWithParser(t, 3, filename, true, NewDay03, Day03, 539713)
+	testLines(t, 3, filename, true, Day03, 539713)
 }
 
 // TestColoredOutput is for manual visualization only - prints colored grid output.
@@ -25,40 +25,30 @@ func TestColoredOutput(t *testing.T) {
 }
 
 func BenchmarkDay03Part1(b *testing.B) {
-	lines := linesFromFilename(b, filename(3))
-	b.ResetTimer()
-	for b.Loop() {
-		puzzle, _ := NewDay03(lines)
-		_ = Day03(puzzle, true)
-	}
+	benchLines(b, 3, true, Day03)
 }
 
 func TestDay03Part2Example(t *testing.T) {
-	testWithParser(t, 3, exampleFilename, false, NewDay03, Day03, 467835)
+	testLines(t, 3, exampleFilename, false, Day03, 467835)
 }
 
 func TestDay03Part2_116_12(t *testing.T) {
 	const want = 4032
-	puzzle, _ := NewDay03([]string{
+	lines := []string{
 		".672.",
 		".*...",
 		".6...",
-	})
-	got := Day03(puzzle, false)
+	}
+	got := Day03(lines, false)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay03Part2(t *testing.T) {
-	testWithParser(t, 3, filename, false, NewDay03, Day03, 84159075)
+	testLines(t, 3, filename, false, Day03, 84159075)
 }
 
 func BenchmarkDay03Part2(b *testing.B) {
-	lines := linesFromFilename(b, filename(3))
-	b.ResetTimer()
-	for b.Loop() {
-		puzzle, _ := NewDay03(lines)
-		_ = Day03(puzzle, false)
-	}
+	benchLines(b, 3, false, Day03)
 }
