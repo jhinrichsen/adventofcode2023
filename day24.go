@@ -142,72 +142,41 @@ func Day24(puzzle Day24Puzzle, part1 bool) uint {
 		return 0
 	}
 
-	minCoord := int64(200000000000000)
-	maxCoord := int64(400000000000000)
+	minCoord := 200000000000000.0
+	maxCoord := 400000000000000.0
 
 	count := 0
 	for i := 0; i < len(puzzle); i++ {
 		for j := i + 1; j < len(puzzle); j++ {
 			h1, h2 := puzzle[i], puzzle[j]
 
-			// Check if paths intersect in XY plane
-			// Line 1: (px1, py1) + t1 * (vx1, vy1)
-			// Line 2: (px2, py2) + t2 * (vx2, vy2)
-			// At intersection:
-			// px1 + t1*vx1 = px2 + t2*vx2
-			// py1 + t1*vy1 = py2 + t2*vy2
-			// Rearranging:
-			// t1*vx1 - t2*vx2 = px2 - px1
-			// t1*vy1 - t2*vy2 = py2 - py1
-
-			// Using determinants to solve:
-			// det = vx1*(-vy2) - vy1*(-vx2) = vx1*vy2 - vy1*vx2
-			det := h1.vx*h2.vy - h1.vy*h2.vx
+			// Check if paths intersect in XY plane using floats to avoid overflow
+			det := float64(h1.vx*h2.vy - h1.vy*h2.vx)
 
 			if det == 0 {
 				// Parallel lines
 				continue
 			}
 
-			// Solve for t1 and t2
-			dx := h2.px - h1.px
-			dy := h2.py - h1.py
+			dx := float64(h2.px - h1.px)
+			dy := float64(h2.py - h1.py)
 
 			// t1 = (dx * vy2 - dy * vx2) / det
 			// t2 = (dx * vy1 - dy * vx1) / det
+			t1 := (dx*float64(h2.vy) - dy*float64(h2.vx)) / det
+			t2 := (dx*float64(h1.vy) - dy*float64(h1.vx)) / det
 
-			t1Num := dx*h2.vy - dy*h2.vx
-			t2Num := dx*h1.vy - dy*h1.vx
-
-			// Check if both are in the future (same sign as det for positive t)
-			if (t1Num < 0) != (det < 0) || (t2Num < 0) != (det < 0) {
-				// At least one is in the past
+			// Check if both are in the future
+			if t1 < 0 || t2 < 0 {
 				continue
 			}
 
 			// Calculate intersection point
-			// x = px1 + t1 * vx1 = px1 + (t1Num / det) * vx1
-			// y = py1 + t1 * vy1 = py1 + (t1Num / det) * vy1
+			x := float64(h1.px) + t1*float64(h1.vx)
+			y := float64(h1.py) + t1*float64(h1.vy)
 
-			// To avoid floating point, check bounds using scaled values
-			// x * det = px1 * det + t1Num * vx1
-			// We want: minCoord <= x <= maxCoord
-			// Which means: minCoord * det <= x * det <= maxCoord * det (if det > 0)
-			// Or: maxCoord * det <= x * det <= minCoord * det (if det < 0)
-
-			xScaled := h1.px*det + t1Num*h1.vx
-			yScaled := h1.py*det + t1Num*h1.vy
-
-			var inBounds bool
-			if det > 0 {
-				inBounds = minCoord*det <= xScaled && xScaled <= maxCoord*det &&
-					minCoord*det <= yScaled && yScaled <= maxCoord*det
-			} else {
-				inBounds = maxCoord*det <= xScaled && xScaled <= minCoord*det &&
-					maxCoord*det <= yScaled && yScaled <= minCoord*det
-			}
-
-			if inBounds {
+			// Check if in bounds
+			if x >= minCoord && x <= maxCoord && y >= minCoord && y <= maxCoord {
 				count++
 			}
 		}

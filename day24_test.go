@@ -66,7 +66,7 @@ func TestDay24Part1Example(t *testing.T) {
 }
 
 func TestDay24Part1(t *testing.T) {
-	testWithParser(t, 24, filename, true, NewDay24, Day24, 7278)
+	testWithParser(t, 24, filename, true, NewDay24, Day24, 11098)
 }
 
 func BenchmarkDay24Part1(b *testing.B) {
