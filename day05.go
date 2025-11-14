@@ -29,7 +29,7 @@ func Day05(lines []string, part1 bool) (uint, error) {
 	} else {
 		// Part 2: process seed ranges instead of individual seeds
 		// Convert seed pairs to ranges
-		var seedRanges []Range
+		seedRanges := make([]Range, 0, len(seeds)/2)
 		for i := 0; i < len(seeds); i += 2 {
 			start := uint(seeds[i])
 			length := uint(seeds[i+1])
@@ -56,13 +56,13 @@ func Day05(lines []string, part1 bool) (uint, error) {
 }
 
 func parseDay05(lines []string) ([]Ranges, error) {
-	var (
-		rss []Ranges
-		rs  Ranges
-	)
+	// Pre-allocate for 7 map sections (typical for AoC Day 5)
+	rss := make([]Ranges, 0, 7)
+	var rs Ranges
 	for _, line := range lines {
 		if strings.HasSuffix(line, "map:") {
-			rs = nil
+			// Pre-allocate for typical range count per map (~40 ranges)
+			rs = make(Ranges, 0, 40)
 		} else if len(line) == 0 {
 			rss = append(rss, rs)
 		} else {

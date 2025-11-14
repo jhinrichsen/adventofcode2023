@@ -61,10 +61,13 @@ func Day09V1(lines []string) int {
 // This implementation implements lessons learned from day 8 part 2 - visually check the input
 // and only do as little as possible.
 func Day09V2(buf []byte, part1 bool) int {
-	const DIM = 200
+	const (
+		LINES   = 200 // Number of input lines
+		MAXNUMS = 30  // Max numbers per line (input has 21, use 30 for safety)
+	)
 
 	var (
-		ns [DIM][DIM]int
+		ns [LINES][MAXNUMS]int
 
 		// state machine for parser
 		negative bool

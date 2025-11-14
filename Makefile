@@ -1,5 +1,6 @@
 GO ?= CGO_ENABLED=0 go
-BENCH_FILE ?= benches/$(shell go env GOOS)-$(shell go env GOARCH)-$(shell lscpu | grep "Model name:" | cut -d: -f2 | xargs | sed 's/ \(CPU\|@\|w\/\).*//' | sed 's/ /_/g').txt
+CPU_NAME := $(shell go run cmd/cpuname/main.go)
+BENCH_FILE := benches/$(shell go env GOOS)-$(shell go env GOARCH)-$(CPU_NAME).txt
 
 .PHONY: all
 all: tidy test
@@ -71,9 +72,9 @@ govulncheck.sarif:
 	govulncheck -version
 	govulncheck -format=sarif ./... > $@
 
-$(BENCH_FILE):
-	@echo "Running benchmarks and saving to $@..."
-	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
+$(BENCH_FILE): $(wildcard *.go)
+	echo "Running benchmarks and saving to $@..."
+	$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
 
 README.html: README.adoc
 	asciidoc $^

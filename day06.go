@@ -2,6 +2,7 @@ package adventofcode2023
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -61,15 +62,46 @@ func NewDay06(lines []string) ([]int, []int, error) {
 	return ts, ds, nil
 }
 
-// Farther calculates the distances for each possibility and returns the number of possibilities where distance is larger than d.
+// Farther calculates the number of ways to beat the distance record.
+// This is a quadratic equation: we want h*(t-h) > d
+// Rearranging: -h² + h*t - d > 0, or h² - h*t + d < 0
+// Using quadratic formula: h = (t ± sqrt(t² - 4d)) / 2
+// The solutions give us the boundary points where distance equals d.
+// We want integers strictly between these boundaries.
 func Farther(t, d int) int {
-	var n int
-	for i := 1; i < t-1; i++ {
-		speed := i
-		travel := speed * (t - i)
-		if travel > d {
-			n++
-		}
+	// Convert to float64 for math operations
+	tf := float64(t)
+	df := float64(d)
+
+	// Discriminant: t² - 4d
+	discriminant := tf*tf - 4*df
+	if discriminant < 0 {
+		// No real solutions - can't beat the record
+		return 0
 	}
-	return n
+
+	sqrtDisc := math.Sqrt(discriminant)
+	// Two roots of the quadratic equation
+	h1 := (tf - sqrtDisc) / 2
+	h2 := (tf + sqrtDisc) / 2
+
+	// We need integers strictly greater than h1 and strictly less than h2
+	// Use ceiling for lower bound and floor for upper bound
+	minH := int(math.Floor(h1 + 1))
+	maxH := int(math.Ceil(h2 - 1))
+
+	// Handle edge case where roots are exact integers (equality case)
+	// If h1 or h2 are integers, we need strict inequality
+	if h1 == math.Floor(h1) {
+		minH = int(h1) + 1
+	}
+	if h2 == math.Ceil(h2) {
+		maxH = int(h2) - 1
+	}
+
+	// Count of integers in range [minH, maxH]
+	if maxH < minH {
+		return 0
+	}
+	return maxH - minH + 1
 }
