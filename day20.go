@@ -2,9 +2,7 @@ package adventofcode2023
 
 import "strings"
 
-type Day20Puzzle struct {
-	modules map[string]*module
-}
+type Day20Puzzle map[string]*module
 
 type module struct {
 	typ    byte // 'b' = broadcast, '%' = flip-flop, '&' = conjunction
@@ -14,14 +12,8 @@ type module struct {
 	inputs map[string]bool // for conjunctions: last pulse from each input
 }
 
-type pulse struct {
-	from, to string
-	high     bool
-}
-
 func NewDay20(lines []string) (Day20Puzzle, error) {
-	var puzzle Day20Puzzle
-	puzzle.modules = make(map[string]*module)
+	puzzle := make(Day20Puzzle)
 
 	// First pass: create all modules
 	for _, line := range lines {
@@ -44,13 +36,13 @@ func NewDay20(lines []string) (Day20Puzzle, error) {
 		m.dests = dests
 		m.inputs = make(map[string]bool)
 
-		puzzle.modules[m.name] = &m
+		puzzle[m.name] = &m
 	}
 
 	// Second pass: register inputs for conjunction modules
-	for name, m := range puzzle.modules {
+	for name, m := range puzzle {
 		for _, dest := range m.dests {
-			if destMod, ok := puzzle.modules[dest]; ok && destMod.typ == '&' {
+			if destMod, ok := puzzle[dest]; ok && destMod.typ == '&' {
 				destMod.inputs[name] = false // initially low
 			}
 		}
@@ -67,7 +59,7 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 	var lowCount, highCount uint
 
 	for i := 0; i < 1000; i++ {
-		low, high := pressButton(puzzle.modules)
+		low, high := pressButton(puzzle)
 		lowCount += low
 		highCount += high
 	}
@@ -76,6 +68,11 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 }
 
 func pressButton(modules map[string]*module) (uint, uint) {
+	type pulse struct {
+		from, to string
+		high     bool
+	}
+
 	var lowCount, highCount uint
 	queue := []pulse{{from: "button", to: "broadcaster", high: false}}
 
