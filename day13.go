@@ -73,9 +73,9 @@ func countHorizontalMismatches(lines []string, start, end, row int) int {
 }
 
 func Day13(lines []string, part1 bool) uint {
-	smudges := 0
-	if !part1 {
-		smudges = 1
+	smudges := 1
+	if part1 {
+		smudges = 0
 	}
 
 	var total uint
