@@ -59,7 +59,7 @@ Number of tries for a correct answer:
 | 11  |   1    |  1
 | 12  |   1    |  1
 | 13  |   1    |  1
-| 14  |   1    |
+| 14  |   1    |  1
 | 15  |        |
 | 16  |        |
 | 17  |        |

@@ -1,5 +1,9 @@
 package adventofcode2023
 
+import (
+	"bytes"
+)
+
 type Day14Puzzle struct {
 	grid [][]byte
 }
@@ -35,6 +39,100 @@ func tiltNorth(grid [][]byte) {
 	}
 }
 
+func tiltWest(grid [][]byte) {
+	rows := len(grid)
+	if rows == 0 {
+		return
+	}
+	cols := len(grid[0])
+
+	for row := 0; row < rows; row++ {
+		for col := 1; col < cols; col++ {
+			if grid[row][col] == 'O' {
+				newCol := col
+				for newCol > 0 && grid[row][newCol-1] == '.' {
+					newCol--
+				}
+				if newCol != col {
+					grid[row][newCol] = 'O'
+					grid[row][col] = '.'
+				}
+			}
+		}
+	}
+}
+
+func tiltSouth(grid [][]byte) {
+	rows := len(grid)
+	if rows == 0 {
+		return
+	}
+	cols := len(grid[0])
+
+	for col := 0; col < cols; col++ {
+		for row := rows - 2; row >= 0; row-- {
+			if grid[row][col] == 'O' {
+				newRow := row
+				for newRow < rows-1 && grid[newRow+1][col] == '.' {
+					newRow++
+				}
+				if newRow != row {
+					grid[newRow][col] = 'O'
+					grid[row][col] = '.'
+				}
+			}
+		}
+	}
+}
+
+func tiltEast(grid [][]byte) {
+	rows := len(grid)
+	if rows == 0 {
+		return
+	}
+	cols := len(grid[0])
+
+	for row := 0; row < rows; row++ {
+		for col := cols - 2; col >= 0; col-- {
+			if grid[row][col] == 'O' {
+				newCol := col
+				for newCol < cols-1 && grid[row][newCol+1] == '.' {
+					newCol++
+				}
+				if newCol != col {
+					grid[row][newCol] = 'O'
+					grid[row][col] = '.'
+				}
+			}
+		}
+	}
+}
+
+func runCycle(grid [][]byte) {
+	tiltNorth(grid)
+	tiltWest(grid)
+	tiltSouth(grid)
+	tiltEast(grid)
+}
+
+func gridToString(grid [][]byte) string {
+	var buf bytes.Buffer
+	for _, row := range grid {
+		buf.Write(row)
+		buf.WriteByte('\n')
+	}
+	return buf.String()
+}
+
+func copyGrid(src [][]byte) [][]byte {
+	dst := make([][]byte, len(src))
+	for i := range src {
+		dst[i] = make([]byte, len(src[i]))
+		copy(dst[i], src[i])
+	}
+	return dst
+}
+
 func calculateLoad(grid [][]byte) uint {
 	rows := len(grid)
 	if rows == 0 {
@@ -54,16 +152,29 @@ func calculateLoad(grid [][]byte) uint {
 }
 
 func Day14(puzzle Day14Puzzle, part1 bool) uint {
-	if !part1 {
-		return 0
+	grid := copyGrid(puzzle.grid)
+
+	if part1 {
+		tiltNorth(grid)
+		return calculateLoad(grid)
 	}
 
-	grid := make([][]byte, len(puzzle.grid))
-	for i := range puzzle.grid {
-		grid[i] = make([]byte, len(puzzle.grid[i]))
-		copy(grid[i], puzzle.grid[i])
+	seen := make(map[string]int)
+	const totalCycles = 1000000000
+
+	for i := 0; i < totalCycles; i++ {
+		key := gridToString(grid)
+		if prev, ok := seen[key]; ok {
+			cycleLength := i - prev
+			remaining := (totalCycles - i) % cycleLength
+			for j := 0; j < remaining; j++ {
+				runCycle(grid)
+			}
+			return calculateLoad(grid)
+		}
+		seen[key] = i
+		runCycle(grid)
 	}
 
-	tiltNorth(grid)
 	return calculateLoad(grid)
 }
