@@ -1765,6 +1765,69 @@ geomean                      49.64                    ?                       ¹
 
 The optimization eliminates all string manipulation overhead by parsing directly from input. Part 1 benefits from inline hash calculation without creating substring allocations. Part 2 reduces allocations from ~2464 to 256 by pre-allocating box slices and avoiding `strings.Split/TrimSuffix`. The remaining 256 allocations represent the 256 pre-allocated box slices - one per hash bucket.
 
+== Day 16: The Floor Will Be Lava
+
+=== Performance Optimization
+
+Day 16 was optimized by replacing maps with fixed-size arrays and reusing data structures across multiple simulations.
+
+==== Baseline (b0)
+
+Initial implementation used maps and dynamic slice allocations:
+- `make(map[pos]bool)` for visited tracking - map with position+direction keys
+- `make(map[[2]int]bool)` for energized cell tracking
+- `queue` slice with dynamic growth via append
+- Part 2 creates new maps for each of ~440 edge configurations (110×4 edges)
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay16Part1-16              3.45ms ± 6%    3.07 MiB   11113 allocs/op
+BenchmarkDay16Part2-16              660ms ± ?      665 MiB    2.4M allocs/op (estimated)
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Fixed-size arrays**: `var visited [120][120][4]bool` for position+direction states (stack-allocated)
+- **Energized array**: `var energized [120][120]bool` instead of map
+- **Array reuse**: Clear and reuse same arrays across all Part 2 energize calls (~440 calls)
+- **Pre-allocated queue**: `make([]pos, 0, 1000)` with capacity hint
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day16_bench_b0.txt │       /tmp/day16_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day16Part1-16              3445.0µ ± 6%   428.5µ ± 7%  -87.56% (p=0.000 n=10)
+
+              │ /tmp/day16_bench_b0.txt │       /tmp/day16_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day16Part1-16             3067.6Ki ± 0%   556.9Ki ± 0%  -81.85% (p=0.000 n=10)
+
+              │ /tmp/day16_bench_b0.txt │      /tmp/day16_bench_b1.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day16Part1-16              11113.0 ± 0%   496.0 ± 0%  -95.54% (p=0.000 n=10)
+----
+
+**Part 2 Results:**
+----
+BenchmarkDay16Part2-16    	      12	 101.6ms ± 2%	119.6 MiB	  103.8k allocs/op
+----
+
+**Key Improvements:**
+
+* **Part 1**: 87.56% faster (3.4ms → 428µs), 81.85% less memory (3.1MB → 557KB), 95.54% fewer allocations (11113 → 496)
+* **Part 2**: ~84% faster (660ms → 102ms), ~82% less memory (665MB → 120MB), 95.7% fewer allocations (2.4M → 103.8k)
+
+The optimization replaces hash-based maps with direct array indexing, eliminating hashing overhead and memory allocations. The 120×120×4 visited array (230KB) and 120×120 energized array (14KB) are stack-allocated and reused across all ~440 Part 2 simulations, reducing allocations from ~2.4M to ~104k. The remaining allocations are primarily from queue slice operations (496 per simulation × ~210 simulations ≈ 104k). Array clearing is fast due to CPU cache locality compared to map reallocation.
+
 == Benchmarks
 
 All benchmarks for Advent of Code 2023 solutions (run on Intel(R) Xeon(R) CPU @ 2.60GHz):
