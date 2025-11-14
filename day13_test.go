@@ -5,36 +5,22 @@ import (
 )
 
 func TestDay13Part1Example(t *testing.T) {
-	const want = 405
-	lines := linesFromFilename(t, exampleFilename(13))
-	got := Day13(lines, true)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testWithParser(t, 13, exampleFilename, true, NewDay13, Day13, 405)
 }
 
 func TestDay13Part1(t *testing.T) {
-	const want = 33356
-	lines := linesFromFilename(t, filename(13))
-	got := Day13(lines, true)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testWithParser(t, 13, filename, true, NewDay13, Day13, 33356)
 }
 
 func BenchmarkDay13Part1(b *testing.B) {
 	lines := linesFromFilename(b, filename(13))
 	b.ResetTimer()
 	for b.Loop() {
-		_ = Day13(lines, true)
+		puzzle, _ := NewDay13(lines)
+		_ = Day13(puzzle, true)
 	}
 }
 
 func TestDay13Part2(t *testing.T) {
-	const want = 0
-	lines := linesFromFilename(t, filename(13))
-	got := Day13(lines, false)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testWithParser(t, 13, filename, false, NewDay13, Day13, 0)
 }

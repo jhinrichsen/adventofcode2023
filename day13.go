@@ -1,5 +1,9 @@
 package adventofcode2023
 
+func NewDay13(lines []string) ([]string, error) {
+	return lines, nil
+}
+
 func findVerticalReflection(lines []string, start, end int) int {
 	if start >= end || len(lines[start]) == 0 {
 		return 0
