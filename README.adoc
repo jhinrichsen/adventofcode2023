@@ -1697,6 +1697,74 @@ geomean                      571.5        270.4       -52.68%
 
 The optimization eliminates repeated buffer allocations by reusing a single `bytes.Buffer` across all cycle detection iterations. Buffer growth uses `.Grow()` with exact grid capacity to prevent internal reallocations. Map pre-allocation avoids repeated growth operations as cycle states are recorded. The ~1255 eliminated allocations (1617→362) represent the ~165 buffer creations and ~90 map growth operations from the baseline.
 
+== Day 15: Lens Library
+
+=== Performance Optimization
+
+Day 15 was optimized by eliminating string operations and parsing input inline without intermediate allocations.
+
+==== Baseline (b0)
+
+Initial implementation used string operations heavily:
+- `strings.Join(lines, "")` - allocated joined input string (64KB)
+- `strings.Split(input, ",")` - allocated slice of step strings
+- `strings.Split(step, "=")` and `strings.TrimSuffix(step, "-")` - allocated parsed parts for each step
+- Dynamic box slice growth without pre-allocation
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay15Part1-16               93.11µ ± 3%    64.00 KiB     1 allocs/op
+BenchmarkDay15Part2-16              360.2µ ± 4%   146.96 KiB  2464 allocs/op
+----
+
+==== Optimization (b1)
+
+Three key changes:
+- **Inline parsing**: Parse input character-by-character in Part 1, avoiding hash function calls and string splits
+- **Direct input access**: Use `lines[0]` directly for single-line input (typical case)
+- **Pre-allocate boxes**: Initialize each box with capacity 8 (`make([]lens, 0, 8)`)
+- **Inline step parsing**: Parse operations without `strings.Split/Contains/TrimSuffix`
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day15_bench_b0.txt │       /tmp/day15_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day15Part1-16               93.11µ ± 3%   48.33µ ± 1%  -48.09% (p=0.000 n=10)
+Day15Part2-16               360.2µ ± 4%   170.0µ ± 1%  -52.82% (p=0.000 n=10)
+geomean                     183.1µ        90.64µ       -50.51%
+
+              │ /tmp/day15_bench_b0.txt │          /tmp/day15_bench_b1.txt          │
+              │          B/op           │     B/op      vs base                     │
+Day15Part1-16              64.00Ki ± 0%    0.00Ki ± 0%  -100.00% (p=0.000 n=10)
+Day15Part2-16             146.96Ki ± 0%   48.00Ki ± 0%   -67.34% (p=0.000 n=10)
+geomean                    96.98Ki                      ?                       ¹ ²
+¹ summaries must be >0 to compute geomean
+² ratios must be >0 to compute geomean
+
+              │ /tmp/day15_bench_b0.txt │         /tmp/day15_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day15Part1-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+Day15Part2-16               2464.0 ± 0%   256.0 ± 0%   -89.61% (p=0.000 n=10)
+geomean                      49.64                    ?                       ¹ ²
+¹ summaries must be >0 to compute geomean
+² ratios must be >0 to compute geomean
+----
+
+**Key Improvements:**
+
+* **Part 1**: 48% faster (93µs → 48µs), 100% reduction in memory and allocations (64KB → 0B, 1 → 0)
+* **Part 2**: 53% faster (360µs → 170µs), 67% less memory (147KB → 48KB), 90% fewer allocations (2464 → 256)
+
+The optimization eliminates all string manipulation overhead by parsing directly from input. Part 1 benefits from inline hash calculation without creating substring allocations. Part 2 reduces allocations from ~2464 to 256 by pre-allocating box slices and avoiding `strings.Split/TrimSuffix`. The remaining 256 allocations represent the 256 pre-allocated box slices - one per hash bucket.
+
 == Benchmarks
 
 All benchmarks for Advent of Code 2023 solutions (run on Intel(R) Xeon(R) CPU @ 2.60GHz):

@@ -20,47 +20,90 @@ func hash(s string) uint {
 }
 
 func Day15(lines []string, part1 bool) uint {
-	input := strings.Join(lines, "")
-	steps := strings.Split(input, ",")
+	// Parse input directly without allocating intermediate strings
+	// Input is typically a single line, but handle multiple lines
+	input := lines[0]
+	if len(lines) > 1 {
+		input = strings.Join(lines, "")
+	}
 
 	if part1 {
 		var total uint
-		for _, step := range steps {
-			total += hash(step)
+		var current uint
+		for i := 0; i < len(input); i++ {
+			if input[i] == ',' {
+				// End of step
+				current = 0
+			} else {
+				current += uint(input[i])
+				current *= 17
+				current %= 256
+				// Check if next char is comma or end
+				if i+1 >= len(input) || input[i+1] == ',' {
+					total += current
+					current = 0
+				}
+			}
 		}
 		return total
 	}
 
+	// Part 2: Pre-allocate boxes with reasonable capacity per box
 	boxes := make([][]lens, 256)
+	for i := range boxes {
+		boxes[i] = make([]lens, 0, 8) // Most boxes have few lenses
+	}
 
-	for _, step := range steps {
-		if strings.Contains(step, "=") {
-			parts := strings.Split(step, "=")
-			label := parts[0]
-			focal := uint(parts[1][0] - '0')
-			boxNum := hash(label)
+	// Parse steps inline without string allocations
+	start := 0
+	for i := 0; i <= len(input); i++ {
+		if i == len(input) || input[i] == ',' {
+			if i > start {
+				step := input[start:i]
 
-			found := false
-			for i := range boxes[boxNum] {
-				if boxes[boxNum][i].label == label {
-					boxes[boxNum][i].focal = focal
-					found = true
-					break
+				// Find operation: = or -
+				opIdx := -1
+				isAdd := false
+				for j := 0; j < len(step); j++ {
+					if step[j] == '=' {
+						opIdx = j
+						isAdd = true
+						break
+					} else if step[j] == '-' {
+						opIdx = j
+						break
+					}
+				}
+
+				if opIdx >= 0 {
+					label := step[:opIdx]
+					boxNum := hash(label)
+
+					if isAdd {
+						focal := uint(step[opIdx+1] - '0')
+						found := false
+						for i := range boxes[boxNum] {
+							if boxes[boxNum][i].label == label {
+								boxes[boxNum][i].focal = focal
+								found = true
+								break
+							}
+						}
+						if !found {
+							boxes[boxNum] = append(boxes[boxNum], lens{label: label, focal: focal})
+						}
+					} else {
+						// Remove operation
+						for i := range boxes[boxNum] {
+							if boxes[boxNum][i].label == label {
+								boxes[boxNum] = append(boxes[boxNum][:i], boxes[boxNum][i+1:]...)
+								break
+							}
+						}
+					}
 				}
 			}
-			if !found {
-				boxes[boxNum] = append(boxes[boxNum], lens{label: label, focal: focal})
-			}
-		} else if strings.Contains(step, "-") {
-			label := strings.TrimSuffix(step, "-")
-			boxNum := hash(label)
-
-			for i := range boxes[boxNum] {
-				if boxes[boxNum][i].label == label {
-					boxes[boxNum] = append(boxes[boxNum][:i], boxes[boxNum][i+1:]...)
-					break
-				}
-			}
+			start = i + 1
 		}
 	}
 
