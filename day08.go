@@ -75,7 +75,8 @@ func Day08(d8 D08Puzzle, part1 bool) uint {
 	starts := d8.startNodes()
 
 	// Find cycle length for each starting node
-	var cycleLengths []uint
+	// Pre-allocate with exact capacity since we know the number of starts
+	cycleLengths := make([]uint, 0, len(starts))
 	for _, start := range starts {
 		d := d8
 		d.Network = d8.Network
@@ -111,6 +112,16 @@ func lcm(a, b uint) uint {
 }
 
 func (a D08Puzzle) startNodes() (nodes []string) {
+	// Count start nodes first to pre-allocate with exact capacity
+	count := 0
+	for k := range a.Network {
+		if startNode(k) {
+			count++
+		}
+	}
+
+	// Pre-allocate with exact capacity
+	nodes = make([]string, 0, count)
 	for k := range a.Network {
 		if startNode(k) {
 			nodes = append(nodes, k)

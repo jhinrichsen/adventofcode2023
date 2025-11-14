@@ -489,6 +489,67 @@ Answer: 18024643846273
 ----
 <1> First attempt used synchronous simulation which ran >10s without completing, making it clear the input requires mathematical insight rather than brute force.
 
+=== Performance Optimization
+
+Day 08 was optimized by pre-allocating slices with exact capacities to reduce memory allocations.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic slice growth without capacity hints:
+- `var cycleLengths []uint` in Part 2 grew dynamically via append
+- `var nodes []string` in `startNodes()` grew dynamically via append
+- Part 2 resulted in 12 allocations per call
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay08Part1-16              615.4µ ± 1%     56.09 KiB    4 allocs/op
+BenchmarkDay08Part2-16              3.226m ± 2%     56.44 KiB   12 allocs/op
+----
+
+==== Optimization (b1)
+
+Pre-allocated slices with exact capacities:
+- `cycleLengths := make([]uint, 0, len(starts))` - pre-allocate for known number of starting nodes
+- In `startNodes()`: count nodes first, then pre-allocate with exact capacity
+- Eliminates repeated reallocation as slices grow
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day08_bench_b0.txt │      /tmp/day08_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day08Part1-16               615.4µ ± 1%   557.2µ ± 1%  -9.47% (p=0.000 n=10)
+Day08Part2-16               3.226m ± 2%   3.125m ± 1%  -3.11% (p=0.000 n=10)
+geomean                     1.409m        1.320m       -6.34%
+
+              │ /tmp/day08_bench_b0.txt │       /tmp/day08_bench_b1.txt       │
+              │          B/op           │     B/op      vs base               │
+Day08Part1-16              56.09Ki ± 0%   56.09Ki ± 0%       ~ (p=0.582 n=10)
+Day08Part2-16              56.44Ki ± 0%   56.23Ki ± 0%  -0.37% (p=0.000 n=10)
+geomean                    56.26Ki        56.16Ki       -0.19%
+
+              │ /tmp/day08_bench_b0.txt │       /tmp/day08_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day08Part1-16                4.000 ± 0%   4.000 ± 0%        ~ (p=1.000 n=10) ¹
+Day08Part2-16               12.000 ± 0%   6.000 ± 0%  -50.00% (p=0.000 n=10)
+geomean                      6.928        4.899       -29.29%
+¹ all samples are equal
+----
+
+**Key Improvements:**
+
+* **Part 1**: 9.47% faster (615µs → 557µs)
+* **Part 2**: 3.11% faster (3.23ms → 3.13ms), 50% reduction in allocations (12 → 6 allocs/op)
+
+The optimization reduces allocations by eliminating dynamic slice growth. Pre-allocating with exact capacity prevents the Go runtime from repeatedly allocating larger backing arrays and copying data as slices grow. Part 2 benefits most because it processes multiple starting nodes, each requiring cycle length tracking. The `startNodes()` optimization uses a two-pass approach: count first, then allocate exact capacity - trading a small amount of iteration overhead for predictable memory allocation.
+
 == Day 9: Mirage Maintenance
 
 These timings include parsing the puzzle input:
