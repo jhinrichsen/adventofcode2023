@@ -51,7 +51,7 @@ func BenchmarkDay20Part1(b *testing.B) {
 }
 
 func TestDay20Part2(t *testing.T) {
-	testWithParser(t, 20, filename, false, NewDay20, Day20, 0)
+	testWithParser(t, 20, filename, false, NewDay20, Day20, 243037165713371)
 }
 
 func BenchmarkDay20Part2(b *testing.B) {
