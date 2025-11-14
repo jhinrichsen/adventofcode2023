@@ -65,6 +65,25 @@ func TestDay24Part1Example(t *testing.T) {
 	}
 }
 
+func TestDay24Part2Example(t *testing.T) {
+	lines := []string{
+		"19, 13, 30 @ -2,  1, -2",
+		"18, 19, 22 @ -1, -1, -2",
+		"20, 25, 34 @ -2, -2, -4",
+		"12, 31, 28 @ -1, -2, -1",
+		"20, 19, 15 @  1, -5, -3",
+	}
+	puzzle, err := NewDay24(lines)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := Day24(puzzle, false)
+	const want = 47
+	if got != want {
+		t.Errorf("Part2 example: got %d, want %d", got, want)
+	}
+}
+
 func TestDay24Part1(t *testing.T) {
 	testWithParser(t, 24, filename, true, NewDay24, Day24, 11098)
 }
@@ -74,7 +93,7 @@ func BenchmarkDay24Part1(b *testing.B) {
 }
 
 func TestDay24Part2(t *testing.T) {
-	testWithParser(t, 24, filename, false, NewDay24, Day24, 0)
+	testWithParser(t, 24, filename, false, NewDay24, Day24, 920630818300104)
 }
 
 func BenchmarkDay24Part2(b *testing.B) {
