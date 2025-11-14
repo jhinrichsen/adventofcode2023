@@ -62,7 +62,7 @@ Number of tries for a correct answer:
 | 14  |   1    |  1
 | 15  |   1    |  1
 | 16  |   1    |  1
-| 17  |        |
+| 17  |   1    |
 | 18  |        |
 | 19  |        |
 | 20  |        |
