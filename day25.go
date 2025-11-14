@@ -1,30 +1,58 @@
 package adventofcode2023
 
-import (
-	"strings"
-)
-
 type Day25Puzzle map[string][]string
 
 func NewDay25(lines []string) (Day25Puzzle, error) {
-	puzzle := make(Day25Puzzle)
+	puzzle := make(Day25Puzzle, 2000)
 
 	for _, line := range lines {
 		if line == "" {
 			continue
 		}
 
-		parts := strings.Split(line, ": ")
-		if len(parts) != 2 {
+		// Parse format: "abc: def ghi jkl"
+		colonIdx := -1
+		for i := 0; i < len(line); i++ {
+			if line[i] == ':' {
+				colonIdx = i
+				break
+			}
+		}
+		if colonIdx == -1 {
 			continue
 		}
 
-		from := parts[0]
-		connections := strings.Fields(parts[1])
+		from := line[:colonIdx]
+
+		// Parse connections after ": "
+		i := colonIdx + 2 // Skip ": "
+		connections := make([]string, 0, 4)
+		for i < len(line) {
+			// Skip spaces
+			for i < len(line) && line[i] == ' ' {
+				i++
+			}
+			if i >= len(line) {
+				break
+			}
+
+			// Find end of word
+			start := i
+			for i < len(line) && line[i] != ' ' {
+				i++
+			}
+			connections = append(connections, line[start:i])
+		}
 
 		// Add bidirectional connections
+		if puzzle[from] == nil {
+			puzzle[from] = make([]string, 0, 8)
+		}
 		for _, to := range connections {
 			puzzle[from] = append(puzzle[from], to)
+			if puzzle[to] == nil {
+				puzzle[to] = make([]string, 0, 8)
+			}
 			puzzle[to] = append(puzzle[to], from)
 		}
 	}
@@ -38,7 +66,7 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 
 	// Build edge usage map
 	type edge struct{ a, b string }
-	edgeCount := make(map[edge]int)
+	edgeCount := make(map[edge]int, 10000)
 
 	// Get all nodes
 	nodes := make([]string, 0, len(puzzle))
@@ -68,7 +96,7 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 	}
 
 	// Find top 3 most used edges
-	var topEdges []edge
+	topEdges := make([]edge, 0, 3)
 	for len(topEdges) < 3 {
 		var maxEdge edge
 		maxCount := 0
@@ -83,7 +111,7 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 	}
 
 	// Remove these 3 edges from graph
-	graph := make(Day25Puzzle)
+	graph := make(Day25Puzzle, len(puzzle))
 	for node, neighbors := range puzzle {
 		graph[node] = append([]string{}, neighbors...)
 	}
@@ -93,7 +121,7 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 	}
 
 	// Count size of one component
-	visited := make(map[string]bool)
+	visited := make(map[string]bool, len(graph))
 	var count int
 	var dfs func(string)
 	dfs = func(node string) {
@@ -120,18 +148,21 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 }
 
 func bfsParents(graph Day25Puzzle, start string) map[string]string {
-	parent := make(map[string]string)
+	parent := make(map[string]string, len(graph))
 	parent[start] = ""
-	queue := []string{start}
+	queue := make([]string, len(graph))
+	queue[0] = start
 
-	for len(queue) > 0 {
-		curr := queue[0]
-		queue = queue[1:]
+	head, tail := 0, 1
+	for head < tail {
+		curr := queue[head]
+		head++
 
 		for _, neighbor := range graph[curr] {
 			if _, seen := parent[neighbor]; !seen {
 				parent[neighbor] = curr
-				queue = append(queue, neighbor)
+				queue[tail] = neighbor
+				tail++
 			}
 		}
 	}

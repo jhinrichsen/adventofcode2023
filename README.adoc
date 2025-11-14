@@ -527,6 +527,122 @@ geomean                     45.91k        322.8       -99.30%
 
 The optimization dramatically reduces Part 1's allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2's BFS graph compression benefits from pre-allocated structures: junction map (100 capacity), graph map (sized to junctions), visited map (1000 capacity), and queue (1000 capacity). The head/tail pointer queue approach eliminates slice reslicing operations. Part 2's runtime remains unchanged because it's dominated by the final DFS on the compressed graph (which uses recursion), but memory usage and allocations improve significantly. The remaining 284 Part 1 allocations and 367 Part 2 allocations represent unavoidable parsing and graph construction overhead.
 
+== Day 24: Never Tell Me The Odds
+
+=== Performance Optimization
+
+Day 24 was optimized by pre-allocating the puzzle slice.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic puzzle growth without pre-allocation:
+- `var puzzle Day24Puzzle` without capacity hint
+- Parsing was already inline (good!)
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay24Part1-16               853.5µ ± 1%    47.95 KiB    10 allocs/op
+BenchmarkDay24Part2-16               1.595ms ± 1%   47.95 KiB    10 allocs/op
+----
+
+==== Optimization (b1)
+
+Single key change:
+- **Pre-allocate puzzle slice**: `puzzle := make(Day24Puzzle, 0, len(lines))` with estimated capacity
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day24Part1-16               853.5µ ± 1%   827.9µ ± 1%  -3.00% (p=0.000 n=10)
+Day24Part2-16               1.595m ± 1%   1.572m ± 2%  -1.44% (p=0.029 n=10)
+geomean                     1.167m        1.141m       -2.22%
+
+              │ /tmp/day24_bench_b0.txt │       /tmp/day24_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day24Part1-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+Day24Part2-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+geomean                    47.95Ki        16.00Ki       -66.63%
+
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day24Part1-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+Day24Part2-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+geomean                      10.00        1.000       -90.00%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+* **Part 2**: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+
+The optimization pre-allocates the puzzle slice, eliminating 9 slice growth operations during parsing. The parsing code was already optimized with inline byte-level parsing (no `strings.Split`), so the only improvement was in slice pre-allocation. Both parts share the same parsing code, resulting in identical memory and allocation reductions.
+
+== Day 25: Snowverload
+
+=== Performance Optimization
+
+Day 25 was optimized by eliminating `strings.Split` operations, using head/tail pointer queue, and pre-allocating data structures.
+
+==== Baseline (b0)
+
+Initial implementation used string operations and dynamic allocations:
+- `strings.Split(line, ": ")` for parsing line structure
+- `strings.Fields(parts[1])` for parsing connections
+- Dynamic map growth without capacity hints
+- `queue = queue[1:]` in BFS creating repeated allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay25Part1-16               1.39s ± 3%     308.4 MiB   64430 allocs/op
+----
+
+==== Optimization (b1)
+
+Five key changes:
+- **Inline parsing**: Find colon delimiter and parse connections character-by-character without `strings.Split` or `strings.Fields`
+- **Pre-allocate puzzle map**: `make(Day25Puzzle, 2000)` with estimated capacity
+- **Pre-allocate neighbor slices**: `make([]string, 0, 8)` for each node's connections
+- **Pre-allocate algorithm maps**: `edgeCount` (10000), `graph` (len(puzzle)), `visited` (len(graph)), `parent` (len(graph))
+- **Array-based BFS queue**: `make([]string, len(graph))` with head/tail pointers instead of slice reslicing
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day25_bench_b0.txt │      /tmp/day25_bench_b1.txt       │
+              │         sec/op          │   sec/op    vs base                │
+Day25Part1-16                1.390 ± 3%   1.209 ± 1%  -13.03% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │       /tmp/day25_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day25Part1-16              308.4Mi ± 0%   156.6Mi ± 0%  -49.23% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │       /tmp/day25_bench_b1.txt       │
+              │        allocs/op        │  allocs/op   vs base                │
+Day25Part1-16               64.43k ± 0%   13.91k ± 0%  -78.42% (p=0.000 n=10)
+----
+
+**Key Improvements:**
+
+* **Part 1**: 13% faster (1.39s → 1.21s), 49% less memory (308MB → 157MB), 78% fewer allocations (64430 → 13910)
+
+The optimization eliminates string operations in parsing and replaces queue slice reslicing with head/tail pointer traversal. Pre-allocating maps with appropriate capacities (puzzle: 2000, edgeCount: 10000, others: len(graph)) reduces hash table growth operations. The BFS function is called ~1500 times during edge betweenness calculation, so the queue optimization (eliminating `queue = queue[1:]`) provides significant cumulative savings. The remaining 13910 allocations represent unavoidable graph construction and algorithm overhead (edge tracking, parent maps per BFS call).
+
 == Day 1: Trebuchet?!
 
 Writing a custom one-pass parser for V2 because why not.

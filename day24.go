@@ -8,7 +8,7 @@ type hailstone struct {
 type Day24Puzzle []hailstone
 
 func NewDay24(lines []string) (Day24Puzzle, error) {
-	var puzzle Day24Puzzle
+	puzzle := make(Day24Puzzle, 0, len(lines))
 
 	for _, line := range lines {
 		if line == "" {
