@@ -142,6 +142,11 @@ func Day24(puzzle Day24Puzzle, part1 bool) uint {
 		return 0
 	}
 
+	// Coordinates are ~2-5×10^14 (15 digits). Using int64 arithmetic causes overflow
+	// when multiplying by determinants (~100-1000), exceeding int64 max (9×10^18).
+	// float64 has ~15-17 significant digits of precision, sufficient for our 15-digit
+	// coordinates and avoiding overflow. Go doesn't have float128, and big.Int would
+	// be overkill for simple bounds checking.
 	minCoord := 200000000000000.0
 	maxCoord := 400000000000000.0
 
@@ -150,7 +155,7 @@ func Day24(puzzle Day24Puzzle, part1 bool) uint {
 		for j := i + 1; j < len(puzzle); j++ {
 			h1, h2 := puzzle[i], puzzle[j]
 
-			// Check if paths intersect in XY plane using floats to avoid overflow
+			// Check if paths intersect in XY plane
 			det := float64(h1.vx*h2.vy - h1.vy*h2.vx)
 
 			if det == 0 {
