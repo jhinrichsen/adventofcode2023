@@ -72,7 +72,7 @@ govulncheck.sarif:
 	govulncheck -version
 	govulncheck -format=sarif ./... > $@
 
-$(BENCH_FILE):
+$(BENCH_FILE): $(wildcard *.go)
 	echo "Running benchmarks and saving to $@..."
 	$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
 
