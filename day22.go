@@ -59,10 +59,6 @@ func NewDay22(lines []string) (Day22Puzzle, error) {
 }
 
 func Day22(puzzle Day22Puzzle, part1 bool) uint {
-	if !part1 {
-		return 0
-	}
-
 	// Sort bricks by lowest z coordinate
 	bricks := make([]brick, len(puzzle))
 	copy(bricks, puzzle)
@@ -97,23 +93,62 @@ func Day22(puzzle Day22Puzzle, part1 bool) uint {
 		}
 	}
 
-	// Count bricks that can be safely disintegrated
-	var count uint
-	for i := range bricks {
-		canRemove := true
-		for _, above := range supports[i] {
-			if len(supportedBy[above]) == 1 {
-				// This brick is the sole supporter of 'above'
-				canRemove = false
-				break
+	if part1 {
+		// Count bricks that can be safely disintegrated
+		var count uint
+		for i := range bricks {
+			canRemove := true
+			for _, above := range supports[i] {
+				if len(supportedBy[above]) == 1 {
+					// This brick is the sole supporter of 'above'
+					canRemove = false
+					break
+				}
+			}
+			if canRemove {
+				count++
 			}
 		}
-		if canRemove {
-			count++
-		}
+		return count
 	}
 
-	return count
+	// Part 2: Count total number of bricks that would fall
+	var total uint
+	for i := range bricks {
+		// Count how many bricks would fall if we remove brick i
+		fallen := make(map[int]bool)
+		fallen[i] = true
+
+		// Propagate: if a brick loses all its supports, it falls
+		changed := true
+		for changed {
+			changed = false
+			for j := range bricks {
+				if fallen[j] {
+					continue
+				}
+				// Check if all supporters of j have fallen
+				if len(supportedBy[j]) > 0 {
+					allFallen := true
+					for _, supporter := range supportedBy[j] {
+						if !fallen[supporter] {
+							allFallen = false
+							break
+						}
+					}
+					if allFallen {
+						fallen[j] = true
+						changed = true
+					}
+				}
+			}
+		}
+
+		// Count fallen bricks (excluding the initial brick i)
+		total += uint(len(fallen) - 1)
+	}
+
+	return total
 }
 
 func overlapsXY(a, b brick) bool {
