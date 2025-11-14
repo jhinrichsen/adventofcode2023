@@ -1,9 +1,5 @@
 package adventofcode2023
 
-func findVerticalReflection(lines []string, start, end int) int {
-	return findVerticalReflectionWithSmudges(lines, start, end, 0)
-}
-
 func findVerticalReflectionWithSmudges(lines []string, start, end, smudges int) int {
 	if start >= end || len(lines[start]) == 0 {
 		return 0
@@ -34,10 +30,6 @@ func countVerticalMismatches(lines []string, start, end, col int) int {
 		}
 	}
 	return mismatches
-}
-
-func findHorizontalReflection(lines []string, start, end int) int {
-	return findHorizontalReflectionWithSmudges(lines, start, end, 0)
 }
 
 func findHorizontalReflectionWithSmudges(lines []string, start, end, smudges int) int {

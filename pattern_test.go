@@ -77,20 +77,6 @@ func benchWithParser[P any, R any](
 	}
 }
 
-// benchSolver is a generic benchmark helper for day part benchmarks that work directly with []byte.
-func benchSolver[R any](
-	b *testing.B,
-	day uint8,
-	part1 bool,
-	solver func([]byte, bool) (R, error),
-) {
-	b.Helper()
-	buf := fileFromFilename(b, filename, day)
-	for b.Loop() {
-		_, _ = solver(buf, part1)
-	}
-}
-
 // benchLines is a generic benchmark helper for day part benchmarks that work directly with []string lines.
 func benchLines[R any](
 	b *testing.B,

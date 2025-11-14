@@ -286,5 +286,5 @@ func isSpace(b byte) bool {
 }
 
 func isSymbol(b byte) bool {
-	return !(isSpace(b) || isDigit(b))
+	return !isSpace(b) && !isDigit(b)
 }

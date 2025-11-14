@@ -126,7 +126,7 @@ func LoadGridFromFile(filename string) (*Day10Grid, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	grid := Day10NewGrid(10, 10)
 	scanner := bufio.NewScanner(file)

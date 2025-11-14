@@ -63,7 +63,7 @@ Number of tries for a correct answer:
 | 15  |   1    |  1
 | 16  |   1    |  1
 | 17  |   1    |  1
-| 18  |        |
+| 18  |   1    |  1
 | 19  |        |
 | 20  |        |
 | 21  |        |
@@ -77,15 +77,19 @@ Number of tries for a correct answer:
 
 === Performance Optimization
 
-Day 17 was optimized by experimenting with a generic priority queue implementation.
+Day 17 was optimized by replacing `container/heap` with a custom generic heap implementation.
 
 ==== Baseline (b0)
 
-Initial implementation with day-specific priority queue types (`state17` and `priorityQueue17`).
+Initial implementation using `container/heap` with day-specific `priorityQueue17` type wrapping `heap.Interface`.
 
-==== Optimization (b1)
+==== Failed Optimization (b1, b2)
 
-Refactored priority queue into generic `priorityQueue[T priorityItem]` with interface constraint.
+Attempted generic implementations still using `container/heap` were 18-22% slower due to `heap.Interface` overhead, not generics themselves.
+
+==== Successful Optimization (b3)
+
+Custom generic heap implementation without `container/heap`, using Go's monomorphization for zero-abstraction cost.
 
 ==== Results
 
@@ -94,35 +98,176 @@ goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ day17_bench_b0.txt │          day17_bench_b1.txt          │
-              │       sec/op       │    sec/op     vs base                │
-Day17Part1-16          309.3m ± 9%   365.5m ± 11%  +18.17% (p=0.001 n=10)
-Day17Part2-16           1.135 ± 6%    1.184 ±  7%        ~ (p=0.165 n=10)
-geomean                592.5m        657.8m        +11.02%
+              │ day17_bench_b0.txt │         day17_bench_b3.txt          │
+              │       sec/op       │   sec/op     vs base                │
+Day17Part1-16          309.3m ± 9%   269.6m ± 5%  -12.86% (p=0.000 n=10)
+Day17Part2-16         1135.0m ± 6%   907.5m ± 5%  -20.04% (p=0.000 n=10)
+geomean                592.5m        494.6m       -16.53%
 
-              │ day17_bench_b0.txt │         day17_bench_b1.txt          │
-              │        B/op        │     B/op      vs base               │
-Day17Part1-16         99.85Mi ± 0%   99.62Mi ± 0%       ~ (p=0.280 n=10)
-Day17Part2-16         251.9Mi ± 0%   251.9Mi ± 0%       ~ (p=0.556 n=10)
-geomean               158.6Mi        158.4Mi       -0.12%
+              │ day17_bench_b0.txt │          day17_bench_b3.txt          │
+              │        B/op        │     B/op      vs base                │
+Day17Part1-16         99.85Mi ± 0%   90.18Mi ± 0%   -9.69% (p=0.000 n=10)
+Day17Part2-16         251.9Mi ± 0%   225.4Mi ± 0%  -10.49% (p=0.000 n=10)
+geomean               158.6Mi        142.6Mi       -10.09%
 
-              │ day17_bench_b0.txt │         day17_bench_b1.txt         │
+              │ day17_bench_b0.txt │         day17_bench_b3.txt         │
               │     allocs/op      │  allocs/op   vs base               │
-Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.239 n=10)
-Day17Part2-16          2.953M ± 0%   2.953M ± 0%       ~ (p=0.592 n=10)
+Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.424 n=10)
+Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
 geomean                1.733M        1.733M       -0.00%
 ----
 
-**Key Results:**
+**Key Improvements:**
 
-* **Part 1**: 18% slower (309ms → 366ms)
-* **Part 2**: No significant change (1.135s → 1.184s, within noise)
-* **Memory**: No significant change
-* **Allocations**: No significant change
+* **Part 1**: 13% faster (309ms → 270ms)
+* **Part 2**: 20% faster (1135ms → 908ms)
+* **Memory**: 10% less (99.8Mi → 90.2Mi)
 
-The generic implementation introduces ~18% runtime overhead for Part 1 without providing any memory or allocation benefits. This demonstrates that Go generics have measurable performance costs when used with interface constraints requiring method calls (GetIndex/SetIndex). The compiler cannot fully eliminate the interface dispatch overhead despite type parameter instantiation.
+**Conclusion:**
 
-For hot path code like Dijkstra's algorithm, day-specific types with direct field access outperform generic abstractions. Keep the generic version for code reusability across future days.
+The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
+
+== Day 18: Lavaduct Lagoon
+
+Calculate the area of a lagoon by tracing its perimeter with dig instructions.
+
+**Algorithm:**
+
+* **Shoelace formula** to compute polygon area from vertices
+* **Pick's theorem** to convert area and perimeter to total interior + boundary points
+* Formula: `total = area + perimeter/2 + 1`
+
+**Part 1:** Use direction and distance from instruction lines
+
+**Part 2:** Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
+
+Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).
+
+=== Performance Optimization
+
+Day 18 was optimized by eliminating `strings.Fields` and pre-allocating slices with exact capacities.
+
+==== Baseline (b0)
+
+Initial implementation used string operations:
+- `strings.Fields(line)` allocated slice of field strings for each line
+- Dynamic vertex slice growth without pre-allocation
+- Dynamic puzzle slice growth
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay18Part1-16               107.89µ ± 14%   132.03 KiB   685 allocs/op
+BenchmarkDay18Part2-16               115.14µ ±  5%   132.03 KiB   685 allocs/op
+----
+
+==== Optimization (b1)
+
+Three key changes:
+- **Inline parsing**: Parse direction, distance, and color character-by-character without `strings.Fields`
+- **Pre-allocate puzzle**: `make(Day18Puzzle, 0, len(lines))`
+- **Pre-allocate vertices**: `make([][2]int, 0, len(puzzle)+1)` with exact capacity
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt        │
+              │         sec/op         │   sec/op     vs base                │
+Day18Part1-16            107.89µ ± 14%   17.26µ ± 4%  -84.00% (p=0.000 n=10)
+Day18Part2-16            115.14µ ±  5%   18.91µ ± 3%  -83.58% (p=0.000 n=10)
+geomean                   111.5µ         18.07µ       -83.79%
+
+              │ /tmp/day18_b0_only.txt │        /tmp/day18_b1_only.txt        │
+              │          B/op          │     B/op      vs base                │
+Day18Part1-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+Day18Part2-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+geomean                   128.9Ki        31.88Ki       -75.28%
+
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day18Part1-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+Day18Part2-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+geomean                     685.0        2.000       -99.71%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+* **Part 2**: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+
+The optimization eliminates all string field splitting by parsing input character-by-character. The remaining 2 allocations are the puzzle slice and vertices slice, both pre-allocated with exact capacities. The 683 eliminated allocations (685→2) represent the per-line `strings.Fields` calls and dynamic slice growth operations.
+
+== Day 19: Aplenty
+
+=== Performance Optimization
+
+Day 19 was optimized by eliminating `strings.Split` operations and pre-allocating data structures.
+
+==== Baseline (b0)
+
+Initial implementation used string operations heavily:
+- `strings.IndexByte` for finding braces
+- `strings.Split(rulesStr, ",")` for parsing rules
+- `strings.Split(ruleStr, ":")` for conditional rules
+- `strings.Split(line, ",")` and `strings.Split(attr, "=")` for parts parsing
+- Dynamic map and slice growth without pre-allocation
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay19Part1-16               404.4µ ± 4%    308.2 KiB   4287 allocs/op
+BenchmarkDay19Part2-16               427.7µ ± 3%    308.2 KiB   4287 allocs/op
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Inline workflow parsing**: Parse rules character-by-character, find colons without `strings.Split`
+- **Inline part parsing**: Parse attributes without `strings.Split`
+- **Pre-allocate workflows map**: `make(map[string]workflow, 600)` with capacity hint
+- **Pre-allocate parts slice**: `make([]part, 0, 200)`
+- **Pre-allocate rule slices**: `make([]rule, 0, 4)` per workflow
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │         sec/op         │   sec/op     vs base               │
+Day19Part1-16              404.4µ ± 4%   161.5µ ± 2%  -60.06% (p=0.000 n=10)
+Day19Part2-16              427.7µ ± 3%   156.9µ ± 3%  -63.32% (p=0.000 n=10)
+geomean                    415.9µ        159.2µ       -61.72%
+
+              │ /tmp/day19_b0_only.txt │       /tmp/day19_bench_b1.txt        │
+              │          B/op          │     B/op      vs base                │
+Day19Part1-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+Day19Part2-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+geomean                   308.2Ki        127.1Ki       -58.76%
+
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day19Part1-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+Day19Part2-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+geomean                    4.287k        0.586k       -86.33%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+* **Part 2**: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+
+The optimization eliminates all `strings.Split` operations by parsing character-by-character. Pre-allocating the workflows map (600 capacity), parts slice (200 capacity), and rule slices (4 capacity each) reduces growth operations. The 3701 eliminated allocations (4287→586) represent the string split operations and dynamic growth from the baseline.
 
 == Day 1: Trebuchet?!
 
