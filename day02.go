@@ -1,16 +1,10 @@
 package adventofcode2023
 
-type Day02Puzzle []string
-
-func NewDay02(lines []string) (Day02Puzzle, error) {
-	return Day02Puzzle(lines), nil
-}
-
-func Day02(puzzle Day02Puzzle, part1 bool) uint {
+func Day02(lines []string, part1 bool) uint {
 	var sum uint
 	ref := Triple{12, 13, 14}
 
-	for _, line := range puzzle {
+	for _, line := range lines {
 		gameID, maxTriple := parseDay02Line(line)
 
 		if part1 {

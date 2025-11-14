@@ -6,17 +6,11 @@ import (
 	"github.com/fatih/color"
 )
 
-type Day03Puzzle []string
-
-func NewDay03(lines []string) (Day03Puzzle, error) {
-	return Day03Puzzle(lines), nil
-}
-
-func Day03(puzzle Day03Puzzle, part1 bool) int {
+func Day03(lines []string, part1 bool) int {
 	if part1 {
-		return Day03Part1([]string(puzzle))
+		return Day03Part1(lines)
 	}
-	return int(Day03Part2([]string(puzzle)))
+	return int(Day03Part2(lines))
 }
 
 func Day03Part1(lines []string) (sum int) {
