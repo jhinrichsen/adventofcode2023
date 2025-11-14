@@ -1,12 +1,5 @@
 package adventofcode2023
 
-type state17 struct {
-	row, col    int
-	dr, dc      int
-	consecutive int
-	heat        uint
-}
-
 func Day17(lines []string, part1 bool) uint {
 	if len(lines) == 0 {
 		return 0
@@ -27,11 +20,19 @@ func Day17(lines []string, part1 bool) uint {
 		dr, dc      int
 		consecutive int
 	}
-	visited := make(map[key]bool)
-	pq := newPriorityQueue[uint](func(a, b *state17) bool { return a.heat < b.heat })
 
-	pq.Push(&state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
-	pq.Push(&state17{row: 0, col: 0, dr: 1, dc: 0, consecutive: 0, heat: 0})
+	type state struct {
+		row, col    int
+		dr, dc      int
+		consecutive int
+		heat        uint
+	}
+
+	visited := make(map[key]bool)
+	pq := newPriorityQueue[uint](func(a, b *state) bool { return a.heat < b.heat })
+
+	pq.Push(&state{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
+	pq.Push(&state{row: 0, col: 0, dr: 1, dc: 0, consecutive: 0, heat: 0})
 
 	for pq.Len() > 0 {
 		current := pq.Pop()
@@ -83,7 +84,7 @@ func Day17(lines []string, part1 bool) uint {
 
 			newHeat := current.heat + uint(lines[newRow][newCol]-'0')
 
-			pq.Push(&state17{
+			pq.Push(&state{
 				row:         newRow,
 				col:         newCol,
 				dr:          dir[0],
