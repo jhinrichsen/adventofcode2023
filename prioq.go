@@ -1,46 +1,37 @@
 package adventofcode2023
 
-type priorityItem interface {
+import "cmp"
+
+type priorityItem[P cmp.Ordered] interface {
+	Priority() P
 	GetIndex() int
 	SetIndex(int)
 }
 
-type state17 struct {
-	row, col    int
-	dr, dc      int
-	consecutive int
-	heat        uint
-	index       int
-}
-
-func (s *state17) GetIndex() int    { return s.index }
-func (s *state17) SetIndex(idx int) { s.index = idx }
-
-type priorityQueue[T priorityItem] struct {
+type priorityQueue[P cmp.Ordered, T priorityItem[P]] struct {
 	items []T
-	less  func(T, T) bool
 }
 
-func newPriorityQueue[T priorityItem](less func(T, T) bool) *priorityQueue[T] {
-	return &priorityQueue[T]{items: make([]T, 0), less: less}
+func newPriorityQueue[P cmp.Ordered, T priorityItem[P]]() *priorityQueue[P, T] {
+	return &priorityQueue[P, T]{items: make([]T, 0)}
 }
 
-func (pq *priorityQueue[T]) Len() int { return len(pq.items) }
-func (pq *priorityQueue[T]) Less(i, j int) bool {
-	return pq.less(pq.items[i], pq.items[j])
+func (pq *priorityQueue[P, T]) Len() int { return len(pq.items) }
+func (pq *priorityQueue[P, T]) Less(i, j int) bool {
+	return pq.items[i].Priority() < pq.items[j].Priority()
 }
-func (pq *priorityQueue[T]) Swap(i, j int) {
+func (pq *priorityQueue[P, T]) Swap(i, j int) {
 	pq.items[i], pq.items[j] = pq.items[j], pq.items[i]
 	pq.items[i].SetIndex(i)
 	pq.items[j].SetIndex(j)
 }
-func (pq *priorityQueue[T]) Push(x interface{}) {
+func (pq *priorityQueue[P, T]) Push(x interface{}) {
 	n := len(pq.items)
 	item := x.(T)
 	item.SetIndex(n)
 	pq.items = append(pq.items, item)
 }
-func (pq *priorityQueue[T]) Pop() interface{} {
+func (pq *priorityQueue[P, T]) Pop() interface{} {
 	old := pq.items
 	n := len(old)
 	item := old[n-1]

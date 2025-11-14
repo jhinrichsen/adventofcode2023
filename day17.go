@@ -8,6 +8,18 @@ type visitKey17 struct {
 	consecutive int
 }
 
+type state17 struct {
+	row, col    int
+	dr, dc      int
+	consecutive int
+	heat        uint
+	index       int
+}
+
+func (s *state17) Priority() uint   { return s.heat }
+func (s *state17) GetIndex() int    { return s.index }
+func (s *state17) SetIndex(idx int) { s.index = idx }
+
 func Day17(lines []string, part1 bool) uint {
 	if len(lines) == 0 {
 		return 0
@@ -24,7 +36,7 @@ func Day17(lines []string, part1 bool) uint {
 	}
 
 	visited := make(map[visitKey17]bool)
-	pq := newPriorityQueue(func(a, b *state17) bool { return a.heat < b.heat })
+	pq := newPriorityQueue[uint, *state17]()
 	heap.Init(pq)
 
 	heap.Push(pq, &state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
