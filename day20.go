@@ -62,70 +62,61 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 		return 0
 	}
 
-	var lowCount, highCount uint
-
-	for i := 0; i < 1000; i++ {
-		low, high := pressButton(puzzle)
-		lowCount += low
-		highCount += high
-	}
-
-	return lowCount * highCount
-}
-
-func pressButton(modules Day20Puzzle) (uint, uint) {
 	type pulse struct {
 		from, to string
 		high     bool
 	}
 
 	var lowCount, highCount uint
-	queue := []pulse{{from: "button", to: "broadcaster", high: false}}
 
-	for len(queue) > 0 {
-		p := queue[0]
-		queue = queue[1:]
+	for i := 0; i < 1000; i++ {
+		queue := []pulse{{from: "button", to: "broadcaster", high: false}}
 
-		if p.high {
-			highCount++
-		} else {
-			lowCount++
-		}
+		for len(queue) > 0 {
+			p := queue[0]
+			queue = queue[1:]
 
-		m, ok := modules[p.to]
-		if !ok {
-			continue
-		}
-
-		switch m.typ {
-		case 'b': // broadcaster
-			for _, dest := range m.dests {
-				queue = append(queue, pulse{from: m.name, to: dest, high: p.high})
+			if p.high {
+				highCount++
+			} else {
+				lowCount++
 			}
 
-		case '%': // flip-flop
-			if !p.high { // only respond to low pulses
-				m.state = !m.state
+			m, ok := puzzle[p.to]
+			if !ok {
+				continue
+			}
+
+			switch m.typ {
+			case 'b': // broadcaster
 				for _, dest := range m.dests {
-					queue = append(queue, pulse{from: m.name, to: dest, high: m.state})
+					queue = append(queue, pulse{from: m.name, to: dest, high: p.high})
 				}
-			}
 
-		case '&': // conjunction
-			m.inputs[p.from] = p.high
-			allHigh := true
-			for _, inputHigh := range m.inputs {
-				if !inputHigh {
-					allHigh = false
-					break
+			case '%': // flip-flop
+				if !p.high { // only respond to low pulses
+					m.state = !m.state
+					for _, dest := range m.dests {
+						queue = append(queue, pulse{from: m.name, to: dest, high: m.state})
+					}
 				}
-			}
-			sendHigh := !allHigh
-			for _, dest := range m.dests {
-				queue = append(queue, pulse{from: m.name, to: dest, high: sendHigh})
+
+			case '&': // conjunction
+				m.inputs[p.from] = p.high
+				allHigh := true
+				for _, inputHigh := range m.inputs {
+					if !inputHigh {
+						allHigh = false
+						break
+					}
+				}
+				sendHigh := !allHigh
+				for _, dest := range m.dests {
+					queue = append(queue, pulse{from: m.name, to: dest, high: sendHigh})
+				}
 			}
 		}
 	}
 
-	return lowCount, highCount
+	return lowCount * highCount
 }
