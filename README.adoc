@@ -1624,4 +1624,4 @@ BenchmarkDay12Part2-16    	      10	 112455039 ns/op	95041446 B/op	   20964 allo
 * **Sub-millisecond**: Days 01-09, 11
 * **Most challenging**: Day 10 Part 2 - 221 ms, Day 12 Part 2 - 124 ms
 
-**Total actual runtime**: 374.8 ms (0.375 seconds) for all puzzle solutions
+**Total runtime**: 374822927.25 ns, 374822.927 µs, 374.823 ms, 0.374823 s
