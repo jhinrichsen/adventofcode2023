@@ -12,7 +12,8 @@ type brick struct {
 type Day22Puzzle []brick
 
 func NewDay22(lines []string) (Day22Puzzle, error) {
-	var bricks Day22Puzzle
+	// Pre-allocate bricks with estimated capacity
+	bricks := make(Day22Puzzle, 0, len(lines))
 
 	for _, line := range lines {
 		if line == "" {
@@ -81,8 +82,13 @@ func Day22(puzzle Day22Puzzle, part1 bool) uint {
 	}
 
 	// Build support relationships
-	supports := make([][]int, len(bricks))    // supports[i] = list of bricks that brick i supports
-	supportedBy := make([][]int, len(bricks)) // supportedBy[i] = list of bricks that support brick i
+	// Pre-allocate with estimated capacity (average ~3 connections per brick)
+	supports := make([][]int, len(bricks))
+	supportedBy := make([][]int, len(bricks))
+	for i := range supports {
+		supports[i] = make([]int, 0, 3)
+		supportedBy[i] = make([]int, 0, 3)
+	}
 
 	for i := range bricks {
 		for j := 0; j < i; j++ {
@@ -114,38 +120,56 @@ func Day22(puzzle Day22Puzzle, part1 bool) uint {
 
 	// Part 2: Count total number of bricks that would fall
 	var total uint
+	// Reusable arrays to avoid allocations
+	fallen := make([]bool, len(bricks))
+	queue := make([]int, len(bricks))
+
 	for i := range bricks {
-		// Count how many bricks would fall if we remove brick i
-		fallen := make(map[int]bool)
+		// Reset fallen array
+		for j := range fallen {
+			fallen[j] = false
+		}
 		fallen[i] = true
 
-		// Propagate: if a brick loses all its supports, it falls
-		changed := true
-		for changed {
-			changed = false
-			for j := range bricks {
-				if fallen[j] {
+		// Use queue for BFS propagation with head/tail pointers
+		head, tail := 0, 1
+		queue[0] = i
+
+		for head < tail {
+			current := queue[head]
+			head++
+
+			// Check all bricks supported by current
+			for _, above := range supports[current] {
+				if fallen[above] {
 					continue
 				}
-				// Check if all supporters of j have fallen
-				if len(supportedBy[j]) > 0 {
-					allFallen := true
-					for _, supporter := range supportedBy[j] {
-						if !fallen[supporter] {
-							allFallen = false
-							break
-						}
+
+				// Check if all supporters of 'above' have fallen
+				allFallen := true
+				for _, supporter := range supportedBy[above] {
+					if !fallen[supporter] {
+						allFallen = false
+						break
 					}
-					if allFallen {
-						fallen[j] = true
-						changed = true
-					}
+				}
+
+				if allFallen {
+					fallen[above] = true
+					queue[tail] = above
+					tail++
 				}
 			}
 		}
 
 		// Count fallen bricks (excluding the initial brick i)
-		total += uint(len(fallen) - 1)
+		var count uint
+		for j := range fallen {
+			if fallen[j] && j != i {
+				count++
+			}
+		}
+		total += count
 	}
 
 	return total

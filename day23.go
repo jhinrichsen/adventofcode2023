@@ -8,6 +8,7 @@ type Day23Puzzle struct {
 
 func NewDay23(lines []string) (Day23Puzzle, error) {
 	var puzzle Day23Puzzle
+	puzzle.grid = make([][]byte, 0, len(lines))
 
 	for y, line := range lines {
 		if line == "" {
@@ -59,7 +60,7 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 			maxDist := -1
 
 			// Get possible moves
-			moves := [][2]int{}
+			moves := make([][2]int, 0, 4)
 			cell := puzzle.grid[y][x]
 
 			switch cell {
@@ -106,7 +107,7 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 	type pos struct{ x, y int }
 
 	// Find all junctions (nodes with more than 2 neighbors, plus start and end)
-	junctions := make(map[pos]bool)
+	junctions := make(map[pos]bool, 100)
 	junctions[pos{puzzle.start[0], puzzle.start[1]}] = true
 	junctions[pos{puzzle.end[0], puzzle.end[1]}] = true
 
@@ -135,20 +136,28 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 		to   pos
 		dist int
 	}
-	graph := make(map[pos][]edge)
+	graph := make(map[pos][]edge, len(junctions))
+	for junction := range junctions {
+		graph[junction] = make([]edge, 0, 4)
+	}
 
 	for junction := range junctions {
 		// BFS from this junction to find reachable junctions
-		visited := make(map[pos]bool)
-		queue := []struct {
+		visited := make(map[pos]bool, 1000)
+		queue := make([]struct {
 			p    pos
 			dist int
-		}{{junction, 0}}
+		}, 1, 1000)
+		queue[0] = struct {
+			p    pos
+			dist int
+		}{junction, 0}
 		visited[junction] = true
 
-		for len(queue) > 0 {
-			curr := queue[0]
-			queue = queue[1:]
+		head, tail := 0, 1
+		for head < tail {
+			curr := queue[head]
+			head++
 
 			if curr.dist > 0 && junctions[curr.p] {
 				// Reached another junction
@@ -171,10 +180,18 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 				}
 
 				visited[next] = true
-				queue = append(queue, struct {
-					p    pos
-					dist int
-				}{next, curr.dist + 1})
+				if tail >= len(queue) {
+					queue = append(queue, struct {
+						p    pos
+						dist int
+					}{next, curr.dist + 1})
+				} else {
+					queue[tail] = struct {
+						p    pos
+						dist int
+					}{next, curr.dist + 1}
+				}
+				tail++
 			}
 		}
 	}
@@ -182,7 +199,7 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 	// DFS on compressed graph
 	start := pos{puzzle.start[0], puzzle.start[1]}
 	end := pos{puzzle.end[0], puzzle.end[1]}
-	visitedJunctions := make(map[pos]bool)
+	visitedJunctions := make(map[pos]bool, len(junctions))
 
 	var dfs func(p pos) int
 	dfs = func(p pos) int {
