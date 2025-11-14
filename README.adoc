@@ -40,6 +40,76 @@ Each day lives separately in a `day{{.n}}.go` and `day{{.n}}_test.go` file.
 Unit test data, both examples and puzzle input, is in
 `testdata/day{{.n}}.txt`, and `testdata/day{{.n}}_example.txt`.
 
+== Intel P-cores and E-cores Performance
+
+Modern Intel CPUs (12th gen and later) feature a hybrid architecture with Performance cores (P-cores) and Efficiency cores (E-cores). Understanding their interaction with Go's garbage collector is crucial for benchmark performance.
+
+=== Architecture Overview
+
+The Intel Core i7-14700K used for benchmarking has:
+
+* **8 P-cores** (Performance): CPUs 0-15 with Hyper-Threading, 3.4 GHz base, 5.6 GHz max boost
+* **12 E-cores** (Efficiency): CPUs 16-27 without Hyper-Threading, 2.6 GHz base, ~4.2 GHz max boost
+* **Total: 28 logical processors** (GOMAXPROCS=28 by default)
+
+=== Benchmarking Single-Threaded Workloads
+
+Go's benchmark runner executes benchmarks serially (one at a time), meaning only one CPU core actively runs benchmark code while others remain idle. This raises the question: should we restrict benchmarks to fast P-cores only?
+
+=== The GC Parallelism Paradox
+
+Counter-intuitively, **restricting to P-cores significantly degrades performance** for allocation-heavy benchmarks:
+
+[source]
+----
+Benchmark Performance Comparison - Day16Part2 (119 MB, 103K allocs):
+GOMAXPROCS=28 (all cores):      43,514,553 ns/op  (baseline)
+GOMAXPROCS=16 (P-cores+HT):    129,132,958 ns/op  (197% slower!)
+GOMAXPROCS=8  (P-cores only):  121,963,069 ns/op  (180% slower!)
+
+Benchmark Performance Comparison - Day12Part2 (95 MB, 20K allocs):
+GOMAXPROCS=28 (all cores):      53,833,117 ns/op  (baseline)
+GOMAXPROCS=16 (P-cores+HT):    139,680,222 ns/op  (159% slower)
+GOMAXPROCS=8  (P-cores only):  122,367,892 ns/op  (127% slower)
+----
+
+Benchmarks with **zero allocations** show no performance difference, confirming the issue is GC-related.
+
+=== Why E-cores Improve Performance
+
+Go's garbage collector spawns **mark workers = 25% of GOMAXPROCS**:
+
+* GOMAXPROCS=28 → ~7 mark workers (fast parallel GC)
+* GOMAXPROCS=16 → ~4 mark workers (moderate parallelism)
+* GOMAXPROCS=8  → ~2 mark workers (GC bottleneck)
+
+With fewer mark workers, the GC cannot keep up with allocation rate, forcing **GC assist**: the allocating goroutine must stop and help with garbage collection work, directly blocking benchmark execution.
+
+E-cores at 4.2 GHz are perfectly adequate for memory scanning work. Having **7 workers on mixed cores** completes GC cycles faster than **2 workers on 5.6 GHz P-cores**.
+
+=== CPU Utilization During Benchmarks
+
+Monitoring during `make total` with GOMAXPROCS=28 shows:
+
+* **Overall CPU usage:** 5-8% (single-threaded nature)
+* **Active cores:** Typically 1-2 P-cores running at 5.3-5.6 GHz
+* **Idle cores:** Majority at 800 MHz (power saving)
+* **Package temperature:** 31-69°C (no thermal throttling)
+
+=== Recommendations
+
+For **Go benchmarks with allocations**:
+
+* ✅ Use default GOMAXPROCS (all cores available)
+* ✅ Let OS scheduler pick fast P-cores for benchmark work
+* ✅ Let GC use all cores (including E-cores) for parallel marking
+* ❌ Do not restrict to P-cores only
+* ❌ Do not use `taskset` to limit CPU affinity
+
+For **allocation-free benchmarks**, core configuration has negligible impact.
+
+The hybrid architecture works optimally when Go's runtime can leverage all available cores for concurrent GC work while the OS scheduler naturally prefers P-cores for compute-intensive tasks.
+
 == Overview
 
 Number of tries for a correct answer:
