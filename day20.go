@@ -1,7 +1,5 @@
 package adventofcode2023
 
-import "strings"
-
 type Day20Puzzle map[string]*struct {
 	typ    byte // 'b' = broadcast, '%' = flip-flop, '&' = conjunction
 	name   string
@@ -11,7 +9,8 @@ type Day20Puzzle map[string]*struct {
 }
 
 func NewDay20(lines []string) (Day20Puzzle, error) {
-	puzzle := make(Day20Puzzle)
+	// Pre-allocate puzzle map with capacity
+	puzzle := make(Day20Puzzle, len(lines))
 
 	// First pass: create all modules
 	for _, line := range lines {
@@ -19,9 +18,34 @@ func NewDay20(lines []string) (Day20Puzzle, error) {
 			continue
 		}
 
-		parts := strings.Split(line, " -> ")
-		src := parts[0]
-		dests := strings.Split(parts[1], ", ")
+		// Parse inline without strings.Split
+		// Format: "broadcaster -> a, b, c" or "%a -> b, c"
+		arrowIdx := 0
+		for i := 0; i < len(line)-3; i++ {
+			if line[i] == ' ' && line[i+1] == '-' && line[i+2] == '>' && line[i+3] == ' ' {
+				arrowIdx = i
+				break
+			}
+		}
+
+		src := line[:arrowIdx]
+		destsStr := line[arrowIdx+4:]
+
+		// Parse destinations
+		dests := make([]string, 0, 4)
+		start := 0
+		for i := 0; i <= len(destsStr); i++ {
+			if i == len(destsStr) || destsStr[i] == ',' {
+				if i > start {
+					dest := destsStr[start:i]
+					// Skip comma and space
+					if i < len(destsStr) && destsStr[i] == ',' {
+						start = i + 2 // Skip ", "
+					}
+					dests = append(dests, dest)
+				}
+			}
+		}
 
 		m := &struct {
 			typ    byte
@@ -31,7 +55,7 @@ func NewDay20(lines []string) (Day20Puzzle, error) {
 			inputs map[string]bool
 		}{
 			dests:  dests,
-			inputs: make(map[string]bool),
+			inputs: make(map[string]bool, 4),
 		}
 
 		if src == "broadcaster" {
@@ -67,7 +91,8 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 		var lowCount, highCount uint
 
 		for range 1000 {
-			queue := []pulse{{from: "button", to: "broadcaster", high: false}}
+			queue := make([]pulse, 0, 100)
+			queue = append(queue, pulse{from: "button", to: "broadcaster", high: false})
 
 			for len(queue) > 0 {
 				p := queue[0]
@@ -137,7 +162,8 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 
 	for len(cycles) < len(puzzle[rxFeeder].inputs) {
 		buttonPresses++
-		queue := []pulse{{from: "button", to: "broadcaster", high: false}}
+		queue := make([]pulse, 0, 100)
+		queue = append(queue, pulse{from: "button", to: "broadcaster", high: false})
 
 		for len(queue) > 0 {
 			p := queue[0]

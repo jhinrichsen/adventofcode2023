@@ -7,6 +7,8 @@ type Day21Puzzle struct {
 
 func NewDay21(lines []string) (Day21Puzzle, error) {
 	var puzzle Day21Puzzle
+	// Pre-allocate grid with estimated capacity
+	puzzle.grid = make([][]byte, 0, len(lines))
 
 	for y, line := range lines {
 		if line == "" {
@@ -65,11 +67,16 @@ func countReachable(puzzle Day21Puzzle, maxSteps int) uint {
 	width := len(puzzle.grid[0])
 
 	// BFS to find minimum steps to each position
-	visited := make(map[pos]int)
-	queue := []struct {
+	// Pre-allocate with estimated capacity
+	visited := make(map[pos]int, height*width/2)
+	queue := make([]struct {
 		p     pos
 		steps int
-	}{{p: pos{puzzle.start[0], puzzle.start[1]}, steps: 0}}
+	}, 0, 1000)
+	queue = append(queue, struct {
+		p     pos
+		steps int
+	}{p: pos{puzzle.start[0], puzzle.start[1]}, steps: 0})
 
 	visited[pos{puzzle.start[0], puzzle.start[1]}] = 0
 
@@ -128,11 +135,16 @@ func countReachableInfinite(puzzle Day21Puzzle, maxSteps int) int {
 	width := len(puzzle.grid[0])
 
 	// BFS on infinite grid
-	visited := make(map[pos]int)
-	queue := []struct {
+	// Pre-allocate with larger capacity for infinite grid
+	visited := make(map[pos]int, 50000)
+	queue := make([]struct {
 		p     pos
 		steps int
-	}{{p: pos{puzzle.start[0], puzzle.start[1]}, steps: 0}}
+	}, 0, 5000)
+	queue = append(queue, struct {
+		p     pos
+		steps int
+	}{p: pos{puzzle.start[0], puzzle.start[1]}, steps: 0})
 
 	visited[pos{puzzle.start[0], puzzle.start[1]}] = 0
 
