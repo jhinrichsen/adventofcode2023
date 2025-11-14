@@ -25,9 +25,8 @@ bench:
 tidy:
 	test -z $(gofmt -l .)
 	$(GO) vet
-	which golangci-lint || $(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint --version
-	golangci-lint run
+	$(GO) run github.com/golangci/golangci-lint/cmd/golangci-lint@latest --version
+	$(GO) run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run
 
 cpu.profile:
 	$(GO) test -run=^$ -bench=Day10Part1$ -benchmem -memprofile mem.profile -cpuprofile $@
@@ -63,7 +62,7 @@ gl-code-quality-report.json: golangci-lint.json
 	golint-convert < $< > $@
 
 golangci-lint.json:
-	-golangci-lint run --out-format json > $@
+	-$(GO) run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run --out-format json > $@
 
 # Gitlab dependency report
 govulncheck.sarif:
