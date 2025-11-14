@@ -1,7 +1,6 @@
 package adventofcode2023
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -28,20 +27,6 @@ func lineAsNumbers(line string) ([]int, error) {
 		ns = append(ns, n)
 	}
 	return ns, err
-}
-
-// linesAsNumber converts strings into integer.
-func linesAsNumbers(lines []string) ([]int, error) {
-	var is []int
-	for i := range lines {
-		n, err := strconv.Atoi(lines[i])
-		if err != nil {
-			msg := "error in line %d: cannot convert %q to number"
-			return is, fmt.Errorf(msg, i, lines[i])
-		}
-		is = append(is, n)
-	}
-	return is, nil
 }
 
 func DayAdapterV1(day func([][]byte, bool) (uint, error), filename string, part1 bool) (uint, error) {
