@@ -101,24 +101,11 @@ func NewDayXX(lines []string) (DayXXPuzzle, error)
 **Test pattern:**
 ```go
 func TestDayXXPart1(t *testing.T) {
-    lines := linesFromFilename(t, filename(XX))
-    puzzle, err := NewDayXX(lines)
-    if err != nil {
-        t.Fatal(err)
-    }
-    got := DayXX(puzzle, true)
-    const want = 12345
-    if got != want {
-        t.Errorf("want %d but got %d", want, got)
-    }
+    testWithParser(t, XX, filename, true, NewDayXX, DayXX, 12345)
 }
 
 func BenchmarkDayXXPart1(b *testing.B) {
-    lines := linesFromFilename(b, filename(XX))
-    for i := 0; i < b.N; i++ {
-        puzzle, _ := NewDayXX(lines)
-        DayXX(puzzle, true)
-    }
+    benchWithParser(b, XX, true, NewDayXX, DayXX)
 }
 ```
 
@@ -136,23 +123,56 @@ func NewDayXX(data []byte) (DayXXPuzzle, error)
 **Test pattern:**
 ```go
 func TestDayXXPart1(t *testing.T) {
-    testWithParserBytes(t, XX, filename, true, NewDayXX, DayXX, 12345)
+    testWithParser(t, XX, filename, true, NewDayXX, DayXX, 12345)
 }
 
 func BenchmarkDayXXPart1(b *testing.B) {
-    benchWithParserBytes(b, XX, true, NewDayXX, DayXX)
+    benchWithParser(b, XX, true, NewDayXX, DayXX)
 }
 ```
 
 **Examples:** Day 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
 
-### Pattern 3: Direct Solver (Rare, for simple problems)
+### Pattern 3: Direct Lines Solver (For in-place line processing)
 
-**When to use:** Parsing and solving are tightly coupled
+**When to use:** Input is line-based but doesn't need parsing into a data structure; solver processes lines directly
 
 **Solver signature:**
 ```go
-func DayXX(data []byte, part1 bool) (string, error)
+func DayXX(lines []string, part1 bool) uint
+```
+
+**Test pattern:**
+```go
+func TestDayXXPart1(t *testing.T) {
+    testLines(t, XX, filename, true, DayXX, 12345)
+}
+
+func BenchmarkDayXXPart1(b *testing.B) {
+    benchLines(b, XX, true, DayXX)
+}
+```
+
+**Examples:** Day 13
+
+### Pattern 4: Direct Byte Solver (Rare, for simple problems)
+
+**When to use:** Parsing and solving are tightly coupled with byte-level input
+
+**Solver signature:**
+```go
+func DayXX(data []byte, part1 bool) (uint, error)
+```
+
+**Test pattern:**
+```go
+func TestDayXXPart1(t *testing.T) {
+    testSolver(t, XX, filename, true, DayXX, 12345)
+}
+
+func BenchmarkDayXXPart1(b *testing.B) {
+    benchSolver(b, XX, true, DayXX)
+}
 ```
 
 ---
