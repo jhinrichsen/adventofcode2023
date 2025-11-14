@@ -2,14 +2,18 @@ package adventofcode2023
 
 import "strings"
 
-type instruction18 struct {
+type instruction struct {
 	dir   byte
 	dist  int
 	color string
 }
 
-func NewDay18(lines []string) ([]instruction18, error) {
-	instructions := make([]instruction18, 0, len(lines))
+type Day18Puzzle struct {
+	instructions []instruction
+}
+
+func NewDay18(lines []string) (Day18Puzzle, error) {
+	instructions := make([]instruction, 0, len(lines))
 	for _, line := range lines {
 		if line == "" {
 			continue
@@ -21,12 +25,12 @@ func NewDay18(lines []string) ([]instruction18, error) {
 			dist = dist*10 + int(parts[1][i]-'0')
 		}
 		color := parts[2][2 : len(parts[2])-1]
-		instructions = append(instructions, instruction18{dir: dir, dist: dist, color: color})
+		instructions = append(instructions, instruction{dir: dir, dist: dist, color: color})
 	}
-	return instructions, nil
+	return Day18Puzzle{instructions: instructions}, nil
 }
 
-func Day18(instructions []instruction18, part1 bool) uint {
+func Day18(puzzle Day18Puzzle, part1 bool) uint {
 	if !part1 {
 		return 0
 	}
@@ -35,7 +39,7 @@ func Day18(instructions []instruction18, part1 bool) uint {
 	vertices := [][2]int{{0, 0}}
 	perimeter := 0
 
-	for _, inst := range instructions {
+	for _, inst := range puzzle.instructions {
 		perimeter += inst.dist
 		switch inst.dir {
 		case 'R':
