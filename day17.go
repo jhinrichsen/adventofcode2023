@@ -1,11 +1,5 @@
 package adventofcode2023
 
-type visitKey17 struct {
-	row, col    int
-	dr, dc      int
-	consecutive int
-}
-
 type state17 struct {
 	row, col    int
 	dr, dc      int
@@ -28,7 +22,12 @@ func Day17(lines []string, part1 bool) uint {
 		maxConsecutive = 10
 	}
 
-	visited := make(map[visitKey17]bool)
+	type key struct {
+		row, col    int
+		dr, dc      int
+		consecutive int
+	}
+	visited := make(map[key]bool)
 	pq := newPriorityQueue[uint](func(a, b *state17) bool { return a.heat < b.heat })
 
 	pq.Push(&state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
@@ -43,11 +42,11 @@ func Day17(lines []string, part1 bool) uint {
 			}
 		}
 
-		key := visitKey17{current.row, current.col, current.dr, current.dc, current.consecutive}
-		if visited[key] {
+		k := key{current.row, current.col, current.dr, current.dc, current.consecutive}
+		if visited[k] {
 			continue
 		}
-		visited[key] = true
+		visited[k] = true
 
 		directions := [][2]int{}
 
