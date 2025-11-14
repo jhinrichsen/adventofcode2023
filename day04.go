@@ -60,17 +60,15 @@ func Day04(buf []byte, part1 bool) (uint, error) {
 	var cardCount uint
 
 	// Initialize first pass: count cards and set initial counts to 1
-	lineStart := 0
 	for i := range buf {
 		if buf[i] == '\n' {
 			ns[cardCount] = 1
 			cardCount++
-			lineStart = i + 1
 		}
 	}
 
 	// Second pass: process winning numbers and update card counts
-	lineStart = 0
+	lineStart := 0
 	cardIdx := uint(0)
 	for i := range buf {
 		if buf[i] == '\n' {

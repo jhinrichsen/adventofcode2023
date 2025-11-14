@@ -115,15 +115,6 @@ func runCycle(grid [][]byte) {
 	tiltEast(grid)
 }
 
-func gridToString(grid [][]byte) string {
-	var buf bytes.Buffer
-	for _, row := range grid {
-		buf.Write(row)
-		buf.WriteByte('\n')
-	}
-	return buf.String()
-}
-
 func copyGrid(src [][]byte) [][]byte {
 	dst := make([][]byte, len(src))
 	for i := range src {
