@@ -2,18 +2,16 @@ package adventofcode2023
 
 import "strings"
 
-type instruction struct {
-	dir   byte
-	dist  int
-	color string
-}
-
 type Day18Puzzle struct {
-	instructions []instruction
+	instructions []struct {
+		dir   byte
+		dist  int
+		color string
+	}
 }
 
 func NewDay18(lines []string) (Day18Puzzle, error) {
-	instructions := make([]instruction, 0, len(lines))
+	var puzzle Day18Puzzle
 	for _, line := range lines {
 		if line == "" {
 			continue
@@ -25,9 +23,13 @@ func NewDay18(lines []string) (Day18Puzzle, error) {
 			dist = dist*10 + int(parts[1][i]-'0')
 		}
 		color := parts[2][2 : len(parts[2])-1]
-		instructions = append(instructions, instruction{dir: dir, dist: dist, color: color})
+		puzzle.instructions = append(puzzle.instructions, struct {
+			dir   byte
+			dist  int
+			color string
+		}{dir, dist, color})
 	}
-	return Day18Puzzle{instructions: instructions}, nil
+	return puzzle, nil
 }
 
 func Day18(puzzle Day18Puzzle, part1 bool) uint {
