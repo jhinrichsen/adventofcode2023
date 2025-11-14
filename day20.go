@@ -2,9 +2,7 @@ package adventofcode2023
 
 import "strings"
 
-type Day20Puzzle map[string]*module
-
-type module struct {
+type Day20Puzzle map[string]*struct {
 	typ    byte // 'b' = broadcast, '%' = flip-flop, '&' = conjunction
 	name   string
 	dests  []string
@@ -25,7 +23,17 @@ func NewDay20(lines []string) (Day20Puzzle, error) {
 		src := parts[0]
 		dests := strings.Split(parts[1], ", ")
 
-		var m module
+		m := &struct {
+			typ    byte
+			name   string
+			dests  []string
+			state  bool
+			inputs map[string]bool
+		}{
+			dests:  dests,
+			inputs: make(map[string]bool),
+		}
+
 		if src == "broadcaster" {
 			m.typ = 'b'
 			m.name = "broadcaster"
@@ -33,10 +41,8 @@ func NewDay20(lines []string) (Day20Puzzle, error) {
 			m.typ = src[0]
 			m.name = src[1:]
 		}
-		m.dests = dests
-		m.inputs = make(map[string]bool)
 
-		puzzle[m.name] = &m
+		puzzle[m.name] = m
 	}
 
 	// Second pass: register inputs for conjunction modules
@@ -67,7 +73,7 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 	return lowCount * highCount
 }
 
-func pressButton(modules map[string]*module) (uint, uint) {
+func pressButton(modules Day20Puzzle) (uint, uint) {
 	type pulse struct {
 		from, to string
 		high     bool
