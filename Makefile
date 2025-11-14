@@ -14,7 +14,7 @@ clean:
 		govulncheck.sarif \
 		junit.xml \
 		README.html \
-		staticcheck.json \
+		golangci-lint.json \
 		test.log
 
 .PHONY: bench
@@ -25,9 +25,9 @@ bench:
 tidy:
 	test -z $(gofmt -l .)
 	$(GO) vet
-	which staticcheck || $(GO) install honnef.co/go/tools/cmd/staticcheck@latest
-	staticcheck -version
-	staticcheck
+	which golangci-lint || $(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint --version
+	golangci-lint run
 
 cpu.profile:
 	$(GO) test -run=^$ -bench=Day10Part1$ -benchmem -memprofile mem.profile -cpuprofile $@
@@ -58,12 +58,12 @@ coverage.xml: coverage.txt
 	gocover-cobertura < $< > $@
 
 # Gitlab code quality report
-gl-code-quality-report.json: staticcheck.json
+gl-code-quality-report.json: golangci-lint.json
 	which golint-convert || $(GO) install github.com/banyansecurity/golint-convert@latest
-	golint-convert > $@
+	golint-convert < $< > $@
 
-staticcheck.json:
-	-staticcheck -f json > $@
+golangci-lint.json:
+	-golangci-lint run --out-format json > $@
 
 # Gitlab dependency report
 govulncheck.sarif:

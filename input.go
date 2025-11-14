@@ -79,7 +79,7 @@ func DayAdapterV2(day func([][]byte, bool) (uint, error), filename string, part1
 	if err != nil {
 		return 0, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// Get the file size
 	stat, err := f.Stat()
@@ -99,7 +99,7 @@ func DayAdapterV2(day func([][]byte, bool) (uint, error), filename string, part1
 	}
 
 	// Defer unmapping the memory
-	defer syscall.Munmap(data)
+	defer func() { _ = syscall.Munmap(data) }()
 
 	// Pre-allocate a fixed array for lines
 	var lines [MagicMaxLines][]byte

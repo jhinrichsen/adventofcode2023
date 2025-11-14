@@ -104,23 +104,24 @@ func handType(h Hand, useJoker bool) HandType {
 
 	h1, h2 := cnt[N-1], cnt[N-2]
 	var t HandType
-	if h1 == 5 {
+	switch h1 {
+	case 5:
 		t = FiveOfAKind
-	} else if h1 == 4 {
+	case 4:
 		t = FourOfAKind
-	} else if h1 == 3 {
+	case 3:
 		if h2 == 2 {
 			t = FullHouse
 		} else {
 			t = ThreeOfAKind
 		}
-	} else if h1 == 2 {
+	case 2:
 		if h2 == 2 {
 			t = TwoPairs
 		} else {
 			t = OnePair
 		}
-	} else {
+	default:
 		t = HighCard
 	}
 

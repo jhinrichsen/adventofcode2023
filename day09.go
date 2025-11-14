@@ -21,7 +21,6 @@ func Day09V1(lines []string) int {
 		for j, s := range parts {
 			n, _ := strconv.Atoi(s)
 			ns[0][j] = n
-			n++
 		}
 
 		// derive deltas
