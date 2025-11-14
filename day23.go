@@ -107,7 +107,7 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 	type pos struct{ x, y int }
 
 	// Find all junctions (nodes with more than 2 neighbors, plus start and end)
-	junctions := make(map[pos]bool, 100)
+	junctions := make(map[pos]bool)
 	junctions[pos{puzzle.start[0], puzzle.start[1]}] = true
 	junctions[pos{puzzle.end[0], puzzle.end[1]}] = true
 
@@ -143,21 +143,16 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 
 	for junction := range junctions {
 		// BFS from this junction to find reachable junctions
-		visited := make(map[pos]bool, 1000)
-		queue := make([]struct {
+		visited := make(map[pos]bool)
+		queue := []struct {
 			p    pos
 			dist int
-		}, 1, 1000)
-		queue[0] = struct {
-			p    pos
-			dist int
-		}{junction, 0}
+		}{{junction, 0}}
 		visited[junction] = true
 
-		head, tail := 0, 1
-		for head < tail {
-			curr := queue[head]
-			head++
+		for len(queue) > 0 {
+			curr := queue[0]
+			queue = queue[1:]
 
 			if curr.dist > 0 && junctions[curr.p] {
 				// Reached another junction
@@ -180,18 +175,10 @@ func Day23(puzzle Day23Puzzle, part1 bool) uint {
 				}
 
 				visited[next] = true
-				if tail >= len(queue) {
-					queue = append(queue, struct {
-						p    pos
-						dist int
-					}{next, curr.dist + 1})
-				} else {
-					queue[tail] = struct {
-						p    pos
-						dist int
-					}{next, curr.dist + 1}
-				}
-				tail++
+				queue = append(queue, struct {
+					p    pos
+					dist int
+				}{next, curr.dist + 1})
 			}
 		}
 	}
