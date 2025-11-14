@@ -63,7 +63,7 @@ Number of tries for a correct answer:
 | 15  |   1    |  1
 | 16  |   1    |  1
 | 17  |   1    |  1
-| 18  |   1    |
+| 18  |   1    |  1
 | 19  |        |
 | 20  |        |
 | 21  |        |
@@ -126,6 +126,22 @@ geomean                1.733M        1.733M       -0.00%
 **Conclusion:**
 
 The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
+
+== Day 18: Lavaduct Lagoon
+
+Calculate the area of a lagoon by tracing its perimeter with dig instructions.
+
+**Algorithm:**
+
+* **Shoelace formula** to compute polygon area from vertices
+* **Pick's theorem** to convert area and perimeter to total interior + boundary points
+* Formula: `total = area + perimeter/2 + 1`
+
+**Part 1:** Use direction and distance from instruction lines
+
+**Part 2:** Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
+
+Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).
 
 == Day 1: Trebuchet?!
 
