@@ -1,10 +1,5 @@
 package adventofcode2023
 
-type pos16 struct {
-	row, col int
-	dr, dc   int
-}
-
 func Day16(lines []string, part1 bool) uint {
 	if !part1 {
 		return 0
@@ -14,12 +9,17 @@ func Day16(lines []string, part1 bool) uint {
 		return 0
 	}
 
+	type pos struct {
+		row, col int
+		dr, dc   int
+	}
+
 	rows := len(lines)
 	cols := len(lines[0])
 
-	visited := make(map[pos16]bool)
+	visited := make(map[pos]bool)
 	energized := make(map[[2]int]bool)
-	queue := []pos16{{row: 0, col: 0, dr: 0, dc: 1}}
+	queue := []pos{{row: 0, col: 0, dr: 0, dc: 1}}
 
 	for len(queue) > 0 {
 		beam := queue[0]
@@ -36,30 +36,30 @@ func Day16(lines []string, part1 bool) uint {
 		energized[[2]int{beam.row, beam.col}] = true
 
 		tile := lines[beam.row][beam.col]
-		var nextBeams []pos16
+		var nextBeams []pos
 
 		switch tile {
 		case '.':
-			nextBeams = append(nextBeams, pos16{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
+			nextBeams = append(nextBeams, pos{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
 		case '/':
 			dr, dc := -beam.dc, -beam.dr
-			nextBeams = append(nextBeams, pos16{beam.row + dr, beam.col + dc, dr, dc})
+			nextBeams = append(nextBeams, pos{beam.row + dr, beam.col + dc, dr, dc})
 		case '\\':
 			dr, dc := beam.dc, beam.dr
-			nextBeams = append(nextBeams, pos16{beam.row + dr, beam.col + dc, dr, dc})
+			nextBeams = append(nextBeams, pos{beam.row + dr, beam.col + dc, dr, dc})
 		case '|':
 			if beam.dc != 0 {
-				nextBeams = append(nextBeams, pos16{beam.row - 1, beam.col, -1, 0})
-				nextBeams = append(nextBeams, pos16{beam.row + 1, beam.col, 1, 0})
+				nextBeams = append(nextBeams, pos{beam.row - 1, beam.col, -1, 0})
+				nextBeams = append(nextBeams, pos{beam.row + 1, beam.col, 1, 0})
 			} else {
-				nextBeams = append(nextBeams, pos16{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
+				nextBeams = append(nextBeams, pos{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
 			}
 		case '-':
 			if beam.dr != 0 {
-				nextBeams = append(nextBeams, pos16{beam.row, beam.col - 1, 0, -1})
-				nextBeams = append(nextBeams, pos16{beam.row, beam.col + 1, 0, 1})
+				nextBeams = append(nextBeams, pos{beam.row, beam.col - 1, 0, -1})
+				nextBeams = append(nextBeams, pos{beam.row, beam.col + 1, 0, 1})
 			} else {
-				nextBeams = append(nextBeams, pos16{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
+				nextBeams = append(nextBeams, pos{beam.row + beam.dr, beam.col + beam.dc, beam.dr, beam.dc})
 			}
 		}
 
