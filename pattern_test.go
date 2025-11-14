@@ -60,3 +60,47 @@ func testLines[R comparable](
 		t.Fatalf("want %v but got %v", want, got)
 	}
 }
+
+// benchWithParser is a generic benchmark helper for day part benchmarks using a parser and solver.
+func benchWithParser[P any, R any](
+	b *testing.B,
+	day uint8,
+	part1 bool,
+	parser func([]string) (P, error),
+	solver func(P, bool) R,
+) {
+	b.Helper()
+	lines := linesFromFilename(b, filename(day))
+	for b.Loop() {
+		puzzle, _ := parser(lines)
+		_ = solver(puzzle, part1)
+	}
+}
+
+// benchSolver is a generic benchmark helper for day part benchmarks that work directly with []byte.
+func benchSolver[R any](
+	b *testing.B,
+	day uint8,
+	part1 bool,
+	solver func([]byte, bool) (R, error),
+) {
+	b.Helper()
+	buf := fileFromFilename(b, filename, day)
+	for b.Loop() {
+		_, _ = solver(buf, part1)
+	}
+}
+
+// benchLines is a generic benchmark helper for day part benchmarks that work directly with []string lines.
+func benchLines[R any](
+	b *testing.B,
+	day uint8,
+	part1 bool,
+	solver func([]string, bool) R,
+) {
+	b.Helper()
+	lines := linesFromFilename(b, filename(day))
+	for b.Loop() {
+		_ = solver(lines, part1)
+	}
+}

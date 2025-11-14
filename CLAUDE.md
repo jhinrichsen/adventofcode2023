@@ -101,24 +101,11 @@ func NewDayXX(lines []string) (DayXXPuzzle, error)
 **Test pattern:**
 ```go
 func TestDayXXPart1(t *testing.T) {
-    lines := linesFromFilename(t, filename(XX))
-    puzzle, err := NewDayXX(lines)
-    if err != nil {
-        t.Fatal(err)
-    }
-    got := DayXX(puzzle, true)
-    const want = 12345
-    if got != want {
-        t.Errorf("want %d but got %d", want, got)
-    }
+    testWithParser(t, XX, filename, true, NewDayXX, DayXX, 12345)
 }
 
 func BenchmarkDayXXPart1(b *testing.B) {
-    lines := linesFromFilename(b, filename(XX))
-    for i := 0; i < b.N; i++ {
-        puzzle, _ := NewDayXX(lines)
-        DayXX(puzzle, true)
-    }
+    benchWithParser(b, XX, true, NewDayXX, DayXX)
 }
 ```
 
@@ -136,11 +123,11 @@ func NewDayXX(data []byte) (DayXXPuzzle, error)
 **Test pattern:**
 ```go
 func TestDayXXPart1(t *testing.T) {
-    testWithParserBytes(t, XX, filename, true, NewDayXX, DayXX, 12345)
+    testWithParser(t, XX, filename, true, NewDayXX, DayXX, 12345)
 }
 
 func BenchmarkDayXXPart1(b *testing.B) {
-    benchWithParserBytes(b, XX, true, NewDayXX, DayXX)
+    benchWithParser(b, XX, true, NewDayXX, DayXX)
 }
 ```
 
@@ -162,10 +149,7 @@ func TestDayXXPart1(t *testing.T) {
 }
 
 func BenchmarkDayXXPart1(b *testing.B) {
-    lines := linesFromFilename(b, filename(XX))
-    for b.Loop() {
-        _ = DayXX(lines, true)
-    }
+    benchLines(b, XX, true, DayXX)
 }
 ```
 
@@ -177,7 +161,18 @@ func BenchmarkDayXXPart1(b *testing.B) {
 
 **Solver signature:**
 ```go
-func DayXX(data []byte, part1 bool) (string, error)
+func DayXX(data []byte, part1 bool) (uint, error)
+```
+
+**Test pattern:**
+```go
+func TestDayXXPart1(t *testing.T) {
+    testSolver(t, XX, filename, true, DayXX, 12345)
+}
+
+func BenchmarkDayXXPart1(b *testing.B) {
+    benchSolver(b, XX, true, DayXX)
+}
 ```
 
 ---

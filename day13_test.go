@@ -13,10 +13,7 @@ func TestDay13Part1(t *testing.T) {
 }
 
 func BenchmarkDay13Part1(b *testing.B) {
-	lines := linesFromFilename(b, filename(13))
-	for b.Loop() {
-		_ = Day13(lines, true)
-	}
+	benchLines(b, 13, true, Day13)
 }
 
 func TestDay13Part2(t *testing.T) {
