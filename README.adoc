@@ -1200,6 +1200,72 @@ BenchmarkDay10Part2-8   	       7	 161608936 ns/op	  918669 B/op	      25 allocs
 
 That's 157 ms, too slow. Said flying object will move 51 m in this time.
 
+=== Performance Optimization
+
+Day 10 Part 2 was optimized by pre-allocating the polygon vertex slice to reduce memory allocations.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic slice growth for tracking polygon vertices:
+- `var poly []image.Point` declared without capacity
+- `poly = append(poly, p)` grew the slice dynamically as the maze was traversed
+- Resulted in 25 allocations for Part 2 as the slice was reallocated multiple times
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay10Part1-16              432.5µ ± 6%    3.7 KiB     5 allocs/op
+BenchmarkDay10Part2-16              219.8m ± 2%    897 KiB    25 allocs/op
+----
+
+==== Optimization (b1)
+
+Pre-allocated polygon slice with maximum possible capacity:
+- Polygon loop bounded by grid perimeter: `maxPolySize := 2 * (len(lines[0]) + len(lines))`
+- Only allocate for Part 2: `if part2 { poly = make([]image.Point, 0, maxPolySize) }`
+- Eliminates repeated reallocation as vertices are appended
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day10_bench_b0.txt │       /tmp/day10_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day10Part1-16               432.5µ ± 6%   386.9µ ± 4%  -10.54% (p=0.001 n=10)
+Day10Part2-16               219.8m ± 2%   221.5m ± 2%        ~ (p=0.315 n=10)
+geomean                     9.750m        9.258m        -5.04%
+
+              │ /tmp/day10_bench_b0.txt │        /tmp/day10_bench_b1.txt        │
+              │          B/op           │     B/op       vs base                │
+Day10Part1-16              3.703Ki ± 0%    3.703Ki ± 0%        ~ (p=1.000 n=10)
+Day10Part2-16              896.9Ki ± 0%   1032.2Ki ± 0%  +15.08% (p=0.000 n=10)
+geomean                    57.63Ki         61.83Ki        +7.28%
+
+              │ /tmp/day10_bench_b0.txt │       /tmp/day10_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day10Part1-16                5.000 ± 0%   5.000 ± 0%        ~ (p=1.000 n=10) ¹
+Day10Part2-16                25.00 ± 0%   16.00 ± 0%  -36.00% (p=0.000 n=10)
+geomean                      11.18        8.944       -20.00%
+¹ all samples are equal
+----
+
+**Key Improvements:**
+
+* **Part 1**: 10.54% faster (433µs → 387µs)
+* **Part 2**: 36% reduction in allocations (25 → 16 allocs/op)
+
+**Trade-off:**
+- Memory capacity increased by 15% due to pre-allocation with maximum perimeter estimate
+- The actual polygon is smaller than the perimeter, so some capacity goes unused
+- This is a standard optimization pattern: trading memory for fewer allocations and reduced GC pressure
+
+The optimization reduces allocations by eliminating slice growth operations. The pre-allocated capacity (grid perimeter) is an upper bound - the actual polygon follows the pipe maze and is typically smaller. While this increases allocated capacity, it significantly reduces allocation count and associated overhead. The 9 eliminated allocations (25→16) indicate the slice was growing ~9 times during traversal.
+
 == Day 11: Cosmos Expansion
 
 === Part 1

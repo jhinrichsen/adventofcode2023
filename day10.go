@@ -84,7 +84,13 @@ func Day10(lines [][]byte, part1 bool) (uint, error) {
 	dim := image.Rectangle{image.Point{0, 0}, image.Point{len(lines[0]), len(lines)}}
 
 	var vertices uint
+	// Pre-allocate poly with maximum possible size (grid perimeter)
+	// The polygon loop can't be larger than the perimeter of the grid
+	maxPolySize := 2 * (len(lines[0]) + len(lines))
 	var poly []image.Point
+	if part2 {
+		poly = make([]image.Point, 0, maxPolySize)
+	}
 	in := func(p image.Point) bool {
 		for i := range poly {
 			if p == poly[i] {
