@@ -77,15 +77,19 @@ Number of tries for a correct answer:
 
 === Performance Optimization
 
-Day 17 was optimized by experimenting with a generic priority queue implementation.
+Day 17 was optimized by replacing `container/heap` with a custom generic heap implementation.
 
 ==== Baseline (b0)
 
-Initial implementation with day-specific priority queue types (`state17` and `priorityQueue17`).
+Initial implementation using `container/heap` with day-specific `priorityQueue17` type wrapping `heap.Interface`.
 
-==== Optimization (b1)
+==== Failed Optimization (b1, b2)
 
-Refactored priority queue into generic `priorityQueue[T priorityItem]` with interface constraint.
+Attempted generic implementations still using `container/heap` were 18-22% slower due to `heap.Interface` overhead, not generics themselves.
+
+==== Successful Optimization (b3)
+
+Custom generic heap implementation without `container/heap`, using Go's monomorphization for zero-abstraction cost.
 
 ==== Results
 
@@ -94,35 +98,34 @@ goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ day17_bench_b0.txt │          day17_bench_b1.txt          │
-              │       sec/op       │    sec/op     vs base                │
-Day17Part1-16          309.3m ± 9%   365.5m ± 11%  +18.17% (p=0.001 n=10)
-Day17Part2-16           1.135 ± 6%    1.184 ±  7%        ~ (p=0.165 n=10)
-geomean                592.5m        657.8m        +11.02%
+              │ day17_bench_b0.txt │         day17_bench_b3.txt          │
+              │       sec/op       │   sec/op     vs base                │
+Day17Part1-16          309.3m ± 9%   269.6m ± 5%  -12.86% (p=0.000 n=10)
+Day17Part2-16         1135.0m ± 6%   907.5m ± 5%  -20.04% (p=0.000 n=10)
+geomean                592.5m        494.6m       -16.53%
 
-              │ day17_bench_b0.txt │         day17_bench_b1.txt          │
-              │        B/op        │     B/op      vs base               │
-Day17Part1-16         99.85Mi ± 0%   99.62Mi ± 0%       ~ (p=0.280 n=10)
-Day17Part2-16         251.9Mi ± 0%   251.9Mi ± 0%       ~ (p=0.556 n=10)
-geomean               158.6Mi        158.4Mi       -0.12%
+              │ day17_bench_b0.txt │          day17_bench_b3.txt          │
+              │        B/op        │     B/op      vs base                │
+Day17Part1-16         99.85Mi ± 0%   90.18Mi ± 0%   -9.69% (p=0.000 n=10)
+Day17Part2-16         251.9Mi ± 0%   225.4Mi ± 0%  -10.49% (p=0.000 n=10)
+geomean               158.6Mi        142.6Mi       -10.09%
 
-              │ day17_bench_b0.txt │         day17_bench_b1.txt         │
+              │ day17_bench_b0.txt │         day17_bench_b3.txt         │
               │     allocs/op      │  allocs/op   vs base               │
-Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.239 n=10)
-Day17Part2-16          2.953M ± 0%   2.953M ± 0%       ~ (p=0.592 n=10)
+Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.424 n=10)
+Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
 geomean                1.733M        1.733M       -0.00%
 ----
 
-**Key Results:**
+**Key Improvements:**
 
-* **Part 1**: 18% slower (309ms → 366ms)
-* **Part 2**: No significant change (1.135s → 1.184s, within noise)
-* **Memory**: No significant change
-* **Allocations**: No significant change
+* **Part 1**: 13% faster (309ms → 270ms)
+* **Part 2**: 20% faster (1135ms → 908ms)
+* **Memory**: 10% less (99.8Mi → 90.2Mi)
 
-The generic implementation introduces ~18% runtime overhead for Part 1 without providing any memory or allocation benefits. This demonstrates that Go generics have measurable performance costs when used with interface constraints requiring method calls (GetIndex/SetIndex). The compiler cannot fully eliminate the interface dispatch overhead despite type parameter instantiation.
+**Conclusion:**
 
-For hot path code like Dijkstra's algorithm, day-specific types with direct field access outperform generic abstractions. Keep the generic version for code reusability across future days.
+The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
 
 == Day 1: Trebuchet?!
 

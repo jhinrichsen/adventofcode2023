@@ -1,7 +1,5 @@
 package adventofcode2023
 
-import "container/heap"
-
 type visitKey17 struct {
 	row, col    int
 	dr, dc      int
@@ -13,12 +11,7 @@ type state17 struct {
 	dr, dc      int
 	consecutive int
 	heat        uint
-	index       int
 }
-
-func (s *state17) Priority() uint   { return s.heat }
-func (s *state17) GetIndex() int    { return s.index }
-func (s *state17) SetIndex(idx int) { s.index = idx }
 
 func Day17(lines []string, part1 bool) uint {
 	if len(lines) == 0 {
@@ -36,14 +29,13 @@ func Day17(lines []string, part1 bool) uint {
 	}
 
 	visited := make(map[visitKey17]bool)
-	pq := newPriorityQueue[uint, *state17]()
-	heap.Init(pq)
+	pq := newPriorityQueue[uint](func(a, b *state17) bool { return a.heat < b.heat })
 
-	heap.Push(pq, &state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
-	heap.Push(pq, &state17{row: 0, col: 0, dr: 1, dc: 0, consecutive: 0, heat: 0})
+	pq.Push(&state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})
+	pq.Push(&state17{row: 0, col: 0, dr: 1, dc: 0, consecutive: 0, heat: 0})
 
 	for pq.Len() > 0 {
-		current := heap.Pop(pq).(*state17)
+		current := pq.Pop()
 
 		if current.row == rows-1 && current.col == cols-1 {
 			if part1 || current.consecutive >= minConsecutive {
@@ -92,7 +84,7 @@ func Day17(lines []string, part1 bool) uint {
 
 			newHeat := current.heat + uint(lines[newRow][newCol]-'0')
 
-			heap.Push(pq, &state17{
+			pq.Push(&state17{
 				row:         newRow,
 				col:         newCol,
 				dr:          dir[0],
