@@ -307,19 +307,56 @@ This produced answer 14209264, which was too low because the final minimum was c
 
 == Day 6: Wait For It
 
-Part 2 ran without any code changes.
-Not sure what the challenge is for part 2.
+=== Performance Optimization
+
+Day 06 was optimized by replacing brute force iteration with a mathematical solution using the quadratic formula.
+
+==== Baseline (b0)
+
+Initial implementation iterated through all possible hold times to count winning strategies:
+- `Farther()` used a loop from 1 to t-1, testing each value
+- For Part 1 (small races), this was fast
+- For Part 2 (single race with t=42,686,985), this meant ~42 million iterations
 
 ----
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
-BenchmarkDay06Part1-8   	 5116702	       205.3 ns/op
-BenchmarkDay06Part2-8   	      37	  31458602   ns/op
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay06Part1-16              212.25n ± 3%
+BenchmarkDay06Part2-16         35521415.50n ± 3%    (35.5 milliseconds)
 ----
 
-That's just 31 ms.
+==== Optimization (b1)
+
+The problem is actually a quadratic equation:
+- We want: `h*(t-h) > d` where h is hold time, t is total time, d is record distance
+- Rearranging: `h² - h*t + d < 0`
+- Use quadratic formula to find boundary points: `h = (t ± sqrt(t² - 4d)) / 2`
+- Count integers strictly between the two roots
+
+This changes the algorithm from O(n) iteration to O(1) calculation.
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day06_bench_b0.txt │       /tmp/day06_bench_b1.txt        │
+              │         sec/op          │   sec/op     vs base                 │
+Day06Part1-16              212.25n ± 3%   41.81n ± 3%   -80.30% (p=0.000 n=10)
+Day06Part2-16         35521415.50n ± 3%   11.01n ± 3%  -100.00% (p=0.000 n=10)
+geomean                     86.83µ        21.46n        -99.98%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 80.3% faster (212ns → 42ns) - 5x speedup
+* **Part 2**: 99.99997% faster (35.5ms → 11ns) - **3.2 million times faster!**
+
+The optimization transforms the problem from iterating through millions of values to a single mathematical calculation. The quadratic formula gives exact boundary points, eliminating the need to test each individual hold time. Part 2's dramatic improvement (from 35 milliseconds to 11 nanoseconds) demonstrates the power of choosing the right algorithm - O(1) vs O(n) where n=42 million.
 
 == Day 7: Camel Cards
 
