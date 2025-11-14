@@ -1,7 +1,5 @@
 package adventofcode2023
 
-import "strings"
-
 type Day18Puzzle []struct {
 	dir   byte
 	dist  int
@@ -9,18 +7,35 @@ type Day18Puzzle []struct {
 }
 
 func NewDay18(lines []string) (Day18Puzzle, error) {
-	var puzzle Day18Puzzle
+	// Pre-allocate puzzle with estimated capacity
+	puzzle := make(Day18Puzzle, 0, len(lines))
+
 	for _, line := range lines {
 		if line == "" {
 			continue
 		}
-		parts := strings.Fields(line)
-		dir := parts[0][0]
+
+		// Parse inline without strings.Fields
+		// Format: "R 6 (#70c710)"
+		i := 0
+
+		// Parse direction
+		dir := line[0]
+		i = 2 // Skip dir and space
+
+		// Parse distance
 		dist := 0
-		for i := 0; i < len(parts[1]); i++ {
-			dist = dist*10 + int(parts[1][i]-'0')
+		for i < len(line) && line[i] >= '0' && line[i] <= '9' {
+			dist = dist*10 + int(line[i]-'0')
+			i++
 		}
-		color := parts[2][2 : len(parts[2])-1]
+
+		// Skip " (#"
+		i += 3
+
+		// Parse color (6 chars)
+		color := line[i : i+6]
+
 		puzzle = append(puzzle, struct {
 			dir   byte
 			dist  int
@@ -32,7 +47,9 @@ func NewDay18(lines []string) (Day18Puzzle, error) {
 
 func Day18(puzzle Day18Puzzle, part1 bool) uint {
 	x, y := 0, 0
-	vertices := [][2]int{{0, 0}}
+	// Pre-allocate vertices with exact capacity
+	vertices := make([][2]int, 0, len(puzzle)+1)
+	vertices = append(vertices, [2]int{0, 0})
 	perimeter := 0
 
 	for _, inst := range puzzle {

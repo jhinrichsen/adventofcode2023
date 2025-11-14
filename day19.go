@@ -1,7 +1,5 @@
 package adventofcode2023
 
-import "strings"
-
 type Day19Puzzle struct {
 	workflows map[string]workflow
 	parts     []part
@@ -28,7 +26,10 @@ type ratingRange struct {
 
 func NewDay19(lines []string) (Day19Puzzle, error) {
 	var puzzle Day19Puzzle
-	puzzle.workflows = make(map[string]workflow)
+	// Pre-allocate workflows map with reasonable capacity
+	puzzle.workflows = make(map[string]workflow, 600)
+	// Pre-allocate parts slice
+	puzzle.parts = make([]part, 0, 200)
 
 	inParts := false
 	for _, line := range lines {
@@ -38,52 +39,90 @@ func NewDay19(lines []string) (Day19Puzzle, error) {
 		}
 
 		if !inParts {
-			// Parse workflow: "px{a<2006:qkq,m>2090:A,rfg}"
-			idx := strings.IndexByte(line, '{')
-			name := line[:idx]
-			rulesStr := line[idx+1 : len(line)-1]
+			// Parse workflow inline: "px{a<2006:qkq,m>2090:A,rfg}"
+			braceIdx := 0
+			for i := 0; i < len(line); i++ {
+				if line[i] == '{' {
+					braceIdx = i
+					break
+				}
+			}
+			name := line[:braceIdx]
+			rulesStr := line[braceIdx+1 : len(line)-1]
 
 			var wf workflow
-			for _, ruleStr := range strings.Split(rulesStr, ",") {
-				if strings.Contains(ruleStr, ":") {
-					// Conditional rule: "a<2006:qkq"
-					parts := strings.Split(ruleStr, ":")
-					cond := parts[0]
-					dest := parts[1]
+			wf.rules = make([]rule, 0, 4)
 
-					category := cond[0]
-					op := cond[1]
-					value := 0
-					for i := 2; i < len(cond); i++ {
-						value = value*10 + int(cond[i]-'0')
+			// Parse rules manually without strings.Split
+			start := 0
+			for i := 0; i <= len(rulesStr); i++ {
+				if i == len(rulesStr) || rulesStr[i] == ',' {
+					ruleStr := rulesStr[start:i]
+
+					// Check if conditional rule (contains ':')
+					colonIdx := -1
+					for j := 0; j < len(ruleStr); j++ {
+						if ruleStr[j] == ':' {
+							colonIdx = j
+							break
+						}
 					}
 
-					wf.rules = append(wf.rules, rule{category, op, value, dest})
-				} else {
-					// Default rule: just destination
-					wf.rules = append(wf.rules, rule{dest: ruleStr})
+					if colonIdx >= 0 {
+						// Conditional rule: "a<2006:qkq"
+						category := ruleStr[0]
+						op := ruleStr[1]
+						value := 0
+						for j := 2; j < colonIdx; j++ {
+							value = value*10 + int(ruleStr[j]-'0')
+						}
+						dest := ruleStr[colonIdx+1:]
+						wf.rules = append(wf.rules, rule{category, op, value, dest})
+					} else {
+						// Default rule: just destination
+						wf.rules = append(wf.rules, rule{dest: ruleStr})
+					}
+					start = i + 1
 				}
 			}
 			puzzle.workflows[name] = wf
 		} else {
-			// Parse part: "{x=787,m=2655,a=1222,s=2876}"
+			// Parse part inline: "{x=787,m=2655,a=1222,s=2876}"
 			var p part
 			line = line[1 : len(line)-1] // Remove { }
-			for _, attr := range strings.Split(line, ",") {
-				kv := strings.Split(attr, "=")
-				val := 0
-				for i := 0; i < len(kv[1]); i++ {
-					val = val*10 + int(kv[1][i]-'0')
-				}
-				switch kv[0] {
-				case "x":
-					p.x = val
-				case "m":
-					p.m = val
-				case "a":
-					p.a = val
-				case "s":
-					p.s = val
+
+			// Parse attributes manually
+			start := 0
+			for i := 0; i <= len(line); i++ {
+				if i == len(line) || line[i] == ',' {
+					attr := line[start:i]
+
+					// Find '=' position
+					eqIdx := 0
+					for j := 0; j < len(attr); j++ {
+						if attr[j] == '=' {
+							eqIdx = j
+							break
+						}
+					}
+
+					category := attr[0]
+					val := 0
+					for j := eqIdx + 1; j < len(attr); j++ {
+						val = val*10 + int(attr[j]-'0')
+					}
+
+					switch category {
+					case 'x':
+						p.x = val
+					case 'm':
+						p.m = val
+					case 'a':
+						p.a = val
+					case 's':
+						p.s = val
+					}
+					start = i + 1
 				}
 			}
 			puzzle.parts = append(puzzle.parts, p)
