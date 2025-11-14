@@ -159,11 +159,24 @@ func Day14(puzzle Day14Puzzle, part1 bool) uint {
 		return calculateLoad(grid)
 	}
 
-	seen := make(map[string]int)
+	// Pre-allocate seen map with estimated capacity
+	// Cycle typically detected within 200 iterations
+	seen := make(map[string]int, 200)
 	const totalCycles = 1000000000
 
+	// Reuse buffer for grid serialization
+	var buf bytes.Buffer
+	// Pre-allocate buffer capacity (grid size + newlines)
+	buf.Grow((len(grid) + 1) * len(grid[0]))
+
 	for i := 0; i < totalCycles; i++ {
-		key := gridToString(grid)
+		buf.Reset()
+		for _, row := range grid {
+			buf.Write(row)
+			buf.WriteByte('\n')
+		}
+		key := buf.String()
+
 		if prev, ok := seen[key]; ok {
 			cycleLength := i - prev
 			remaining := (totalCycles - i) % cycleLength

@@ -1632,6 +1632,71 @@ The DP approach is:
 
 Final performance: Part 1 runs in ~5ms, Part 2 in ~73ms.
 
+== Day 14: Parabolic Reflector Dish
+
+=== Performance Optimization
+
+Day 14 Part 2 was optimized by reusing a bytes.Buffer for grid serialization and pre-allocating the cycle detection map.
+
+==== Baseline (b0)
+
+Initial implementation had multiple allocation issues in Part 2's cycle detection:
+- Called `gridToString()` for every iteration, creating a new bytes.Buffer each time
+- Map `seen` grew without pre-allocation
+- For ~165 cycles before detection, this meant 165 buffer allocations + map growth
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay14Part1-16               44.75µ ± 4%    27.12 KiB    202 allocs/op
+BenchmarkDay14Part2-16               38.98m ± 1%     6.35 MiB   1617 allocs/op
+----
+
+==== Optimization (b1)
+
+Two key changes:
+- **Buffer reuse**: Create single `bytes.Buffer` outside loop, pre-grow with grid capacity, reset on each iteration
+- **Map pre-allocation**: `make(map[string]int, 200)` - cycle typically found within 200 iterations
+- Moved gridToString logic inline to eliminate function call overhead
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day14_bench_b0.txt │      /tmp/day14_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day14Part1-16               44.75µ ± 4%   43.83µ ± 3%       ~ (p=0.218 n=10)
+Day14Part2-16               38.98m ± 1%   36.68m ± 2%  -5.90% (p=0.000 n=10)
+geomean                     1.321m        1.268m       -3.99%
+
+              │ /tmp/day14_bench_b0.txt │        /tmp/day14_bench_b1.txt         │
+              │          B/op           │     B/op      vs base                  │
+Day14Part1-16              27.12Ki ± 0%   27.12Ki ± 0%        ~ (p=1.000 n=10) ¹
+Day14Part2-16              6.345Mi ± 0%   1.566Mi ± 0%  -75.32% (p=0.000 n=10)
+geomean                    419.8Ki        208.6Ki       -50.32%
+¹ all samples are equal
+
+              │ /tmp/day14_bench_b0.txt │       /tmp/day14_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day14Part1-16                202.0 ± 0%   202.0 ± 0%        ~ (p=1.000 n=10) ¹
+Day14Part2-16               1617.0 ± 0%   362.0 ± 0%  -77.61% (p=0.000 n=10)
+geomean                      571.5        270.4       -52.68%
+¹ all samples are equal
+----
+
+**Key Improvements:**
+
+* **Part 2**: 5.90% faster (38.98ms → 36.68ms)
+* **Part 2**: 75.32% less memory (6.3MB → 1.5MB)
+* **Part 2**: 77.61% fewer allocations (1617 → 362 allocs/op)
+
+The optimization eliminates repeated buffer allocations by reusing a single `bytes.Buffer` across all cycle detection iterations. Buffer growth uses `.Grow()` with exact grid capacity to prevent internal reallocations. Map pre-allocation avoids repeated growth operations as cycle states are recorded. The ~1255 eliminated allocations (1617→362) represent the ~165 buffer creations and ~90 map growth operations from the baseline.
+
 == Benchmarks
 
 All benchmarks for Advent of Code 2023 solutions (run on Intel(R) Xeon(R) CPU @ 2.60GHz):
