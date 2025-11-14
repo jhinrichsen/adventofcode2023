@@ -69,7 +69,7 @@ func Day20(puzzle Day20Puzzle, part1 bool) uint {
 
 	var lowCount, highCount uint
 
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		queue := []pulse{{from: "button", to: "broadcaster", high: false}}
 
 		for len(queue) > 0 {
