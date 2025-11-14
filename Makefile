@@ -1,5 +1,4 @@
 GO ?= CGO_ENABLED=0 go
-BENCH_FILE ?= benches/$(shell go env GOOS)-$(shell go env GOARCH)-$(shell lscpu | grep "Model name:" | cut -d: -f2 | xargs | sed 's/ \(CPU\|@\|w\/\).*//' | sed 's/ /_/g').txt
 
 .PHONY: all
 all: tidy test
@@ -71,14 +70,22 @@ govulncheck.sarif:
 	govulncheck -version
 	govulncheck -format=sarif ./... > $@
 
-$(BENCH_FILE):
-	@echo "Running benchmarks and saving to $@..."
-	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem | tee $@
+.PHONY: bench-file
+bench-file:
+	@echo "Running benchmarks..."
+	@$(GO) test -run=^$$ -bench=Day..Part.$$ -benchmem > /tmp/bench-output.txt
+	@CPU_NAME=$$(grep '^cpu:' /tmp/bench-output.txt | head -1 | sed 's/^cpu: //' | sed 's/ CPU.*//' | sed 's/[()@]//g' | sed 's/ /_/g' | sed 's/__*/_/g' | sed 's/_$$//' ); \
+	BENCH_FILE="benches/$$(go env GOOS)-$$(go env GOARCH)-$$CPU_NAME.txt"; \
+	echo "Saving to $$BENCH_FILE..."; \
+	cp /tmp/bench-output.txt "$$BENCH_FILE"; \
+	cat "$$BENCH_FILE"
 
 README.html: README.adoc
 	asciidoc $^
 
 .PHONY: total
-total: $(BENCH_FILE)
-	awk -f total.awk < $(BENCH_FILE)
+total: bench-file
+	@BENCH_FILE=$$(ls -t benches/*.txt | head -1); \
+	echo "Calculating total from $$BENCH_FILE..."; \
+	awk -f total.awk < "$$BENCH_FILE"
 
