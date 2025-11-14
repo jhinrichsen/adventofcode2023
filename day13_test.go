@@ -14,7 +14,6 @@ func TestDay13Part1(t *testing.T) {
 
 func BenchmarkDay13Part1(b *testing.B) {
 	lines := linesFromFilename(b, filename(13))
-	b.ResetTimer()
 	for b.Loop() {
 		puzzle, _ := NewDay13(lines)
 		_ = Day13(puzzle, true)
