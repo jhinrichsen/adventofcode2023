@@ -44,16 +44,19 @@ type visitKey17 struct {
 }
 
 func Day17(lines []string, part1 bool) uint {
-	if !part1 {
-		return 0
-	}
-
 	if len(lines) == 0 {
 		return 0
 	}
 
 	rows := len(lines)
 	cols := len(lines[0])
+
+	minConsecutive := 0
+	maxConsecutive := 3
+	if !part1 {
+		minConsecutive = 4
+		maxConsecutive = 10
+	}
 
 	visited := make(map[visitKey17]bool)
 	pq := &priorityQueue17{}
@@ -66,7 +69,9 @@ func Day17(lines []string, part1 bool) uint {
 		current := heap.Pop(pq).(*state17)
 
 		if current.row == rows-1 && current.col == cols-1 {
-			return current.heat
+			if part1 || current.consecutive >= minConsecutive {
+				return current.heat
+			}
 		}
 
 		key := visitKey17{current.row, current.col, current.dr, current.dc, current.consecutive}
@@ -77,14 +82,22 @@ func Day17(lines []string, part1 bool) uint {
 
 		directions := [][2]int{}
 
-		if current.consecutive < 3 && (current.dr != 0 || current.dc != 0) {
+		if current.consecutive < maxConsecutive && (current.dr != 0 || current.dc != 0) {
 			directions = append(directions, [2]int{current.dr, current.dc})
 		}
 
-		if current.dr == 0 {
-			directions = append(directions, [2]int{-1, 0}, [2]int{1, 0})
-		} else {
-			directions = append(directions, [2]int{0, -1}, [2]int{0, 1})
+		if current.consecutive >= minConsecutive || (current.dr == 0 && current.dc == 0) {
+			if current.dr == 0 {
+				directions = append(directions, [2]int{-1, 0}, [2]int{1, 0})
+			} else if current.dc == 0 {
+				directions = append(directions, [2]int{0, -1}, [2]int{0, 1})
+			} else {
+				if current.dr != 0 {
+					directions = append(directions, [2]int{0, -1}, [2]int{0, 1})
+				} else {
+					directions = append(directions, [2]int{-1, 0}, [2]int{1, 0})
+				}
+			}
 		}
 
 		for _, dir := range directions {
