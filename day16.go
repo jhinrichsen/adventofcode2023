@@ -10,20 +10,16 @@ func Day16(lines []string, part1 bool) uint {
 		return 0
 	}
 
-	return energize(lines, 0, 0, 0, 1)
-}
-
-func energize(grid []string, startRow, startCol, startDr, startDc int) uint {
-	if len(grid) == 0 {
+	if len(lines) == 0 {
 		return 0
 	}
 
-	rows := len(grid)
-	cols := len(grid[0])
+	rows := len(lines)
+	cols := len(lines[0])
 
 	visited := make(map[pos16]bool)
 	energized := make(map[[2]int]bool)
-	queue := []pos16{{row: startRow, col: startCol, dr: startDr, dc: startDc}}
+	queue := []pos16{{row: 0, col: 0, dr: 0, dc: 1}}
 
 	for len(queue) > 0 {
 		beam := queue[0]
@@ -39,7 +35,7 @@ func energize(grid []string, startRow, startCol, startDr, startDc int) uint {
 		visited[beam] = true
 		energized[[2]int{beam.row, beam.col}] = true
 
-		tile := grid[beam.row][beam.col]
+		tile := lines[beam.row][beam.col]
 		var nextBeams []pos16
 
 		switch tile {
