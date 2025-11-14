@@ -2,41 +2,6 @@ package adventofcode2023
 
 import "container/heap"
 
-type state17 struct {
-	row, col    int
-	dr, dc      int
-	consecutive int
-	heat        uint
-	index       int
-}
-
-type priorityQueue17 []*state17
-
-func (pq priorityQueue17) Len() int { return len(pq) }
-func (pq priorityQueue17) Less(i, j int) bool {
-	return pq[i].heat < pq[j].heat
-}
-func (pq priorityQueue17) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-	pq[i].index = i
-	pq[j].index = j
-}
-func (pq *priorityQueue17) Push(x interface{}) {
-	n := len(*pq)
-	item := x.(*state17)
-	item.index = n
-	*pq = append(*pq, item)
-}
-func (pq *priorityQueue17) Pop() interface{} {
-	old := *pq
-	n := len(old)
-	item := old[n-1]
-	old[n-1] = nil
-	item.index = -1
-	*pq = old[0 : n-1]
-	return item
-}
-
 type visitKey17 struct {
 	row, col    int
 	dr, dc      int
@@ -59,7 +24,7 @@ func Day17(lines []string, part1 bool) uint {
 	}
 
 	visited := make(map[visitKey17]bool)
-	pq := &priorityQueue17{}
+	pq := newPriorityQueue(func(a, b *state17) bool { return a.heat < b.heat })
 	heap.Init(pq)
 
 	heap.Push(pq, &state17{row: 0, col: 0, dr: 0, dc: 1, consecutive: 0, heat: 0})

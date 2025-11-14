@@ -73,6 +73,57 @@ Number of tries for a correct answer:
 | 25  |        |
 |===
 
+== Day 17: Clumsy Crucible
+
+=== Performance Optimization
+
+Day 17 was optimized by experimenting with a generic priority queue implementation.
+
+==== Baseline (b0)
+
+Initial implementation with day-specific priority queue types (`state17` and `priorityQueue17`).
+
+==== Optimization (b1)
+
+Refactored priority queue into generic `priorityQueue[T priorityItem]` with interface constraint.
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ day17_bench_b0.txt │          day17_bench_b1.txt          │
+              │       sec/op       │    sec/op     vs base                │
+Day17Part1-16          309.3m ± 9%   365.5m ± 11%  +18.17% (p=0.001 n=10)
+Day17Part2-16           1.135 ± 6%    1.184 ±  7%        ~ (p=0.165 n=10)
+geomean                592.5m        657.8m        +11.02%
+
+              │ day17_bench_b0.txt │         day17_bench_b1.txt          │
+              │        B/op        │     B/op      vs base               │
+Day17Part1-16         99.85Mi ± 0%   99.62Mi ± 0%       ~ (p=0.280 n=10)
+Day17Part2-16         251.9Mi ± 0%   251.9Mi ± 0%       ~ (p=0.556 n=10)
+geomean               158.6Mi        158.4Mi       -0.12%
+
+              │ day17_bench_b0.txt │         day17_bench_b1.txt         │
+              │     allocs/op      │  allocs/op   vs base               │
+Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.239 n=10)
+Day17Part2-16          2.953M ± 0%   2.953M ± 0%       ~ (p=0.592 n=10)
+geomean                1.733M        1.733M       -0.00%
+----
+
+**Key Results:**
+
+* **Part 1**: 18% slower (309ms → 366ms)
+* **Part 2**: No significant change (1.135s → 1.184s, within noise)
+* **Memory**: No significant change
+* **Allocations**: No significant change
+
+The generic implementation introduces ~18% runtime overhead for Part 1 without providing any memory or allocation benefits. This demonstrates that Go generics have measurable performance costs when used with interface constraints requiring method calls (GetIndex/SetIndex). The compiler cannot fully eliminate the interface dispatch overhead despite type parameter instantiation.
+
+For hot path code like Dijkstra's algorithm, day-specific types with direct field access outperform generic abstractions. Keep the generic version for code reusability across future days.
+
 == Day 1: Trebuchet?!
 
 Writing a custom one-pass parser for V2 because why not.
