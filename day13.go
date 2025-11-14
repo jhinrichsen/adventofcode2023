@@ -1,6 +1,10 @@
 package adventofcode2023
 
 func findVerticalReflection(lines []string, start, end int) int {
+	return findVerticalReflectionWithSmudges(lines, start, end, 0)
+}
+
+func findVerticalReflectionWithSmudges(lines []string, start, end, smudges int) int {
 	if start >= end || len(lines[start]) == 0 {
 		return 0
 	}
@@ -8,15 +12,16 @@ func findVerticalReflection(lines []string, start, end int) int {
 	cols := len(lines[start])
 
 	for col := 1; col < cols; col++ {
-		if isVerticalReflection(lines, start, end, col) {
+		if countVerticalMismatches(lines, start, end, col) == smudges {
 			return col
 		}
 	}
 	return 0
 }
 
-func isVerticalReflection(lines []string, start, end, col int) bool {
+func countVerticalMismatches(lines []string, start, end, col int) int {
 	cols := len(lines[start])
+	mismatches := 0
 
 	for i := 0; i < min(col, cols-col); i++ {
 		left := col - 1 - i
@@ -24,14 +29,18 @@ func isVerticalReflection(lines []string, start, end, col int) bool {
 
 		for row := start; row < end; row++ {
 			if lines[row][left] != lines[row][right] {
-				return false
+				mismatches++
 			}
 		}
 	}
-	return true
+	return mismatches
 }
 
 func findHorizontalReflection(lines []string, start, end int) int {
+	return findHorizontalReflectionWithSmudges(lines, start, end, 0)
+}
+
+func findHorizontalReflectionWithSmudges(lines []string, start, end, smudges int) int {
 	if start >= end {
 		return 0
 	}
@@ -39,30 +48,34 @@ func findHorizontalReflection(lines []string, start, end int) int {
 	rows := end - start
 
 	for row := 1; row < rows; row++ {
-		if isHorizontalReflection(lines, start, end, row) {
+		if countHorizontalMismatches(lines, start, end, row) == smudges {
 			return row
 		}
 	}
 	return 0
 }
 
-func isHorizontalReflection(lines []string, start, end, row int) bool {
+func countHorizontalMismatches(lines []string, start, end, row int) int {
 	rows := end - start
+	mismatches := 0
 
 	for i := 0; i < min(row, rows-row); i++ {
 		above := start + row - 1 - i
 		below := start + row + i
 
-		if lines[above] != lines[below] {
-			return false
+		for col := 0; col < len(lines[above]); col++ {
+			if lines[above][col] != lines[below][col] {
+				mismatches++
+			}
 		}
 	}
-	return true
+	return mismatches
 }
 
 func Day13(lines []string, part1 bool) uint {
+	smudges := 0
 	if !part1 {
-		return 0
+		smudges = 1
 	}
 
 	var total uint
@@ -71,9 +84,9 @@ func Day13(lines []string, part1 bool) uint {
 	for i := 0; i <= len(lines); i++ {
 		if i == len(lines) || lines[i] == "" {
 			if i > start {
-				if vr := findVerticalReflection(lines, start, i); vr > 0 {
+				if vr := findVerticalReflectionWithSmudges(lines, start, i, smudges); vr > 0 {
 					total += uint(vr)
-				} else if hr := findHorizontalReflection(lines, start, i); hr > 0 {
+				} else if hr := findHorizontalReflectionWithSmudges(lines, start, i, smudges); hr > 0 {
 					total += uint(hr * 100)
 				}
 			}
