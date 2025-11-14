@@ -3,7 +3,7 @@ package adventofcode2023
 type Day25Puzzle map[string][]string
 
 func NewDay25(lines []string) (Day25Puzzle, error) {
-	puzzle := make(Day25Puzzle, 2000)
+	puzzle := make(Day25Puzzle)
 
 	for _, line := range lines {
 		if line == "" {
@@ -45,14 +45,8 @@ func NewDay25(lines []string) (Day25Puzzle, error) {
 		}
 
 		// Add bidirectional connections
-		if puzzle[from] == nil {
-			puzzle[from] = make([]string, 0, 8)
-		}
 		for _, to := range connections {
 			puzzle[from] = append(puzzle[from], to)
-			if puzzle[to] == nil {
-				puzzle[to] = make([]string, 0, 8)
-			}
 			puzzle[to] = append(puzzle[to], from)
 		}
 	}
@@ -66,7 +60,13 @@ func Day25(puzzle Day25Puzzle, part1 bool) uint {
 
 	// Build edge usage map
 	type edge struct{ a, b string }
-	edgeCount := make(map[edge]int, 10000)
+	// Calculate number of edges: sum of all neighbor counts / 2
+	numEdges := 0
+	for _, neighbors := range puzzle {
+		numEdges += len(neighbors)
+	}
+	numEdges /= 2
+	edgeCount := make(map[edge]int, numEdges)
 
 	// Get all nodes
 	nodes := make([]string, 0, len(puzzle))
