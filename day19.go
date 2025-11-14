@@ -22,6 +22,10 @@ type part struct {
 	x, m, a, s int
 }
 
+type ratingRange struct {
+	x, m, a, s [2]int // [min, max] inclusive
+}
+
 func NewDay19(lines []string) (Day19Puzzle, error) {
 	var puzzle Day19Puzzle
 	puzzle.workflows = make(map[string]workflow)
@@ -90,17 +94,24 @@ func NewDay19(lines []string) (Day19Puzzle, error) {
 }
 
 func Day19(puzzle Day19Puzzle, part1 bool) uint {
-	if !part1 {
-		return 0
+	if part1 {
+		var total uint
+		for _, p := range puzzle.parts {
+			if processPart(p, puzzle.workflows) {
+				total += uint(p.x + p.m + p.a + p.s)
+			}
+		}
+		return total
 	}
 
-	var total uint
-	for _, p := range puzzle.parts {
-		if processPart(p, puzzle.workflows) {
-			total += uint(p.x + p.m + p.a + p.s)
-		}
+	// Part 2: Count all possible rating combinations
+	initial := ratingRange{
+		x: [2]int{1, 4000},
+		m: [2]int{1, 4000},
+		a: [2]int{1, 4000},
+		s: [2]int{1, 4000},
 	}
-	return total
+	return countAccepted(initial, "in", puzzle.workflows)
 }
 
 func processPart(p part, workflows map[string]workflow) bool {
@@ -143,4 +154,120 @@ func processPart(p part, workflows map[string]workflow) bool {
 	}
 
 	return current == "A"
+}
+
+func countAccepted(rr ratingRange, workflowName string, workflows map[string]workflow) uint {
+	if workflowName == "R" {
+		return 0
+	}
+	if workflowName == "A" {
+		// Calculate combinations: product of all range sizes
+		return uint((rr.x[1] - rr.x[0] + 1) *
+			(rr.m[1] - rr.m[0] + 1) *
+			(rr.a[1] - rr.a[0] + 1) *
+			(rr.s[1] - rr.s[0] + 1))
+	}
+
+	wf := workflows[workflowName]
+	var total uint
+	current := rr
+
+	for _, r := range wf.rules {
+		if r.category == 0 {
+			// Default rule - send all remaining to destination
+			total += countAccepted(current, r.dest, workflows)
+			break
+		}
+
+		// Get the relevant range for this condition
+		var rangePtr *[2]int
+		switch r.category {
+		case 'x':
+			rangePtr = &current.x
+		case 'm':
+			rangePtr = &current.m
+		case 'a':
+			rangePtr = &current.a
+		case 's':
+			rangePtr = &current.s
+		}
+
+		matching := current
+
+		if r.op == '<' {
+			// Matching: [min, value-1]
+			// Non-matching: [value, max]
+			if rangePtr[0] < r.value {
+				matchRange := *rangePtr
+				matchRange[1] = min(matchRange[1], r.value-1)
+				switch r.category {
+				case 'x':
+					matching.x = matchRange
+				case 'm':
+					matching.m = matchRange
+				case 'a':
+					matching.a = matchRange
+				case 's':
+					matching.s = matchRange
+				}
+				total += countAccepted(matching, r.dest, workflows)
+			}
+
+			if rangePtr[1] >= r.value {
+				nonMatchRange := *rangePtr
+				nonMatchRange[0] = max(nonMatchRange[0], r.value)
+				switch r.category {
+				case 'x':
+					current.x = nonMatchRange
+				case 'm':
+					current.m = nonMatchRange
+				case 'a':
+					current.a = nonMatchRange
+				case 's':
+					current.s = nonMatchRange
+				}
+			} else {
+				// No non-matching range
+				break
+			}
+		} else { // r.op == '>'
+			// Matching: [value+1, max]
+			// Non-matching: [min, value]
+			if rangePtr[1] > r.value {
+				matchRange := *rangePtr
+				matchRange[0] = max(matchRange[0], r.value+1)
+				switch r.category {
+				case 'x':
+					matching.x = matchRange
+				case 'm':
+					matching.m = matchRange
+				case 'a':
+					matching.a = matchRange
+				case 's':
+					matching.s = matchRange
+				}
+				total += countAccepted(matching, r.dest, workflows)
+			}
+
+			if rangePtr[0] <= r.value {
+				nonMatchRange := *rangePtr
+				nonMatchRange[1] = min(nonMatchRange[1], r.value)
+				switch r.category {
+				case 'x':
+					current.x = nonMatchRange
+				case 'm':
+					current.m = nonMatchRange
+				case 'a':
+					current.a = nonMatchRange
+				case 's':
+					current.s = nonMatchRange
+				}
+			} else {
+				// No non-matching range
+				break
+			}
+		}
+	}
+
+	return total
 }
