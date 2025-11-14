@@ -718,6 +718,75 @@ BenchmarkDay09Part2-16      	   28086	     42086 ns/op	       0 B/op	       0 al
 Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
 Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.
 
+=== Performance Optimization (Stack Allocation)
+
+Day 09 was further optimized by reducing array dimensions to fit within stack size limits, eliminating heap escaping.
+
+==== Baseline (b0)
+
+The Day09V2 implementation used a fixed-size array `var ns [DIM][DIM]int` with `DIM = 200`:
+- Array size: [200][200]int = 200 × 200 × 8 bytes = 320 KB
+- Exceeded typical stack frame limits, causing heap allocation
+- Resulted in 1 allocation per call despite using a "fixed-size" array
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay09Part1-16             171.18µ ± 27%    320 KiB    1 allocs/op
+BenchmarkDay09Part2-16             206.22µ ±  6%    320 KiB    1 allocs/op
+----
+
+==== Optimization (b1)
+
+Analyzed actual input dimensions:
+- 200 lines (matching original DIM)
+- Maximum 21 numbers per line (much less than 200)
+
+Reduced array to actual requirements with safety margin:
+- Changed from `var ns [200][200]int` to `var ns [LINES][MAXNUMS]int`
+- Where `LINES = 200` and `MAXNUMS = 30`
+- New array size: [200][30]int = 200 × 30 × 8 bytes = 48 KB
+- Now fits comfortably within stack limits
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day09_bench_b0.txt │       /tmp/day09_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day09Part1-16             171.18µ ± 27%   75.61µ ± 2%  -55.83% (p=0.000 n=10)
+Day09Part2-16             206.22µ ±  6%   77.02µ ± 2%  -62.65% (p=0.000 n=10)
+geomean                    187.9µ         76.31µ       -59.38%
+
+              │ /tmp/day09_bench_b0.txt │         /tmp/day09_bench_b1.txt         │
+              │          B/op           │    B/op     vs base                     │
+Day09Part1-16              320.0Ki ± 0%   0.0Ki ± 0%  -100.00% (p=0.000 n=10)
+Day09Part2-16              320.0Ki ± 0%   0.0Ki ± 0%  -100.00% (p=0.000 n=10)
+geomean                    320.0Ki                    ?                       ¹ ²
+¹ summaries must be >0 to compute geomean
+² ratios must be >0 to compute geomean
+
+              │ /tmp/day09_bench_b0.txt │         /tmp/day09_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day09Part1-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+Day09Part2-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+geomean                      1.000                    ?                       ¹ ²
+¹ summaries must be >0 to compute geomean
+² ratios must be >0 to compute geomean
+----
+
+**Key Improvements:**
+
+* **Part 1**: 55.83% faster (171µs → 76µs), 100% reduction in allocations and memory (320 KB → 0 B)
+* **Part 2**: 62.65% faster (206µs → 77µs), 100% reduction in allocations and memory (320 KB → 0 B)
+
+The optimization eliminates heap escaping by sizing arrays based on actual input dimensions rather than worst-case estimates. Go's compiler allocates small arrays (<64KB typically) on the stack, but large arrays escape to the heap. By reducing from 320KB to 48KB, the array now stays on the stack. This eliminates allocation overhead and improves cache locality. The analysis step (checking input dimensions) is crucial - blindly using large fixed arrays can defeat the performance benefits of avoiding dynamic allocations.
+
 == Day 10: Pipe Maze
 
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
