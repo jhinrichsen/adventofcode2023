@@ -1,24 +1,16 @@
 package adventofcode2023
 
-type Day16Puzzle struct {
-	grid []string
-}
-
-func NewDay16(lines []string) (Day16Puzzle, error) {
-	return Day16Puzzle{grid: lines}, nil
-}
-
 type pos16 struct {
 	row, col int
 	dr, dc   int
 }
 
-func Day16(puzzle Day16Puzzle, part1 bool) uint {
+func Day16(lines []string, part1 bool) uint {
 	if !part1 {
 		return 0
 	}
 
-	return energize(puzzle.grid, 0, 0, 0, 1)
+	return energize(lines, 0, 0, 0, 1)
 }
 
 func energize(grid []string, startRow, startCol, startDr, startDc int) uint {
