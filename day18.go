@@ -31,25 +31,46 @@ func NewDay18(lines []string) (Day18Puzzle, error) {
 }
 
 func Day18(puzzle Day18Puzzle, part1 bool) uint {
-	if !part1 {
-		return 0
-	}
-
 	x, y := 0, 0
 	vertices := [][2]int{{0, 0}}
 	perimeter := 0
 
 	for _, inst := range puzzle {
-		perimeter += inst.dist
-		switch inst.dir {
+		var dir byte
+		var dist int
+
+		if part1 {
+			dir = inst.dir
+			dist = inst.dist
+		} else {
+			// Decode color: first 5 hex digits = distance, last digit = direction
+			dist = 0
+			for i := 0; i < 5; i++ {
+				dist = dist*16 + hexToInt(inst.color[i])
+			}
+			// Direction: 0=R, 1=D, 2=L, 3=U
+			switch inst.color[5] {
+			case '0':
+				dir = 'R'
+			case '1':
+				dir = 'D'
+			case '2':
+				dir = 'L'
+			case '3':
+				dir = 'U'
+			}
+		}
+
+		perimeter += dist
+		switch dir {
 		case 'R':
-			x += inst.dist
+			x += dist
 		case 'L':
-			x -= inst.dist
+			x -= dist
 		case 'D':
-			y += inst.dist
+			y += dist
 		case 'U':
-			y -= inst.dist
+			y -= dist
 		}
 		vertices = append(vertices, [2]int{x, y})
 	}
@@ -66,4 +87,17 @@ func Day18(puzzle Day18Puzzle, part1 bool) uint {
 
 	total := area + perimeter/2 + 1
 	return uint(total)
+}
+
+func hexToInt(c byte) int {
+	if c >= '0' && c <= '9' {
+		return int(c - '0')
+	}
+	if c >= 'a' && c <= 'f' {
+		return int(c - 'a' + 10)
+	}
+	if c >= 'A' && c <= 'F' {
+		return int(c - 'A' + 10)
+	}
+	return 0
 }
