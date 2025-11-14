@@ -460,6 +460,73 @@ geomean                     4.446k        2.927k       -34.16%
 
 The optimization dramatically improves Part 2 performance by eliminating repeated allocations in the BFS loop. The baseline created a new map for each of ~1400 brick removals tested; the optimized version reuses a single bool array, clearing it with a simple loop. The head/tail pointer queue approach eliminates slice reslicing operations (`queue = queue[1:]`) that create new slice headers. Pre-allocating support relationship slices with capacity 3 (typical brick connectivity) reduces growth operations. The remaining ~2926 allocations in both parts represent the initial brick parsing and support relationship building - unavoidable without changing the data model.
 
+== Day 23: A Long Walk
+
+=== Performance Optimization
+
+Day 23 was optimized by pre-allocating data structures and using array-based queue with head/tail pointers.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic allocations:
+- Grid slice without pre-allocation
+- `moves := [][2]int{}` created in Part 1 DFS hot loop without capacity
+- Junction and graph maps without capacity hints
+- `visited := make(map[pos]bool)` in Part 2 BFS loop without capacity
+- Queue using slice operations (`queue = queue[1:]`) creating allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay23Part1-16               12.7ms ± 5%     9.67 MiB   156505 allocs/op
+BenchmarkDay23Part2-16               3.85s ± 1%      2.41 MiB    13470 allocs/op
+----
+
+==== Optimization (b2)
+
+Six key changes:
+- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` with estimated capacity
+- **Pre-allocate moves slice**: `make([][2]int, 0, 4)` in Part 1 DFS (max 4 directions)
+- **Pre-allocate junctions map**: `make(map[pos]bool, 100)` with estimated capacity
+- **Pre-allocate graph and edges**: `make(map[pos][]edge, len(junctions))` and `make([]edge, 0, 4)` per junction
+- **Pre-allocate BFS structures**: `make(map[pos]bool, 1000)` for visited, `make([]struct{...}, 1, 1000)` for queue
+- **Array-based queue with head/tail pointers**: Replace `queue = queue[1:]` with index-based traversal
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day23_bench_b0.txt │       /tmp/day23_bench_b2.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day23Part1-16              12.708m ± 5%   5.679m ± 2%  -55.31% (p=0.000 n=10)
+Day23Part2-16                3.854 ± 1%    3.859 ± 2%        ~ (p=0.853 n=10)
+geomean                     221.3m        148.0m       -33.11%
+
+              │ /tmp/day23_bench_b0.txt │       /tmp/day23_bench_b2.txt        │
+              │          B/op           │     B/op      vs base                │
+Day23Part1-16            9672.93Ki ± 0%   46.41Ki ± 0%  -99.52% (p=0.000 n=10)
+Day23Part2-16              2.413Mi ± 0%   1.908Mi ± 0%  -20.92% (p=0.000 n=10)
+geomean                    4.774Mi        301.1Ki       -93.84%
+
+              │ /tmp/day23_bench_b0.txt │      /tmp/day23_bench_b2.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day23Part1-16             156505.0 ± 0%   284.0 ± 0%  -99.82% (p=0.000 n=10)
+Day23Part2-16              13470.0 ± 0%   367.0 ± 0%  -97.28% (p=0.000 n=10)
+geomean                     45.91k        322.8       -99.30%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 55% faster (12.7ms → 5.68ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
+* **Part 2**: Same speed (~0%), 21% less memory (2.41MB → 1.91MB), 97% fewer allocations (13470 → 367)
+
+The optimization dramatically reduces Part 1's allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2's BFS graph compression benefits from pre-allocated structures: junction map (100 capacity), graph map (sized to junctions), visited map (1000 capacity), and queue (1000 capacity). The head/tail pointer queue approach eliminates slice reslicing operations. Part 2's runtime remains unchanged because it's dominated by the final DFS on the compressed graph (which uses recursion), but memory usage and allocations improve significantly. The remaining 284 Part 1 allocations and 367 Part 2 allocations represent unavoidable parsing and graph construction overhead.
+
 == Day 1: Trebuchet?!
 
 Writing a custom one-pass parser for V2 because why not.
