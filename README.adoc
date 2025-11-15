@@ -43,12 +43,6 @@ https://github.com/openwch/ch32v003[a bare metal 48 MHz]
 - probably requiring tinygo - or a full fledge
 https://www.sifive.com/cores/performance-p870-p870a[multicore GHz monster].
 
-== Project structure
-
-Each day lives separately in a `day{{.n}}.go` and `day{{.n}}_test.go` file.
-Unit test data, both examples and puzzle input, is in
-`testdata/day{{.n}}.txt`, and `testdata/day{{.n}}_example.txt`.
-
 == Intel P-cores and E-cores Performance
 
 Modern Intel CPUs (12th gen and later) feature a hybrid architecture with Performance cores (P-cores) and Efficiency cores (E-cores). Understanding their interaction with Go's garbage collector is crucial for benchmark performance.
@@ -57,9 +51,9 @@ Modern Intel CPUs (12th gen and later) feature a hybrid architecture with Perfor
 
 The Intel Core i7-14700K used for benchmarking has:
 
-* **8 P-cores** (Performance): CPUs 0-15 with Hyper-Threading, 3.4 GHz base, 5.6 GHz max boost
-* **12 E-cores** (Efficiency): CPUs 16-27 without Hyper-Threading, 2.6 GHz base, ~4.2 GHz max boost
-* **Total: 28 logical processors** (GOMAXPROCS=28 by default)
+ 8 P-cores (Performance): CPUs 0-15 with Hyper-Threading, 3.4 GHz base, 5.6 GHz max boost
+ 12 E-cores (Efficiency): CPUs 16-27 without Hyper-Threading, 2.6 GHz base, ~4.2 GHz max boost
+ Total: 28 logical processors (GOMAXPROCS=28 by default)
 
 === Benchmarking Single-Threaded Workloads
 
@@ -67,7 +61,7 @@ Go's benchmark runner executes benchmarks serially (one at a time), meaning only
 
 === The GC Parallelism Paradox
 
-Counter-intuitively, **restricting to P-cores significantly degrades performance** for allocation-heavy benchmarks:
+Counter-intuitively, restricting to P-cores significantly degrades performance for allocation-heavy benchmarks:
 
 ----
 Benchmark Performance Comparison - Day16Part2 (119 MB, 103K allocs):
@@ -81,40 +75,40 @@ GOMAXPROCS=16 (P-cores+HT):    139,680,222 ns/op  (159% slower)
 GOMAXPROCS=8  (P-cores only):  122,367,892 ns/op  (127% slower)
 ----
 
-Benchmarks with **zero allocations** show no performance difference, confirming the issue is GC-related.
+Benchmarks with zero allocations show no performance difference, confirming the issue is GC-related.
 
 === Why E-cores Improve Performance
 
-Go's garbage collector spawns **mark workers = 25% of GOMAXPROCS**:
+Go's garbage collector spawns mark workers = 25% of GOMAXPROCS:
 
-* GOMAXPROCS=28 → ~7 mark workers (fast parallel GC)
-* GOMAXPROCS=16 → ~4 mark workers (moderate parallelism)
-* GOMAXPROCS=8  → ~2 mark workers (GC bottleneck)
+ GOMAXPROCS=28 → ~7 mark workers (fast parallel GC)
+ GOMAXPROCS=16 → ~4 mark workers (moderate parallelism)
+ GOMAXPROCS=8  → ~2 mark workers (GC bottleneck)
 
-With fewer mark workers, the GC cannot keep up with allocation rate, forcing **GC assist**: the allocating goroutine must stop and help with garbage collection work, directly blocking benchmark execution.
+With fewer mark workers, the GC cannot keep up with allocation rate, forcing GC assist: the allocating goroutine must stop and help with garbage collection work, directly blocking benchmark execution.
 
-E-cores at 4.2 GHz are perfectly adequate for memory scanning work. Having **7 workers on mixed cores** completes GC cycles faster than **2 workers on 5.6 GHz P-cores**.
+E-cores at 4.2 GHz are perfectly adequate for memory scanning work. Having 7 workers on mixed cores completes GC cycles faster than 2 workers on 5.6 GHz P-cores.
 
 === CPU Utilization During Benchmarks
 
 Monitoring during `make total` with GOMAXPROCS=28 shows:
 
-* **Overall CPU usage:** 5-8% (single-threaded nature)
-* **Active cores:** Typically 1-2 P-cores running at 5.3-5.6 GHz
-* **Idle cores:** Majority at 800 MHz (power saving)
-* **Package temperature:** 31-69°C (no thermal throttling)
+ Overall CPU usage: 5-8% (single-threaded nature)
+ Active cores: Typically 1-2 P-cores running at 5.3-5.6 GHz
+ Idle cores: Majority at 800 MHz (power saving)
+ Package temperature: 31-69°C (no thermal throttling)
 
 === Recommendations
 
-For **Go benchmarks with allocations**:
+For Go benchmarks with allocations:
 
-* ✅ Use default GOMAXPROCS (all cores available)
-* ✅ Let OS scheduler pick fast P-cores for benchmark work
-* ✅ Let GC use all cores (including E-cores) for parallel marking
-* ❌ Do not restrict to P-cores only
-* ❌ Do not use `taskset` to limit CPU affinity
+ ✅ Use default GOMAXPROCS (all cores available)
+ ✅ Let OS scheduler pick fast P-cores for benchmark work
+ ✅ Let GC use all cores (including E-cores) for parallel marking
+ ❌ Do not restrict to P-cores only
+ ❌ Do not use `taskset` to limit CPU affinity
 
-For **allocation-free benchmarks**, core configuration has negligible impact.
+For allocation-free benchmarks, core configuration has negligible impact.
 
 The hybrid architecture works optimally when Go's runtime can leverage all available cores for concurrent GC work while the OS scheduler naturally prefers P-cores for compute-intensive tasks.
 
@@ -362,11 +356,11 @@ geomean                               ²               ?                       �
 ³ ratios must be >0 to compute geomean
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 2**: 2.08% faster (53.4µs → 52.3µs)
-* **Part 2**: 100% reduction in allocations (1 → 0 allocs/op)
-* **Part 2**: 100% reduction in memory (1792 B → 0 B)
+ Part 2: 2.08% faster (53.4µs → 52.3µs)
+ Part 2: 100% reduction in allocations (1 → 0 allocs/op)
+ Part 2: 100% reduction in memory (1792 B → 0 B)
 
 The optimization achieves zero-allocation performance by leveraging compile-time knowledge about input constraints. AoC puzzle inputs have fewer than 256 cards, making a fixed-size `[256]uint` array safe. The Go compiler allocates this array on the stack rather than the heap, eliminating the dynamic allocation overhead entirely. The array uses 2048 bytes of stack space (256 × 8), but only the first `cardCount` elements are accessed.
 
@@ -424,10 +418,10 @@ Day05Part2-16                  8.322k ± 0%   8.280k ± 0%  -0.50% (p=0.000 n=10
 geomean                        2.844k        2.781k       -2.22%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 1.49% faster (65.0µs → 64.0µs), 6.91% less memory (40KB → 37KB), 3.91% fewer allocations (972 → 934)
-* **Part 2**: 3.25% faster (390µs → 378µs), 1.32% less memory (247KB → 244KB), 0.50% fewer allocations (8322 → 8280)
+ Part 1: 1.49% faster (65.0µs → 64.0µs), 6.91% less memory (40KB → 37KB), 3.91% fewer allocations (972 → 934)
+ Part 2: 3.25% faster (390µs → 378µs), 1.32% less memory (247KB → 244KB), 0.50% fewer allocations (8322 → 8280)
 
 The optimization works by eliminating repeated slice reallocations during parsing. By pre-allocating slices with appropriate capacities based on known input patterns, the Go runtime avoids multiple copy operations as slices grow. The parsing phase benefits most from this optimization, as it processes hundreds of numbers across multiple map sections.
 
@@ -476,8 +470,8 @@ BenchmarkDay06Part2-16         35521415.50n ± 3%    (35.5 milliseconds)
 ==== Optimization (b1)
 
 The problem is actually a quadratic equation:
-- We want: `h*(t-h) > d` where h is hold time, t is total time, d is record distance
-- Rearranging: `h² - h*t + d < 0`
+- We want: `h(t-h) > d` where h is hold time, t is total time, d is record distance
+- Rearranging: `h² - ht + d < 0`
 - Use quadratic formula to find boundary points: `h = (t ± sqrt(t² - 4d)) / 2`
 - Count integers strictly between the two roots
 
@@ -497,10 +491,10 @@ Day06Part2-16         35521415.50n ± 3%   11.01n ± 3%  -100.00% (p=0.000 n=10)
 geomean                     86.83µ        21.46n        -99.98%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 80.3% faster (212ns → 42ns) - 5x speedup
-* **Part 2**: 99.99997% faster (35.5ms → 11ns) - **3.2 million times faster!**
+ Part 1: 80.3% faster (212ns → 42ns) - 5x speedup
+ Part 2: 99.99997% faster (35.5ms → 11ns) - 3.2 million times faster!
 
 The optimization transforms the problem from iterating through millions of values to a single mathematical calculation. The quadratic formula gives exact boundary points, eliminating the need to test each individual hold time. Part 2's dramatic improvement (from 35 milliseconds to 11 nanoseconds) demonstrates the power of choosing the right algorithm - O(1) vs O(n) where n=42 million.
 
@@ -623,10 +617,10 @@ geomean                      6.928        4.899       -29.29%
 ¹ all samples are equal
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 9.47% faster (615µs → 557µs)
-* **Part 2**: 3.11% faster (3.23ms → 3.13ms), 50% reduction in allocations (12 → 6 allocs/op)
+ Part 1: 9.47% faster (615µs → 557µs)
+ Part 2: 3.11% faster (3.23ms → 3.13ms), 50% reduction in allocations (12 → 6 allocs/op)
 
 The optimization reduces allocations by eliminating dynamic slice growth. Pre-allocating with exact capacity prevents the Go runtime from repeatedly allocating larger backing arrays and copying data as slices grow. Part 2 benefits most because it processes multiple starting nodes, each requiring cycle length tracking. The `startNodes()` optimization uses a two-pass approach: count first, then allocate exact capacity - trading a small amount of iteration overhead for predictable memory allocation.
 
@@ -699,21 +693,21 @@ As suggested, removing `clear()/ func1` shaves off another 20% from 114 to 84 μ
 ROUTINE ======================== gitlab.com/jhinrichsen/adventofcode2023.Day09V2.func2 in /home/jot/repos/adventofcode2023/day09.go
      1.84s      1.84s (flat, cum) 19.70% of Total
          .          .     79:	digit := func(d int) {
-     1.84s      1.84s     80:		n = 10*n + d
+     1.84s      1.84s     80:		n = 10n + d
          .          .     81:	}
 ----
 
 ChatGPT 4o confirms that this is already pretty optimized, and slightly suggests trying bit shifting `(n << 3) + (n << 1) + d`.
-The Go compiler decides to take another route, the disassembly for `n = 10 * n + d` on AMD looks like this:
+The Go compiler decides to take another route, the disassembly for `n = 10  n + d` on AMD looks like this:
 
 ----
      170ms      170ms     50f6ca: MOVQ 0x4e220(SP), DI                    ;gitlab.com/jhinrichsen/adventofcode2023.Day09V2 day09.go:80
-     980ms      980ms     50f6d2: LEAQ 0(DI)(DI*4), DI
-      90ms       90ms     50f6d6: LEAQ 0(SI)(DI*2), SI
+     980ms      980ms     50f6d2: LEAQ 0(DI)(DI4), DI
+      90ms       90ms     50f6d6: LEAQ 0(SI)(DI2), SI
      600ms      600ms     50f6da: MOVQ SI, 0x4e220(SP)
 ----
 
-`DI + DI * 4` (5) and then `SI + DI * 2` (10 * DI + SI).
+`DI + DI  4` (5) and then `SI + DI  2` (10  DI + SI).
 Well, compiler people know way better than me, so i leave it like that.
 
 For part 2, i had to add a single line, and BÄM
@@ -860,10 +854,10 @@ geomean                      1.000                    ?                       ¹
 ² ratios must be >0 to compute geomean
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 55.83% faster (171µs → 76µs), 100% reduction in allocations and memory (320 KB → 0 B)
-* **Part 2**: 62.65% faster (206µs → 77µs), 100% reduction in allocations and memory (320 KB → 0 B)
+ Part 1: 55.83% faster (171µs → 76µs), 100% reduction in allocations and memory (320 KB → 0 B)
+ Part 2: 62.65% faster (206µs → 77µs), 100% reduction in allocations and memory (320 KB → 0 B)
 
 The optimization eliminates heap escaping by sizing arrays based on actual input dimensions rather than worst-case estimates. Go's compiler allocates small arrays (<64KB typically) on the stack, but large arrays escape to the heap. By reducing from 320KB to 48KB, the array now stays on the stack. This eliminates allocation overhead and improves cache locality. The analysis step (checking input dimensions) is crucial - blindly using large fixed arrays can defeat the performance benefits of avoiding dynamic allocations.
 
@@ -887,7 +881,7 @@ Seems as if some structure is not properly initialized.
 `LoadGridFromFile` contains solid line parser code with a twist.
 
 ----
-        var grid *Day10Grid <1>
+        var grid Day10Grid <1>
         scanner := bufio.NewScanner(file)
         y := 0
         for scanner.Scan() {
@@ -1053,7 +1047,7 @@ For the next implementation, we calculate the bit position, and shift between co
 
 TEXT command-line-arguments.opposite3(SB) /home/jot/repos/adventofcode2023/day10.go
   day10.go:49		0x620c			0fb6c8			MOVZX AL, CX
-  day10.go:49		0x620f			8d0c09			LEAL 0(CX)(CX*1), CX
+  day10.go:49		0x620f			8d0c09			LEAL 0(CX)(CX1), CX
   day10.go:49		0x6212			8d4901			LEAL 0x1(CX), CX
   day10.go:49		0x6215			0fbdc9			BSRL CX, CX <1>
   day10.go:50		0x6218			0fbae100		BTL $0x0, CX <2>
@@ -1173,10 +1167,10 @@ Let's check where these remaining allocations come from.
 ----
 <1> leaking param: filename
 <2> inlining call to os.Open
-<3> inlining call to os.(*File).Close
+<3> inlining call to os.(File).Close
 <4> can inline bytesFromMappedFilename.deferwrap1
 <5> inlining call to syscall.Mmap
-<6> inlining call to os.(*File).Fd
+<6> inlining call to os.(File).Fd
 <7> can inline bytesFromMappedFilename.func1
 <8> func literal does not escape
 <9> inlining call to syscall.Munmap
@@ -1303,7 +1297,7 @@ BenchmarkDay10Part2-16              219.8m ± 2%    897 KiB    25 allocs/op
 ==== Optimization (b1)
 
 Pre-allocated polygon slice with maximum possible capacity:
-- Polygon loop bounded by grid perimeter: `maxPolySize := 2 * (len(lines[0]) + len(lines))`
+- Polygon loop bounded by grid perimeter: `maxPolySize := 2  (len(lines[0]) + len(lines))`
 - Only allocate for Part 2: `if part2 { poly = make([]image.Point, 0, maxPolySize) }`
 - Eliminates repeated reallocation as vertices are appended
 
@@ -1334,12 +1328,12 @@ geomean                      11.18        8.944       -20.00%
 ¹ all samples are equal
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 10.54% faster (433µs → 387µs)
-* **Part 2**: 36% reduction in allocations (25 → 16 allocs/op)
+ Part 1: 10.54% faster (433µs → 387µs)
+ Part 2: 36% reduction in allocations (25 → 16 allocs/op)
 
-**Trade-off:**
+Trade-off:
 - Memory capacity increased by 15% due to pre-allocation with maximum perimeter estimate
 - The actual polygon is smaller than the perimeter, so some capacity goes unused
 - This is a standard optimization pattern: trading memory for fewer allocations and reduced GC pressure
@@ -1353,7 +1347,7 @@ The optimization reduces allocations by eliminating slice growth operations. The
 Possible alternative implementations:
 
 - Literally expand the existing grid, and then use a line draw algo to count points. Drawback: many heap allocations
-- Use Dijkstra's `shortest path` or an A* implementation, giving regular cells +1, and expanded cells +2. Drawback: runs long time.
+- Use Dijkstra's `shortest path` or an A implementation, giving regular cells +1, and expanded cells +2. Drawback: runs long time.
 
 - On further thought, we need to cross all expanded spaces exactly once when traversing from P~1~ to P~2~. Use a stright manhattan distance as a baseline, and add horizontal and vertical expanded spaces while crossing.
 
@@ -1403,8 +1397,8 @@ func Day11(grid [][]byte) uint {
 
 Let's see if and how ChatGPT can squeeze some performance out of this code.
 
-* It shows alternative code that compiles, and runs, and has the same test results as before. Good.
-* It also unrolls the closures into straight `for` loops. Good.
+ It shows alternative code that compiles, and runs, and has the same test results as before. Good.
+ It also unrolls the closures into straight `for` loops. Good.
 
 After ChatGPTs suggestions:
 
@@ -1556,13 +1550,13 @@ Showing top 10 nodes out of 134
      4.22s  7.32%  7.32%     16.94s 29.38%  runtime.mallocgc
      3.96s  6.87% 14.19%      4.75s  8.24%  runtime.findObject
      3.89s  6.75% 20.93%      3.89s  6.75%  runtime.memclrNoHeapPointers
-     3.11s  5.39% 26.33%      6.05s 10.49%  regexp.(*Regexp).tryBacktrack
+     3.11s  5.39% 26.33%      6.05s 10.49%  regexp.(Regexp).tryBacktrack
      2.68s  4.65% 30.97%      2.68s  4.65%  runtime.nextFreeFast (inline)
-     1.91s  3.31% 34.29%      1.91s  3.31%  regexp.(*bitState).shouldVisit (inline)
+     1.91s  3.31% 34.29%      1.91s  3.31%  regexp.(bitState).shouldVisit (inline)
      1.80s  3.12% 37.41%      9.18s 15.92%  runtime.scanobject
      1.33s  2.31% 39.72%     11.06s 19.18%  runtime.growslice
      1.22s  2.12% 41.83%      1.22s  2.12%  runtime.memmove
-     1.10s  1.91% 43.74%      1.74s  3.02%  runtime.(*mspan).writeHeapBitsSmall
+     1.10s  1.91% 43.74%      1.74s  3.02%  runtime.(mspan).writeHeapBitsSmall
 ----
 
 image::static/profile12-01.svg[Embedded,800,opts=inline]
@@ -1654,9 +1648,9 @@ Day12Part2-16      20.15k ± 0%    20.15k ± 0%     ~     (all equal)
 ----
 
 The DP approach is:
-- **138x faster** for Part 1 (622ms → 4.5ms)
-- **114x less memory** for Part 1 (629 MiB → 5.5 MiB)
-- **1604x fewer allocations** for Part 1 (15.3M → 9.5k)
+- 138x faster for Part 1 (622ms → 4.5ms)
+- 114x less memory for Part 1 (629 MiB → 5.5 MiB)
+- 1604x fewer allocations for Part 1 (15.3M → 9.5k)
 - Makes Part 2 tractable without RAM explosion
 
 Final performance: Part 1 runs in ~5ms, Part 2 in ~73ms.
@@ -1686,8 +1680,8 @@ BenchmarkDay14Part2-16               38.98m ± 1%     6.35 MiB   1617 allocs/op
 ==== Optimization (b1)
 
 Two key changes:
-- **Buffer reuse**: Create single `bytes.Buffer` outside loop, pre-grow with grid capacity, reset on each iteration
-- **Map pre-allocation**: `make(map[string]int, 200)` - cycle typically found within 200 iterations
+- Buffer reuse: Create single `bytes.Buffer` outside loop, pre-grow with grid capacity, reset on each iteration
+- Map pre-allocation: `make(map[string]int, 200)` - cycle typically found within 200 iterations
 - Moved gridToString logic inline to eliminate function call overhead
 
 ==== Results
@@ -1718,11 +1712,11 @@ geomean                      571.5        270.4       -52.68%
 ¹ all samples are equal
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 2**: 5.90% faster (38.98ms → 36.68ms)
-* **Part 2**: 75.32% less memory (6.3MB → 1.5MB)
-* **Part 2**: 77.61% fewer allocations (1617 → 362 allocs/op)
+ Part 2: 5.90% faster (38.98ms → 36.68ms)
+ Part 2: 75.32% less memory (6.3MB → 1.5MB)
+ Part 2: 77.61% fewer allocations (1617 → 362 allocs/op)
 
 The optimization eliminates repeated buffer allocations by reusing a single `bytes.Buffer` across all cycle detection iterations. Buffer growth uses `.Grow()` with exact grid capacity to prevent internal reallocations. Map pre-allocation avoids repeated growth operations as cycle states are recorded. The ~1255 eliminated allocations (1617→362) represent the ~165 buffer creations and ~90 map growth operations from the baseline.
 
@@ -1752,10 +1746,10 @@ BenchmarkDay15Part2-16              360.2µ ± 4%   146.96 KiB  2464 allocs/op
 ==== Optimization (b1)
 
 Three key changes:
-- **Inline parsing**: Parse input character-by-character in Part 1, avoiding hash function calls and string splits
-- **Direct input access**: Use `lines[0]` directly for single-line input (typical case)
-- **Pre-allocate boxes**: Initialize each box with capacity 8 (`make([]lens, 0, 8)`)
-- **Inline step parsing**: Parse operations without `strings.Split/Contains/TrimSuffix`
+- Inline parsing: Parse input character-by-character in Part 1, avoiding hash function calls and string splits
+- Direct input access: Use `lines[0]` directly for single-line input (typical case)
+- Pre-allocate boxes: Initialize each box with capacity 8 (`make([]lens, 0, 8)`)
+- Inline step parsing: Parse operations without `strings.Split/Contains/TrimSuffix`
 
 ==== Results
 
@@ -1787,10 +1781,10 @@ geomean                      49.64                    ?                       ¹
 ² ratios must be >0 to compute geomean
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 48% faster (93µs → 48µs), 100% reduction in memory and allocations (64KB → 0B, 1 → 0)
-* **Part 2**: 53% faster (360µs → 170µs), 67% less memory (147KB → 48KB), 90% fewer allocations (2464 → 256)
+ Part 1: 48% faster (93µs → 48µs), 100% reduction in memory and allocations (64KB → 0B, 1 → 0)
+ Part 2: 53% faster (360µs → 170µs), 67% less memory (147KB → 48KB), 90% fewer allocations (2464 → 256)
 
 The optimization eliminates all string manipulation overhead by parsing directly from input. Part 1 benefits from inline hash calculation without creating substring allocations. Part 2 reduces allocations from ~2464 to 256 by pre-allocating box slices and avoiding `strings.Split/TrimSuffix`. The remaining 256 allocations represent the 256 pre-allocated box slices - one per hash bucket.
 
@@ -1820,10 +1814,10 @@ BenchmarkDay16Part2-16              660ms ± ?      665 MiB    2.4M allocs/op (e
 ==== Optimization (b1)
 
 Four key changes:
-- **Fixed-size arrays**: `var visited [120][120][4]bool` for position+direction states (stack-allocated)
-- **Energized array**: `var energized [120][120]bool` instead of map
-- **Array reuse**: Clear and reuse same arrays across all Part 2 energize calls (~440 calls)
-- **Pre-allocated queue**: `make([]pos, 0, 1000)` with capacity hint
+- Fixed-size arrays: `var visited [120][120][4]bool` for position+direction states (stack-allocated)
+- Energized array: `var energized [120][120]bool` instead of map
+- Array reuse: Clear and reuse same arrays across all Part 2 energize calls (~440 calls)
+- Pre-allocated queue: `make([]pos, 0, 1000)` with capacity hint
 
 ==== Results
 
@@ -1845,15 +1839,15 @@ Day16Part1-16             3067.6Ki ± 0%   556.9Ki ± 0%  -81.85% (p=0.000 n=10)
 Day16Part1-16              11113.0 ± 0%   496.0 ± 0%  -95.54% (p=0.000 n=10)
 ----
 
-**Part 2 Results:**
+Part 2 Results:
 ----
 BenchmarkDay16Part2-16    	      12	 101.6ms ± 2%	119.6 MiB	  103.8k allocs/op
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 87.56% faster (3.4ms → 428µs), 81.85% less memory (3.1MB → 557KB), 95.54% fewer allocations (11113 → 496)
-* **Part 2**: ~84% faster (660ms → 102ms), ~82% less memory (665MB → 120MB), 95.7% fewer allocations (2.4M → 103.8k)
+ Part 1: 87.56% faster (3.4ms → 428µs), 81.85% less memory (3.1MB → 557KB), 95.54% fewer allocations (11113 → 496)
+ Part 2: ~84% faster (660ms → 102ms), ~82% less memory (665MB → 120MB), 95.7% fewer allocations (2.4M → 103.8k)
 
 The optimization replaces hash-based maps with direct array indexing, eliminating hashing overhead and memory allocations. The 120×120×4 visited array (230KB) and 120×120 energized array (14KB) are stack-allocated and reused across all ~440 Part 2 simulations, reducing allocations from ~2.4M to ~104k. The remaining allocations are primarily from queue slice operations (496 per simulation × ~210 simulations ≈ 104k). Array clearing is fast due to CPU cache locality compared to map reallocation.
 
@@ -1901,13 +1895,13 @@ Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
 geomean                1.733M        1.733M       -0.00%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 13% faster (309ms → 270ms)
-* **Part 2**: 20% faster (1135ms → 908ms)
-* **Memory**: 10% less (99.8Mi → 90.2Mi)
+ Part 1: 13% faster (309ms → 270ms)
+ Part 2: 20% faster (1135ms → 908ms)
+ Memory: 10% less (99.8Mi → 90.2Mi)
 
-**Conclusion:**
+Conclusion:
 
 The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
 
@@ -1915,15 +1909,15 @@ The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A pr
 
 Calculate the area of a lagoon by tracing its perimeter with dig instructions.
 
-**Algorithm:**
+Algorithm:
 
-* **Shoelace formula** to compute polygon area from vertices
-* **Pick's theorem** to convert area and perimeter to total interior + boundary points
-* Formula: `total = area + perimeter/2 + 1`
+ Shoelace formula to compute polygon area from vertices
+ Pick's theorem to convert area and perimeter to total interior + boundary points
+ Formula: `total = area + perimeter/2 + 1`
 
-**Part 1:** Use direction and distance from instruction lines
+Part 1: Use direction and distance from instruction lines
 
-**Part 2:** Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
+Part 2: Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
 
 Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).
 
@@ -1950,9 +1944,9 @@ BenchmarkDay18Part2-16               115.14µ ±  5%   132.03 KiB   685 allocs/o
 ==== Optimization (b1)
 
 Three key changes:
-- **Inline parsing**: Parse direction, distance, and color character-by-character without `strings.Fields`
-- **Pre-allocate puzzle**: `make(Day18Puzzle, 0, len(lines))`
-- **Pre-allocate vertices**: `make([][2]int, 0, len(puzzle)+1)` with exact capacity
+- Inline parsing: Parse direction, distance, and color character-by-character without `strings.Fields`
+- Pre-allocate puzzle: `make(Day18Puzzle, 0, len(lines))`
+- Pre-allocate vertices: `make([][2]int, 0, len(puzzle)+1)` with exact capacity
 
 ==== Results
 
@@ -1980,10 +1974,10 @@ Day18Part2-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
 geomean                     685.0        2.000       -99.71%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
-* **Part 2**: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+ Part 1: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+ Part 2: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
 
 The optimization eliminates all string field splitting by parsing input character-by-character. The remaining 2 allocations are the puzzle slice and vertices slice, both pre-allocated with exact capacities. The 683 eliminated allocations (685→2) represent the per-line `strings.Fields` calls and dynamic slice growth operations.
 
@@ -2014,11 +2008,11 @@ BenchmarkDay19Part2-16               427.7µ ± 3%    308.2 KiB   4287 allocs/op
 ==== Optimization (b1)
 
 Four key changes:
-- **Inline workflow parsing**: Parse rules character-by-character, find colons without `strings.Split`
-- **Inline part parsing**: Parse attributes without `strings.Split`
-- **Pre-allocate workflows map**: `make(map[string]workflow, 600)` with capacity hint
-- **Pre-allocate parts slice**: `make([]part, 0, 200)`
-- **Pre-allocate rule slices**: `make([]rule, 0, 4)` per workflow
+- Inline workflow parsing: Parse rules character-by-character, find colons without `strings.Split`
+- Inline part parsing: Parse attributes without `strings.Split`
+- Pre-allocate workflows map: `make(map[string]workflow, 600)` with capacity hint
+- Pre-allocate parts slice: `make([]part, 0, 200)`
+- Pre-allocate rule slices: `make([]rule, 0, 4)` per workflow
 
 ==== Results
 
@@ -2046,10 +2040,10 @@ Day19Part2-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
 geomean                    4.287k        0.586k       -86.33%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
-* **Part 2**: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+ Part 1: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+ Part 2: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
 
 The optimization eliminates all `strings.Split` operations by parsing character-by-character. Pre-allocating the workflows map (600 capacity), parts slice (200 capacity), and rule slices (4 capacity each) reduces growth operations. The 3701 eliminated allocations (4287→586) represent the string split operations and dynamic growth from the baseline.
 
@@ -2079,10 +2073,10 @@ BenchmarkDay20Part2-16               23.1ms ± 4%    21.1 MiB   35864 allocs/op
 ==== Optimization (b1)
 
 Four key changes:
-- **Inline module parsing**: Find " -> " delimiter by checking 4-character sequence instead of `strings.Split`
-- **Inline destination parsing**: Parse comma-separated destinations character-by-character
-- **Pre-allocate structures**: `make(Day20Puzzle, len(lines))` for modules, `make(map[string]bool, 4)` for inputs
-- **Pre-allocate queue**: `make([]pulse, 0, 100)` with capacity hint for BFS queue
+- Inline module parsing: Find " -> " delimiter by checking 4-character sequence instead of `strings.Split`
+- Inline destination parsing: Parse comma-separated destinations character-by-character
+- Pre-allocate structures: `make(Day20Puzzle, len(lines))` for modules, `make(map[string]bool, 4)` for inputs
+- Pre-allocate queue: `make([]pulse, 0, 100)` with capacity hint for BFS queue
 
 ==== Results
 
@@ -2110,10 +2104,10 @@ Day20Part2-16   35.864k ± 0%   1.144k ± 0%  -96.81% (p=0.000 n=10)
 geomean          18.13k         698.9       -96.14%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 45% faster (5.47ms → 3.01ms), 94% less memory (5.43MB → 335KB), 95% fewer allocations (9162 → 427)
-* **Part 2**: 44% faster (23.1ms → 13.0ms), 94% less memory (21.1MB → 1.29MB), 97% fewer allocations (35864 → 1144)
+ Part 1: 45% faster (5.47ms → 3.01ms), 94% less memory (5.43MB → 335KB), 95% fewer allocations (9162 → 427)
+ Part 2: 44% faster (23.1ms → 13.0ms), 94% less memory (21.1MB → 1.29MB), 97% fewer allocations (35864 → 1144)
 
 The optimization eliminates all `strings.Split` operations by finding delimiters through character-by-character inspection. Pre-allocating the puzzle map, inputs maps (4 capacity each), and BFS queue (100 capacity) reduces growth operations. The 8735 eliminated allocations in Part 1 (9162→427) represent the string split operations and queue slicing from the baseline.
 
@@ -2143,9 +2137,9 @@ BenchmarkDay21Part2-16               111ms ± 7%     35.9 MiB    2556 allocs/op
 ==== Optimization (b1)
 
 Three key changes:
-- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` with estimated capacity
-- **Pre-allocate visited map**: `make(map[pos]int, height*width/2)` for Part 1, `make(map[pos]int, 50000)` for Part 2
-- **Pre-allocate queue**: `make([]struct{...}, 0, 1000)` for Part 1, `make([]struct{...}, 0, 5000)` for Part 2
+- Pre-allocate grid: `make([][]byte, 0, len(lines))` with estimated capacity
+- Pre-allocate visited map: `make(map[pos]int, heightwidth/2)` for Part 1, `make(map[pos]int, 50000)` for Part 2
+- Pre-allocate queue: `make([]struct{...}, 0, 1000)` for Part 1, `make([]struct{...}, 0, 5000)` for Part 2
 
 ==== Results
 
@@ -2173,10 +2167,10 @@ Day21Part2-16   2.556k ± 0%   2.153k ± 0%  -15.77% (p=0.000 n=10)
 geomean          839.9         661.1       -21.29%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 29% faster (2.16ms → 1.52ms), 35% less memory (1.12MB → 734KB), 26% fewer allocations (276 → 203)
-* **Part 2**: 9% faster (111ms → 101ms), 8% less memory (35.9MB → 33.1MB), 16% fewer allocations (2556 → 2153)
+ Part 1: 29% faster (2.16ms → 1.52ms), 35% less memory (1.12MB → 734KB), 26% fewer allocations (276 → 203)
+ Part 2: 9% faster (111ms → 101ms), 8% less memory (35.9MB → 33.1MB), 16% fewer allocations (2556 → 2153)
 
 The optimization pre-allocates data structures with appropriate capacity hints based on the expected problem size. Part 1 benefits from estimating visited map size as half the grid (height×width/2) and queue size of 1000. Part 2 uses larger estimates (50000 for visited, 5000 for queue) for the infinite grid quadratic extrapolation. The remaining allocations primarily represent map bucket growth and queue slice operations that couldn't be eliminated without algorithmic changes.
 
@@ -2206,10 +2200,10 @@ BenchmarkDay22Part2-16               71.6ms ± 2%    5983 KiB    6295 allocs/op
 ==== Optimization (b2)
 
 Four key changes:
-- **Pre-allocate bricks**: `make(Day22Puzzle, 0, len(lines))` with estimated capacity
-- **Pre-allocate support slices**: `make([]int, 0, 3)` for each brick's supports/supportedBy (average ~3 connections)
-- **Reusable fallen array**: `make([]bool, len(bricks))` cleared and reused for all Part 2 iterations instead of map allocations
-- **Array-based queue**: `make([]int, len(bricks))` with head/tail pointers instead of slice append/slicing operations
+- Pre-allocate bricks: `make(Day22Puzzle, 0, len(lines))` with estimated capacity
+- Pre-allocate support slices: `make([]int, 0, 3)` for each brick's supports/supportedBy (average ~3 connections)
+- Reusable fallen array: `make([]bool, len(bricks))` cleared and reused for all Part 2 iterations instead of map allocations
+- Array-based queue: `make([]int, len(bricks))` with head/tail pointers instead of slice append/slicing operations
 
 ==== Results
 
@@ -2237,10 +2231,10 @@ Day22Part2-16               6.295k ± 0%   2.928k ± 0%  -53.49% (p=0.000 n=10)
 geomean                     4.446k        2.927k       -34.16%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 2% faster (20.4ms → 20.0ms), 32% less memory (431KB → 293KB), 7% fewer allocations (3140 → 2926)
-* **Part 2**: 69% faster (71.6ms → 21.9ms), 95% less memory (5983KB → 306KB), 53% fewer allocations (6295 → 2928)
+ Part 1: 2% faster (20.4ms → 20.0ms), 32% less memory (431KB → 293KB), 7% fewer allocations (3140 → 2926)
+ Part 2: 69% faster (71.6ms → 21.9ms), 95% less memory (5983KB → 306KB), 53% fewer allocations (6295 → 2928)
 
 The optimization dramatically improves Part 2 performance by eliminating repeated allocations in the BFS loop. The baseline created a new map for each of ~1400 brick removals tested; the optimized version reuses a single bool array, clearing it with a simple loop. The head/tail pointer queue approach eliminates slice reslicing operations (`queue = queue[1:]`) that create new slice headers. Pre-allocating support relationship slices with capacity 3 (typical brick connectivity) reduces growth operations. The remaining ~2926 allocations in both parts represent the initial brick parsing and support relationship building - unavoidable without changing the data model.
 
@@ -2271,10 +2265,10 @@ BenchmarkDay23Part2-16               3.85s ± 1%      2.41 MiB    13470 allocs/o
 ==== Optimization (b1)
 
 Four key changes:
-- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` calculated from input size
-- **Pre-allocate moves slice**: `make([][2]int, 0, 4)` in Part 1 DFS (max 4 directions is constant)
-- **Pre-allocate graph structures**: `make(map[pos][]edge, len(junctions))` and `make([]edge, 0, 4)` per junction, calculated from discovered junctions
-- **No capacity hints for BFS**: Let Go's map and slice handle visited/queue growth dynamically to avoid over-allocation from guessed capacities
+- Pre-allocate grid: `make([][]byte, 0, len(lines))` calculated from input size
+- Pre-allocate moves slice: `make([][2]int, 0, 4)` in Part 1 DFS (max 4 directions is constant)
+- Pre-allocate graph structures: `make(map[pos][]edge, len(junctions))` and `make([]edge, 0, 4)` per junction, calculated from discovered junctions
+- No capacity hints for BFS: Let Go's map and slice handle visited/queue growth dynamically to avoid over-allocation from guessed capacities
 
 ==== Results
 
@@ -2302,10 +2296,10 @@ Day23Part2-16               13.47k ± 0%   13.39k ± 0%   -0.62% (p=0.000 n=10)
 geomean                     45.91k        4.049k       -95.75%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 53% faster (12.7ms → 5.92ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
-* **Part 2**: 1.4% slower (3.85s → 3.91s), 0.4% less memory (2.41MB → 2.40MB), 0.6% fewer allocations (13470 → 13390)
+ Part 1: 53% faster (12.7ms → 5.92ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
+ Part 2: 1.4% slower (3.85s → 3.91s), 0.4% less memory (2.41MB → 2.40MB), 0.6% fewer allocations (13470 → 13390)
 
 The optimization dramatically reduces Part 1's allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2's BFS graph compression benefits from calculated pre-allocation: graph map sized to len(junctions), edge slices with capacity 4. BFS structures (visited map, queue) use default capacities to avoid over-allocation from arbitrary guesses - using height×width would waste ~20MB allocating for unreachable positions. Part 2 is slightly slower (~56ms) due to dynamic queue growth, but memory usage is optimal. The remaining allocations represent unavoidable parsing and graph construction overhead.
 
@@ -2333,7 +2327,7 @@ BenchmarkDay24Part2-16               1.595ms ± 1%   47.95 KiB    10 allocs/op
 ==== Optimization (b1)
 
 Single key change:
-- **Pre-allocate puzzle slice**: `puzzle := make(Day24Puzzle, 0, len(lines))` with estimated capacity
+- Pre-allocate puzzle slice: `puzzle := make(Day24Puzzle, 0, len(lines))` with estimated capacity
 
 ==== Results
 
@@ -2361,10 +2355,10 @@ Day24Part2-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
 geomean                      10.00        1.000       -90.00%
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
-* **Part 2**: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+ Part 1: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+ Part 2: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
 
 The optimization pre-allocates the puzzle slice, eliminating 9 slice growth operations during parsing. The parsing code was already optimized with inline byte-level parsing (no `strings.Split`), so the only improvement was in slice pre-allocation. Both parts share the same parsing code, resulting in identical memory and allocation reductions.
 
@@ -2393,10 +2387,10 @@ BenchmarkDay25Part1-16               1.39s ± 3%     308.4 MiB   64430 allocs/op
 ==== Optimization (b1)
 
 Four key changes:
-- **Inline parsing**: Find colon delimiter and parse connections character-by-character without `strings.Split` or `strings.Fields`
-- **Calculate edge capacity**: Count edges as `sum(neighbor counts)/2` to size `edgeCount` map accurately
-- **Pre-allocate with calculated sizes**: `graph` (len(puzzle)), `visited` (len(graph)), `parent` (len(graph)), `queue` (len(graph))
-- **Array-based BFS queue**: `make([]string, len(graph))` with head/tail pointers instead of slice reslicing
+- Inline parsing: Find colon delimiter and parse connections character-by-character without `strings.Split` or `strings.Fields`
+- Calculate edge capacity: Count edges as `sum(neighbor counts)/2` to size `edgeCount` map accurately
+- Pre-allocate with calculated sizes: `graph` (len(puzzle)), `visited` (len(graph)), `parent` (len(graph)), `queue` (len(graph))
+- Array-based BFS queue: `make([]string, len(graph))` with head/tail pointers instead of slice reslicing
 
 ==== Results
 
@@ -2418,9 +2412,9 @@ Day25Part1-16              308.4Mi ± 0%   156.1Mi ± 0%  -49.41% (p=0.000 n=10)
 Day25Part1-16               64.43k ± 0%   17.46k ± 0%  -72.89% (p=0.000 n=10)
 ----
 
-**Key Improvements:**
+Key Improvements:
 
-* **Part 1**: 12% faster (1.39s → 1.22s), 49% less memory (308MB → 156MB), 73% fewer allocations (64430 → 17460)
+ Part 1: 12% faster (1.39s → 1.22s), 49% less memory (308MB → 156MB), 73% fewer allocations (64430 → 17460)
 
 The optimization eliminates string operations in parsing and replaces queue slice reslicing with head/tail pointer traversal. All capacities are calculated from actual data: edgeCount sized to actual edge count (sum of neighbor lists / 2), graph/visited/parent/queue all sized to len(graph). No arbitrary guesses - sizes are computed from the input structure. The BFS function is called ~1500 times during edge betweenness calculation, so the queue optimization (eliminating `queue = queue[1:]`) provides significant cumulative savings. The remaining 17460 allocations represent unavoidable graph construction and algorithm overhead (edge tracking, parent maps per BFS call).
 
@@ -2431,11 +2425,11 @@ All benchmarks are run strictly sequential, repeating in a loop for around 2 sec
 
 include::benches/linux-amd64-IntelR_CoreTM_i7-14700K.txt
 
-**Performance Highlights:**
+Performance Highlights:
 
-* **Fastest**: Day 06 Part 2 - 11.3 ns (after quadratic formula optimization)
-* **Zero allocations**: Days 01, 02, 03, 04, 06, 07, 09
-* **Sub-millisecond**: Days 01-09, 11
-* **Most challenging**: Day 10 Part 2 - 221 ms, Day 12 Part 2 - 124 ms
+ Fastest: Day 06 Part 2 - 11.3 ns (after quadratic formula optimization)
+ Zero allocations: Days 01, 02, 03, 04, 06, 07, 09
+ Sub-millisecond: Days 01-09, 11
+ Most challenging: Day 10 Part 2 - 221 ms, Day 12 Part 2 - 124 ms
 
-**Total runtime**: 374822927.25 ns, 374822.927 µs, 374.823 ms, 0.374823 s
+Total runtime: 374822927.25 ns, 374822.927 µs, 374.823 ms, 0.374823 s
