@@ -7,7 +7,6 @@ image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg",title="coverage report"]
 
-
 [quote, me]
 Same procedure as every year, Eric.
 
@@ -21,6 +20,8 @@ Results are hard coded into the unit tests, so you might not want to peek at `_t
 
 == Environment
 
+=== 2023
+
 - Go 1.22, 1.23
 - vim, vim-go, gopls, fed by an HHKB
 - VisualStudio Code for debugging
@@ -28,6 +29,14 @@ Results are hard coded into the unit tests, so you might not want to peek at `_t
 - Fedora up to 41 @ custom build (AMD Ryzen 5 3400G on a Gigabyte B450)
 - OSX @ 16" Macbook Pro 2019 (Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz)
 - Prompts: Tabnine, ChatGPT, Gemini
+
+=== November 2025
+
+- Go 1.24 (1.25 not yet supported by claude.ai/code research preview)
+- vim, lazygit
+- Fedora 43 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
+- Fedora 43 @ custom build (Intel i7 14700K)
+- Ubuntu 24.04.3 LTS (Noble Numbat) @ Intel(R) Xeon(R) CPU @ 2.60GHz (Claude research preview)
 
 I'd love to try one of those Risc-V boards but can't decide between
 https://github.com/openwch/ch32v003[a bare metal 48 MHz]
@@ -60,7 +69,6 @@ Go's benchmark runner executes benchmarks serially (one at a time), meaning only
 
 Counter-intuitively, **restricting to P-cores significantly degrades performance** for allocation-heavy benchmarks:
 
-[source]
 ----
 Benchmark Performance Comparison - Day16Part2 (119 MB, 103K allocs):
 GOMAXPROCS=28 (all cores):      43,514,553 ns/op  (baseline)
@@ -134,581 +142,14 @@ Number of tries for a correct answer:
 | 16  |   1    |  1
 | 17  |   1    |  1
 | 18  |   1    |  1
-| 19  |        |
-| 20  |        |
-| 21  |        |
-| 22  |        |
-| 23  |        |
-| 24  |   2 (7278 too low)    |
-| 25  |        |
+| 19  |   1    |  1
+| 20  |   1    |  1
+| 21  |   1    |  1
+| 22  |   1    |  1
+| 23  |   1    |  1
+| 24  |   2 (7278 too low)    |  1
+| 25  |   1    |  1
 |===
-
-== Day 17: Clumsy Crucible
-
-=== Performance Optimization
-
-Day 17 was optimized by replacing `container/heap` with a custom generic heap implementation.
-
-==== Baseline (b0)
-
-Initial implementation using `container/heap` with day-specific `priorityQueue17` type wrapping `heap.Interface`.
-
-==== Failed Optimization (b1, b2)
-
-Attempted generic implementations still using `container/heap` were 18-22% slower due to `heap.Interface` overhead, not generics themselves.
-
-==== Successful Optimization (b3)
-
-Custom generic heap implementation without `container/heap`, using Go's monomorphization for zero-abstraction cost.
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ day17_bench_b0.txt │         day17_bench_b3.txt          │
-              │       sec/op       │   sec/op     vs base                │
-Day17Part1-16          309.3m ± 9%   269.6m ± 5%  -12.86% (p=0.000 n=10)
-Day17Part2-16         1135.0m ± 6%   907.5m ± 5%  -20.04% (p=0.000 n=10)
-geomean                592.5m        494.6m       -16.53%
-
-              │ day17_bench_b0.txt │          day17_bench_b3.txt          │
-              │        B/op        │     B/op      vs base                │
-Day17Part1-16         99.85Mi ± 0%   90.18Mi ± 0%   -9.69% (p=0.000 n=10)
-Day17Part2-16         251.9Mi ± 0%   225.4Mi ± 0%  -10.49% (p=0.000 n=10)
-geomean               158.6Mi        142.6Mi       -10.09%
-
-              │ day17_bench_b0.txt │         day17_bench_b3.txt         │
-              │     allocs/op      │  allocs/op   vs base               │
-Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.424 n=10)
-Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
-geomean                1.733M        1.733M       -0.00%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 13% faster (309ms → 270ms)
-* **Part 2**: 20% faster (1135ms → 908ms)
-* **Memory**: 10% less (99.8Mi → 90.2Mi)
-
-**Conclusion:**
-
-The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
-
-== Day 18: Lavaduct Lagoon
-
-Calculate the area of a lagoon by tracing its perimeter with dig instructions.
-
-**Algorithm:**
-
-* **Shoelace formula** to compute polygon area from vertices
-* **Pick's theorem** to convert area and perimeter to total interior + boundary points
-* Formula: `total = area + perimeter/2 + 1`
-
-**Part 1:** Use direction and distance from instruction lines
-
-**Part 2:** Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
-
-Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).
-
-=== Performance Optimization
-
-Day 18 was optimized by eliminating `strings.Fields` and pre-allocating slices with exact capacities.
-
-==== Baseline (b0)
-
-Initial implementation used string operations:
-- `strings.Fields(line)` allocated slice of field strings for each line
-- Dynamic vertex slice growth without pre-allocation
-- Dynamic puzzle slice growth
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay18Part1-16               107.89µ ± 14%   132.03 KiB   685 allocs/op
-BenchmarkDay18Part2-16               115.14µ ±  5%   132.03 KiB   685 allocs/op
-----
-
-==== Optimization (b1)
-
-Three key changes:
-- **Inline parsing**: Parse direction, distance, and color character-by-character without `strings.Fields`
-- **Pre-allocate puzzle**: `make(Day18Puzzle, 0, len(lines))`
-- **Pre-allocate vertices**: `make([][2]int, 0, len(puzzle)+1)` with exact capacity
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt        │
-              │         sec/op         │   sec/op     vs base                │
-Day18Part1-16            107.89µ ± 14%   17.26µ ± 4%  -84.00% (p=0.000 n=10)
-Day18Part2-16            115.14µ ±  5%   18.91µ ± 3%  -83.58% (p=0.000 n=10)
-geomean                   111.5µ         18.07µ       -83.79%
-
-              │ /tmp/day18_b0_only.txt │        /tmp/day18_b1_only.txt        │
-              │          B/op          │     B/op      vs base                │
-Day18Part1-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
-Day18Part2-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
-geomean                   128.9Ki        31.88Ki       -75.28%
-
-              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt       │
-              │       allocs/op        │ allocs/op   vs base                │
-Day18Part1-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
-Day18Part2-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
-geomean                     685.0        2.000       -99.71%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
-* **Part 2**: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
-
-The optimization eliminates all string field splitting by parsing input character-by-character. The remaining 2 allocations are the puzzle slice and vertices slice, both pre-allocated with exact capacities. The 683 eliminated allocations (685→2) represent the per-line `strings.Fields` calls and dynamic slice growth operations.
-
-== Day 19: Aplenty
-
-=== Performance Optimization
-
-Day 19 was optimized by eliminating `strings.Split` operations and pre-allocating data structures.
-
-==== Baseline (b0)
-
-Initial implementation used string operations heavily:
-- `strings.IndexByte` for finding braces
-- `strings.Split(rulesStr, ",")` for parsing rules
-- `strings.Split(ruleStr, ":")` for conditional rules
-- `strings.Split(line, ",")` and `strings.Split(attr, "=")` for parts parsing
-- Dynamic map and slice growth without pre-allocation
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay19Part1-16               404.4µ ± 4%    308.2 KiB   4287 allocs/op
-BenchmarkDay19Part2-16               427.7µ ± 3%    308.2 KiB   4287 allocs/op
-----
-
-==== Optimization (b1)
-
-Four key changes:
-- **Inline workflow parsing**: Parse rules character-by-character, find colons without `strings.Split`
-- **Inline part parsing**: Parse attributes without `strings.Split`
-- **Pre-allocate workflows map**: `make(map[string]workflow, 600)` with capacity hint
-- **Pre-allocate parts slice**: `make([]part, 0, 200)`
-- **Pre-allocate rule slices**: `make([]rule, 0, 4)` per workflow
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
-              │         sec/op         │   sec/op     vs base               │
-Day19Part1-16              404.4µ ± 4%   161.5µ ± 2%  -60.06% (p=0.000 n=10)
-Day19Part2-16              427.7µ ± 3%   156.9µ ± 3%  -63.32% (p=0.000 n=10)
-geomean                    415.9µ        159.2µ       -61.72%
-
-              │ /tmp/day19_b0_only.txt │       /tmp/day19_bench_b1.txt        │
-              │          B/op          │     B/op      vs base                │
-Day19Part1-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
-Day19Part2-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
-geomean                   308.2Ki        127.1Ki       -58.76%
-
-              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
-              │       allocs/op        │ allocs/op   vs base                │
-Day19Part1-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
-Day19Part2-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
-geomean                    4.287k        0.586k       -86.33%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
-* **Part 2**: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
-
-The optimization eliminates all `strings.Split` operations by parsing character-by-character. Pre-allocating the workflows map (600 capacity), parts slice (200 capacity), and rule slices (4 capacity each) reduces growth operations. The 3701 eliminated allocations (4287→586) represent the string split operations and dynamic growth from the baseline.
-
-== Day 20: Pulse Propagation
-
-=== Performance Optimization
-
-Day 20 was optimized by eliminating `strings.Split` operations and pre-allocating data structures.
-
-==== Baseline (b0)
-
-Initial implementation used string operations:
-- `strings.Split(line, " -> ")` for parsing module and destinations
-- `strings.Split(parts[1], ", ")` for parsing destination list
-- Dynamic map and slice growth without pre-allocation
-- Queue slicing with `queue = queue[1:]` creating allocations
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay20Part1-16               5.47ms ± 4%    5.43 MiB    9162 allocs/op
-BenchmarkDay20Part2-16               23.1ms ± 4%    21.1 MiB   35864 allocs/op
-----
-
-==== Optimization (b1)
-
-Four key changes:
-- **Inline module parsing**: Find " -> " delimiter by checking 4-character sequence instead of `strings.Split`
-- **Inline destination parsing**: Parse comma-separated destinations character-by-character
-- **Pre-allocate structures**: `make(Day20Puzzle, len(lines))` for modules, `make(map[string]bool, 4)` for inputs
-- **Pre-allocate queue**: `make([]pulse, 0, 100)` with capacity hint for BFS queue
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /dev/fd/63  │             /dev/fd/62              │
-              │   sec/op    │   sec/op     vs base                │
-Day20Part1-16   5.466m ± 4%   3.009m ± 2%  -44.95% (p=0.000 n=10)
-Day20Part2-16   23.06m ± 4%   12.97m ± 3%  -43.74% (p=0.000 n=10)
-geomean         11.23m        6.247m       -44.35%
-
-              │  /dev/fd/63   │              /dev/fd/62              │
-              │     B/op      │     B/op      vs base                │
-Day20Part1-16   5428.0Ki ± 0%   335.3Ki ± 0%  -93.82% (p=0.000 n=10)
-Day20Part2-16   21.133Mi ± 0%   1.287Mi ± 0%  -93.91% (p=0.000 n=10)
-geomean          10.58Mi        664.8Ki       -93.87%
-
-              │  /dev/fd/63  │             /dev/fd/62              │
-              │  allocs/op   │  allocs/op   vs base                │
-Day20Part1-16    9162.0 ± 0%    427.0 ± 0%  -95.34% (p=0.000 n=10)
-Day20Part2-16   35.864k ± 0%   1.144k ± 0%  -96.81% (p=0.000 n=10)
-geomean          18.13k         698.9       -96.14%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 45% faster (5.47ms → 3.01ms), 94% less memory (5.43MB → 335KB), 95% fewer allocations (9162 → 427)
-* **Part 2**: 44% faster (23.1ms → 13.0ms), 94% less memory (21.1MB → 1.29MB), 97% fewer allocations (35864 → 1144)
-
-The optimization eliminates all `strings.Split` operations by finding delimiters through character-by-character inspection. Pre-allocating the puzzle map, inputs maps (4 capacity each), and BFS queue (100 capacity) reduces growth operations. The 8735 eliminated allocations in Part 1 (9162→427) represent the string split operations and queue slicing from the baseline.
-
-== Day 21: Step Counter
-
-=== Performance Optimization
-
-Day 21 was optimized by pre-allocating data structures with capacity hints.
-
-==== Baseline (b0)
-
-Initial implementation used dynamic growth:
-- Grid slice without pre-allocation
-- `make(map[pos]int)` for visited tracking without capacity hint
-- `make([]struct{...}, 0)` for queue without capacity hint
-- Part 2 infinite grid uses larger structures but also grows dynamically
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay21Part1-16               2.16ms ± 3%    1.12 MiB     276 allocs/op
-BenchmarkDay21Part2-16               111ms ± 7%     35.9 MiB    2556 allocs/op
-----
-
-==== Optimization (b1)
-
-Three key changes:
-- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` with estimated capacity
-- **Pre-allocate visited map**: `make(map[pos]int, height*width/2)` for Part 1, `make(map[pos]int, 50000)` for Part 2
-- **Pre-allocate queue**: `make([]struct{...}, 0, 1000)` for Part 1, `make([]struct{...}, 0, 5000)` for Part 2
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /dev/fd/63  │             /dev/fd/62              │
-              │   sec/op    │   sec/op     vs base                │
-Day21Part1-16   2.159m ± 3%   1.524m ± 5%  -29.41% (p=0.000 n=10)
-Day21Part2-16   111.2m ± 7%   101.3m ± 6%   -8.91% (p=0.001 n=10)
-geomean         15.50m        12.43m       -19.81%
-
-              │  /dev/fd/63   │              /dev/fd/62              │
-              │     B/op      │     B/op      vs base                │
-Day21Part1-16   1122.5Ki ± 0%   734.2Ki ± 0%  -34.60% (p=0.000 n=10)
-Day21Part2-16    35.91Mi ± 0%   33.13Mi ± 0%   -7.76% (p=0.000 n=10)
-geomean          6.274Mi        4.873Mi       -22.33%
-
-              │ /dev/fd/63  │             /dev/fd/62              │
-              │  allocs/op  │  allocs/op   vs base                │
-Day21Part1-16    276.0 ± 0%    203.0 ± 0%  -26.45% (p=0.000 n=10)
-Day21Part2-16   2.556k ± 0%   2.153k ± 0%  -15.77% (p=0.000 n=10)
-geomean          839.9         661.1       -21.29%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 29% faster (2.16ms → 1.52ms), 35% less memory (1.12MB → 734KB), 26% fewer allocations (276 → 203)
-* **Part 2**: 9% faster (111ms → 101ms), 8% less memory (35.9MB → 33.1MB), 16% fewer allocations (2556 → 2153)
-
-The optimization pre-allocates data structures with appropriate capacity hints based on the expected problem size. Part 1 benefits from estimating visited map size as half the grid (height×width/2) and queue size of 1000. Part 2 uses larger estimates (50000 for visited, 5000 for queue) for the infinite grid quadratic extrapolation. The remaining allocations primarily represent map bucket growth and queue slice operations that couldn't be eliminated without algorithmic changes.
-
-== Day 22: Sand Slabs
-
-=== Performance Optimization
-
-Day 22 was optimized by pre-allocating data structures and replacing allocation-heavy operations with reusable arrays.
-
-==== Baseline (b0)
-
-Initial implementation used dynamic allocations:
-- Bricks slice without pre-allocation
-- `supports` and `supportedBy` slices without capacity hints
-- Part 2 used `make(map[int]bool)` for fallen brick tracking (one per iteration)
-- Part 2 used slice operations (`queue = queue[1:]`) causing repeated allocations
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay22Part1-16               20.4ms ± 1%     431 KiB    3140 allocs/op
-BenchmarkDay22Part2-16               71.6ms ± 2%    5983 KiB    6295 allocs/op
-----
-
-==== Optimization (b2)
-
-Four key changes:
-- **Pre-allocate bricks**: `make(Day22Puzzle, 0, len(lines))` with estimated capacity
-- **Pre-allocate support slices**: `make([]int, 0, 3)` for each brick's supports/supportedBy (average ~3 connections)
-- **Reusable fallen array**: `make([]bool, len(bricks))` cleared and reused for all Part 2 iterations instead of map allocations
-- **Array-based queue**: `make([]int, len(bricks))` with head/tail pointers instead of slice append/slicing operations
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
-              │         sec/op          │   sec/op     vs base                │
-Day22Part1-16               20.40m ± 1%   20.03m ± 2%   -1.79% (p=0.009 n=10)
-Day22Part2-16               71.55m ± 2%   21.94m ± 2%  -69.33% (p=0.000 n=10)
-geomean                     38.20m        20.96m       -45.12%
-
-              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt        │
-              │          B/op           │     B/op      vs base                │
-Day22Part1-16              430.6Ki ± 0%   292.7Ki ± 0%  -32.03% (p=0.000 n=10)
-Day22Part2-16             5982.6Ki ± 0%   306.2Ki ± 0%  -94.88% (p=0.000 n=10)
-geomean                    1.567Mi        299.4Ki       -81.35%
-
-              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
-              │        allocs/op        │  allocs/op   vs base                │
-Day22Part1-16               3.140k ± 0%   2.926k ± 0%   -6.82% (p=0.000 n=10)
-Day22Part2-16               6.295k ± 0%   2.928k ± 0%  -53.49% (p=0.000 n=10)
-geomean                     4.446k        2.927k       -34.16%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 2% faster (20.4ms → 20.0ms), 32% less memory (431KB → 293KB), 7% fewer allocations (3140 → 2926)
-* **Part 2**: 69% faster (71.6ms → 21.9ms), 95% less memory (5983KB → 306KB), 53% fewer allocations (6295 → 2928)
-
-The optimization dramatically improves Part 2 performance by eliminating repeated allocations in the BFS loop. The baseline created a new map for each of ~1400 brick removals tested; the optimized version reuses a single bool array, clearing it with a simple loop. The head/tail pointer queue approach eliminates slice reslicing operations (`queue = queue[1:]`) that create new slice headers. Pre-allocating support relationship slices with capacity 3 (typical brick connectivity) reduces growth operations. The remaining ~2926 allocations in both parts represent the initial brick parsing and support relationship building - unavoidable without changing the data model.
-
-== Day 23: A Long Walk
-
-=== Performance Optimization
-
-Day 23 was optimized by pre-allocating data structures and using array-based queue with head/tail pointers.
-
-==== Baseline (b0)
-
-Initial implementation used dynamic allocations:
-- Grid slice without pre-allocation
-- `moves := [][2]int{}` created in Part 1 DFS hot loop without capacity
-- Junction and graph maps without capacity hints
-- `visited := make(map[pos]bool)` in Part 2 BFS loop without capacity
-- Queue using slice operations (`queue = queue[1:]`) creating allocations
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay23Part1-16               12.7ms ± 5%     9.67 MiB   156505 allocs/op
-BenchmarkDay23Part2-16               3.85s ± 1%      2.41 MiB    13470 allocs/op
-----
-
-==== Optimization (b1)
-
-Four key changes:
-- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` calculated from input size
-- **Pre-allocate moves slice**: `make([][2]int, 0, 4)` in Part 1 DFS (max 4 directions is constant)
-- **Pre-allocate graph structures**: `make(map[pos][]edge, len(junctions))` and `make([]edge, 0, 4)` per junction, calculated from discovered junctions
-- **No capacity hints for BFS**: Let Go's map and slice handle visited/queue growth dynamically to avoid over-allocation from guessed capacities
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
-              │         sec/op          │   sec/op     vs base                │
-Day23Part1-16              12.708m ± 5%   5.920m ± 2%  -53.41% (p=0.000 n=10)
-Day23Part2-16                3.854 ± 1%    3.909 ± 2%   +1.43% (p=0.004 n=10)
-geomean                     221.3m        304.8m       -31.26%
-
-              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
-              │          B/op           │     B/op      vs base                │
-Day23Part1-16            9672.93Ki ± 0%   46.41Ki ± 0%  -99.52% (p=0.000 n=10)
-Day23Part2-16              2.413Mi ± 0%   2.403Mi ± 0%   -0.39% (p=0.000 n=10)
-geomean                    4.774Mi        2.571Mi       -93.09%
-
-              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
-              │        allocs/op        │  allocs/op   vs base                │
-Day23Part1-16             156505.0 ± 0%    284.0 ± 0%  -99.82% (p=0.000 n=10)
-Day23Part2-16               13.47k ± 0%   13.39k ± 0%   -0.62% (p=0.000 n=10)
-geomean                     45.91k        4.049k       -95.75%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 53% faster (12.7ms → 5.92ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
-* **Part 2**: 1.4% slower (3.85s → 3.91s), 0.4% less memory (2.41MB → 2.40MB), 0.6% fewer allocations (13470 → 13390)
-
-The optimization dramatically reduces Part 1's allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2's BFS graph compression benefits from calculated pre-allocation: graph map sized to len(junctions), edge slices with capacity 4. BFS structures (visited map, queue) use default capacities to avoid over-allocation from arbitrary guesses - using height×width would waste ~20MB allocating for unreachable positions. Part 2 is slightly slower (~56ms) due to dynamic queue growth, but memory usage is optimal. The remaining allocations represent unavoidable parsing and graph construction overhead.
-
-== Day 24: Never Tell Me The Odds
-
-=== Performance Optimization
-
-Day 24 was optimized by pre-allocating the puzzle slice.
-
-==== Baseline (b0)
-
-Initial implementation used dynamic puzzle growth without pre-allocation:
-- `var puzzle Day24Puzzle` without capacity hint
-- Parsing was already inline (good!)
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay24Part1-16               853.5µ ± 1%    47.95 KiB    10 allocs/op
-BenchmarkDay24Part2-16               1.595ms ± 1%   47.95 KiB    10 allocs/op
-----
-
-==== Optimization (b1)
-
-Single key change:
-- **Pre-allocate puzzle slice**: `puzzle := make(Day24Puzzle, 0, len(lines))` with estimated capacity
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
-              │         sec/op          │   sec/op     vs base               │
-Day24Part1-16               853.5µ ± 1%   827.9µ ± 1%  -3.00% (p=0.000 n=10)
-Day24Part2-16               1.595m ± 1%   1.572m ± 2%  -1.44% (p=0.029 n=10)
-geomean                     1.167m        1.141m       -2.22%
-
-              │ /tmp/day24_bench_b0.txt │       /tmp/day24_bench_b1.txt        │
-              │          B/op           │     B/op      vs base                │
-Day24Part1-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
-Day24Part2-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
-geomean                    47.95Ki        16.00Ki       -66.63%
-
-              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
-              │        allocs/op        │ allocs/op   vs base                │
-Day24Part1-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
-Day24Part2-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
-geomean                      10.00        1.000       -90.00%
-----
-
-**Key Improvements:**
-
-* **Part 1**: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
-* **Part 2**: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
-
-The optimization pre-allocates the puzzle slice, eliminating 9 slice growth operations during parsing. The parsing code was already optimized with inline byte-level parsing (no `strings.Split`), so the only improvement was in slice pre-allocation. Both parts share the same parsing code, resulting in identical memory and allocation reductions.
-
-== Day 25: Snowverload
-
-=== Performance Optimization
-
-Day 25 was optimized by eliminating `strings.Split` operations, using head/tail pointer queue, and pre-allocating data structures.
-
-==== Baseline (b0)
-
-Initial implementation used string operations and dynamic allocations:
-- `strings.Split(line, ": ")` for parsing line structure
-- `strings.Fields(parts[1])` for parsing connections
-- Dynamic map growth without capacity hints
-- `queue = queue[1:]` in BFS creating repeated allocations
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay25Part1-16               1.39s ± 3%     308.4 MiB   64430 allocs/op
-----
-
-==== Optimization (b1)
-
-Four key changes:
-- **Inline parsing**: Find colon delimiter and parse connections character-by-character without `strings.Split` or `strings.Fields`
-- **Calculate edge capacity**: Count edges as `sum(neighbor counts)/2` to size `edgeCount` map accurately
-- **Pre-allocate with calculated sizes**: `graph` (len(puzzle)), `visited` (len(graph)), `parent` (len(graph)), `queue` (len(graph))
-- **Array-based BFS queue**: `make([]string, len(graph))` with head/tail pointers instead of slice reslicing
-
-==== Results
-
-----
-goos: linux
-goarch: amd64
-pkg: gitlab.com/jhinrichsen/adventofcode2023
-cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
-              │         sec/op          │   sec/op    vs base                │
-Day25Part1-16                1.390 ± 3%    1.224 ± 3%  -11.99% (p=0.000 n=10)
-
-              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
-              │          B/op           │     B/op      vs base                │
-Day25Part1-16              308.4Mi ± 0%   156.1Mi ± 0%  -49.41% (p=0.000 n=10)
-
-              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
-              │        allocs/op        │  allocs/op   vs base                │
-Day25Part1-16               64.43k ± 0%   17.46k ± 0%  -72.89% (p=0.000 n=10)
-----
-
-**Key Improvements:**
-
-* **Part 1**: 12% faster (1.39s → 1.22s), 49% less memory (308MB → 156MB), 73% fewer allocations (64430 → 17460)
-
-The optimization eliminates string operations in parsing and replaces queue slice reslicing with head/tail pointer traversal. All capacities are calculated from actual data: edgeCount sized to actual edge count (sum of neighbor lists / 2), graph/visited/parent/queue all sized to len(graph). No arbitrary guesses - sizes are computed from the input structure. The BFS function is called ~1500 times during edge betweenness calculation, so the queue optimization (eliminating `queue = queue[1:]`) provides significant cumulative savings. The remaining 17460 allocations represent unavoidable graph construction and algorithm overhead (edge tracking, parent maps per BFS call).
 
 == Day 1: Trebuchet?!
 
@@ -995,7 +436,7 @@ The optimization works by eliminating repeated slice reallocations during parsin
 Part 2 reinterprets the seed numbers as ranges (start, length) instead of individual seeds.
 This makes brute force iteration infeasible - the example has 27 seeds, but the real input has billions.
 
-The solution uses range splitting to process entire ranges through each map layer without enumerating individual values. <1>
+The solution uses range splitting to process entire ranges through each map layer without enumerating individual values.
 When a range overlaps with a map entry, it splits into:
 
 - Unmapped portions (before and after the overlap) that pass through unchanged
@@ -1006,7 +447,8 @@ Each range tracks its Min/Max values in the current space (seed → soil → ...
 ----
 Answer: 52210644
 ----
-<1> First attempt accumulated deltas (offset transformations) but kept ranges in seed space.
+
+NOTE: First attempt accumulated deltas (offset transformations) but kept ranges in seed space.
 This produced answer 14209264, which was too low because the final minimum was calculated in the wrong coordinate system.
 
 == Day 6: Wait For It
@@ -1112,7 +554,7 @@ BenchmarkDay08Part1-8   	    1884	    554004 ns/op	       0 B/op	       0 allocs
 
 Part 2 requires starting at all nodes ending with 'A' simultaneously and moving all "ghosts" in sync until ALL reach nodes ending with 'Z' at the same time.
 
-The naive approach of simulating all ghosts step-by-step works for the example (6 steps) but would never terminate for the actual input - it would need to run for over 18 trillion steps. <1>
+The naive approach of simulating all ghosts step-by-step works for the example (6 steps) but would never terminate for the actual input - it would need to run for over 18 trillion steps.
 
 The solution exploits a special property of the input: each ghost's path forms a cycle with exactly one Z node at regular intervals. By finding when each ghost first reaches a Z node, we can use the Least Common Multiple (LCM) to calculate when all cycles align.
 
@@ -1124,7 +566,8 @@ For each starting node ending in 'A':
 ----
 Answer: 18024643846273
 ----
-<1> First attempt used synchronous simulation which ran >10s without completing, making it clear the input requires mathematical insight rather than brute force.
+
+NOTE: First attempt used synchronous simulation which ran >10s without completing, making it clear the input requires mathematical insight rather than brute force.
 
 === Performance Optimization
 
@@ -2414,41 +1857,579 @@ BenchmarkDay16Part2-16    	      12	 101.6ms ± 2%	119.6 MiB	  103.8k allocs/op
 
 The optimization replaces hash-based maps with direct array indexing, eliminating hashing overhead and memory allocations. The 120×120×4 visited array (230KB) and 120×120 energized array (14KB) are stack-allocated and reused across all ~440 Part 2 simulations, reducing allocations from ~2.4M to ~104k. The remaining allocations are primarily from queue slice operations (496 per simulation × ~210 simulations ≈ 104k). Array clearing is fast due to CPU cache locality compared to map reallocation.
 
-== Benchmarks
+== Day 17: Clumsy Crucible
 
-All benchmarks for Advent of Code 2023 solutions (run on Intel(R) Xeon(R) CPU @ 2.60GHz):
+=== Performance Optimization
+
+Day 17 was optimized by replacing `container/heap` with a custom generic heap implementation.
+
+==== Baseline (b0)
+
+Initial implementation using `container/heap` with day-specific `priorityQueue17` type wrapping `heap.Interface`.
+
+==== Failed Optimization (b1, b2)
+
+Attempted generic implementations still using `container/heap` were 18-22% slower due to `heap.Interface` overhead, not generics themselves.
+
+==== Successful Optimization (b3)
+
+Custom generic heap implementation without `container/heap`, using Go's monomorphization for zero-abstraction cost.
+
+==== Results
 
 ----
 goos: linux
 goarch: amd64
 pkg: gitlab.com/jhinrichsen/adventofcode2023
 cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
-BenchmarkDay00Part1-16    	939913101	         1.297 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay01Part1-16    	   40992	     29087 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay01Part2-16    	   40900	     29411 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay02Part1-16    	   65804	     18536 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay02Part2-16    	   63716	     18884 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay03Part1-16    	   20562	     59336 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay03Part2-16    	   42302	     28805 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay04Part1-16    	   28116	     42741 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay04Part2-16    	   20478	     58818 ns/op	    1792 B/op	       1 allocs/op
-BenchmarkDay05Part1-16    	   19119	     63128 ns/op	   40960 B/op	     972 allocs/op
-BenchmarkDay05Part2-16    	    3186	    374142 ns/op	  253202 B/op	    8322 allocs/op
-BenchmarkDay06Part1-16    	 5829315	       207.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay06Part2-16    	      34	  34413278 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay07Part1-16    	    5660	    198390 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay07Part2-16    	    4654	    222379 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDay08Part1-16    	    2176	    542511 ns/op	   57432 B/op	       4 allocs/op
-BenchmarkDay08Part2-16    	     420	   2837891 ns/op	   57792 B/op	      12 allocs/op
-BenchmarkDay09Part1-16    	    8212	    144292 ns/op	  327681 B/op	       1 allocs/op
-BenchmarkDay09Part2-16    	    8452	    154014 ns/op	  327681 B/op	       1 allocs/op
-BenchmarkDay10Part1-16    	    3424	    326933 ns/op	    3792 B/op	       5 allocs/op
-BenchmarkDay10Part2-16    	       5	 210954950 ns/op	  918464 B/op	      25 allocs/op
-BenchmarkDay11Part1-16    	     151	   7894775 ns/op	   16368 B/op	      10 allocs/op
-BenchmarkDay11Part2-16    	     152	   7791367 ns/op	   16368 B/op	      10 allocs/op
-BenchmarkDay12Part1-16    	     166	   7113400 ns/op	 5803886 B/op	   10350 allocs/op
-BenchmarkDay12Part2-16    	      10	 112455039 ns/op	95041446 B/op	   20964 allocs/op
+              │ day17_bench_b0.txt │         day17_bench_b3.txt          │
+              │       sec/op       │   sec/op     vs base                │
+Day17Part1-16          309.3m ± 9%   269.6m ± 5%  -12.86% (p=0.000 n=10)
+Day17Part2-16         1135.0m ± 6%   907.5m ± 5%  -20.04% (p=0.000 n=10)
+geomean                592.5m        494.6m       -16.53%
+
+              │ day17_bench_b0.txt │          day17_bench_b3.txt          │
+              │        B/op        │     B/op      vs base                │
+Day17Part1-16         99.85Mi ± 0%   90.18Mi ± 0%   -9.69% (p=0.000 n=10)
+Day17Part2-16         251.9Mi ± 0%   225.4Mi ± 0%  -10.49% (p=0.000 n=10)
+geomean               158.6Mi        142.6Mi       -10.09%
+
+              │ day17_bench_b0.txt │         day17_bench_b3.txt         │
+              │     allocs/op      │  allocs/op   vs base               │
+Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.424 n=10)
+Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
+geomean                1.733M        1.733M       -0.00%
 ----
+
+**Key Improvements:**
+
+* **Part 1**: 13% faster (309ms → 270ms)
+* **Part 2**: 20% faster (1135ms → 908ms)
+* **Memory**: 10% less (99.8Mi → 90.2Mi)
+
+**Conclusion:**
+
+The overhead was from `container/heap`'s `heap.Interface`, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.
+
+== Day 18: Lavaduct Lagoon
+
+Calculate the area of a lagoon by tracing its perimeter with dig instructions.
+
+**Algorithm:**
+
+* **Shoelace formula** to compute polygon area from vertices
+* **Pick's theorem** to convert area and perimeter to total interior + boundary points
+* Formula: `total = area + perimeter/2 + 1`
+
+**Part 1:** Use direction and distance from instruction lines
+
+**Part 2:** Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)
+
+Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).
+
+=== Performance Optimization
+
+Day 18 was optimized by eliminating `strings.Fields` and pre-allocating slices with exact capacities.
+
+==== Baseline (b0)
+
+Initial implementation used string operations:
+- `strings.Fields(line)` allocated slice of field strings for each line
+- Dynamic vertex slice growth without pre-allocation
+- Dynamic puzzle slice growth
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay18Part1-16               107.89µ ± 14%   132.03 KiB   685 allocs/op
+BenchmarkDay18Part2-16               115.14µ ±  5%   132.03 KiB   685 allocs/op
+----
+
+==== Optimization (b1)
+
+Three key changes:
+- **Inline parsing**: Parse direction, distance, and color character-by-character without `strings.Fields`
+- **Pre-allocate puzzle**: `make(Day18Puzzle, 0, len(lines))`
+- **Pre-allocate vertices**: `make([][2]int, 0, len(puzzle)+1)` with exact capacity
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt        │
+              │         sec/op         │   sec/op     vs base                │
+Day18Part1-16            107.89µ ± 14%   17.26µ ± 4%  -84.00% (p=0.000 n=10)
+Day18Part2-16            115.14µ ±  5%   18.91µ ± 3%  -83.58% (p=0.000 n=10)
+geomean                   111.5µ         18.07µ       -83.79%
+
+              │ /tmp/day18_b0_only.txt │        /tmp/day18_b1_only.txt        │
+              │          B/op          │     B/op      vs base                │
+Day18Part1-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+Day18Part2-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+geomean                   128.9Ki        31.88Ki       -75.28%
+
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day18Part1-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+Day18Part2-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+geomean                     685.0        2.000       -99.71%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+* **Part 2**: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+
+The optimization eliminates all string field splitting by parsing input character-by-character. The remaining 2 allocations are the puzzle slice and vertices slice, both pre-allocated with exact capacities. The 683 eliminated allocations (685→2) represent the per-line `strings.Fields` calls and dynamic slice growth operations.
+
+== Day 19: Aplenty
+
+=== Performance Optimization
+
+Day 19 was optimized by eliminating `strings.Split` operations and pre-allocating data structures.
+
+==== Baseline (b0)
+
+Initial implementation used string operations heavily:
+- `strings.IndexByte` for finding braces
+- `strings.Split(rulesStr, ",")` for parsing rules
+- `strings.Split(ruleStr, ":")` for conditional rules
+- `strings.Split(line, ",")` and `strings.Split(attr, "=")` for parts parsing
+- Dynamic map and slice growth without pre-allocation
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay19Part1-16               404.4µ ± 4%    308.2 KiB   4287 allocs/op
+BenchmarkDay19Part2-16               427.7µ ± 3%    308.2 KiB   4287 allocs/op
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Inline workflow parsing**: Parse rules character-by-character, find colons without `strings.Split`
+- **Inline part parsing**: Parse attributes without `strings.Split`
+- **Pre-allocate workflows map**: `make(map[string]workflow, 600)` with capacity hint
+- **Pre-allocate parts slice**: `make([]part, 0, 200)`
+- **Pre-allocate rule slices**: `make([]rule, 0, 4)` per workflow
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │         sec/op         │   sec/op     vs base               │
+Day19Part1-16              404.4µ ± 4%   161.5µ ± 2%  -60.06% (p=0.000 n=10)
+Day19Part2-16              427.7µ ± 3%   156.9µ ± 3%  -63.32% (p=0.000 n=10)
+geomean                    415.9µ        159.2µ       -61.72%
+
+              │ /tmp/day19_b0_only.txt │       /tmp/day19_bench_b1.txt        │
+              │          B/op          │     B/op      vs base                │
+Day19Part1-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+Day19Part2-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+geomean                   308.2Ki        127.1Ki       -58.76%
+
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day19Part1-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+Day19Part2-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+geomean                    4.287k        0.586k       -86.33%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+* **Part 2**: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+
+The optimization eliminates all `strings.Split` operations by parsing character-by-character. Pre-allocating the workflows map (600 capacity), parts slice (200 capacity), and rule slices (4 capacity each) reduces growth operations. The 3701 eliminated allocations (4287→586) represent the string split operations and dynamic growth from the baseline.
+
+== Day 20: Pulse Propagation
+
+=== Performance Optimization
+
+Day 20 was optimized by eliminating `strings.Split` operations and pre-allocating data structures.
+
+==== Baseline (b0)
+
+Initial implementation used string operations:
+- `strings.Split(line, " -> ")` for parsing module and destinations
+- `strings.Split(parts[1], ", ")` for parsing destination list
+- Dynamic map and slice growth without pre-allocation
+- Queue slicing with `queue = queue[1:]` creating allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay20Part1-16               5.47ms ± 4%    5.43 MiB    9162 allocs/op
+BenchmarkDay20Part2-16               23.1ms ± 4%    21.1 MiB   35864 allocs/op
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Inline module parsing**: Find " -> " delimiter by checking 4-character sequence instead of `strings.Split`
+- **Inline destination parsing**: Parse comma-separated destinations character-by-character
+- **Pre-allocate structures**: `make(Day20Puzzle, len(lines))` for modules, `make(map[string]bool, 4)` for inputs
+- **Pre-allocate queue**: `make([]pulse, 0, 100)` with capacity hint for BFS queue
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │   sec/op    │   sec/op     vs base                │
+Day20Part1-16   5.466m ± 4%   3.009m ± 2%  -44.95% (p=0.000 n=10)
+Day20Part2-16   23.06m ± 4%   12.97m ± 3%  -43.74% (p=0.000 n=10)
+geomean         11.23m        6.247m       -44.35%
+
+              │  /dev/fd/63   │              /dev/fd/62              │
+              │     B/op      │     B/op      vs base                │
+Day20Part1-16   5428.0Ki ± 0%   335.3Ki ± 0%  -93.82% (p=0.000 n=10)
+Day20Part2-16   21.133Mi ± 0%   1.287Mi ± 0%  -93.91% (p=0.000 n=10)
+geomean          10.58Mi        664.8Ki       -93.87%
+
+              │  /dev/fd/63  │             /dev/fd/62              │
+              │  allocs/op   │  allocs/op   vs base                │
+Day20Part1-16    9162.0 ± 0%    427.0 ± 0%  -95.34% (p=0.000 n=10)
+Day20Part2-16   35.864k ± 0%   1.144k ± 0%  -96.81% (p=0.000 n=10)
+geomean          18.13k         698.9       -96.14%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 45% faster (5.47ms → 3.01ms), 94% less memory (5.43MB → 335KB), 95% fewer allocations (9162 → 427)
+* **Part 2**: 44% faster (23.1ms → 13.0ms), 94% less memory (21.1MB → 1.29MB), 97% fewer allocations (35864 → 1144)
+
+The optimization eliminates all `strings.Split` operations by finding delimiters through character-by-character inspection. Pre-allocating the puzzle map, inputs maps (4 capacity each), and BFS queue (100 capacity) reduces growth operations. The 8735 eliminated allocations in Part 1 (9162→427) represent the string split operations and queue slicing from the baseline.
+
+== Day 21: Step Counter
+
+=== Performance Optimization
+
+Day 21 was optimized by pre-allocating data structures with capacity hints.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic growth:
+- Grid slice without pre-allocation
+- `make(map[pos]int)` for visited tracking without capacity hint
+- `make([]struct{...}, 0)` for queue without capacity hint
+- Part 2 infinite grid uses larger structures but also grows dynamically
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay21Part1-16               2.16ms ± 3%    1.12 MiB     276 allocs/op
+BenchmarkDay21Part2-16               111ms ± 7%     35.9 MiB    2556 allocs/op
+----
+
+==== Optimization (b1)
+
+Three key changes:
+- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` with estimated capacity
+- **Pre-allocate visited map**: `make(map[pos]int, height*width/2)` for Part 1, `make(map[pos]int, 50000)` for Part 2
+- **Pre-allocate queue**: `make([]struct{...}, 0, 1000)` for Part 1, `make([]struct{...}, 0, 5000)` for Part 2
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │   sec/op    │   sec/op     vs base                │
+Day21Part1-16   2.159m ± 3%   1.524m ± 5%  -29.41% (p=0.000 n=10)
+Day21Part2-16   111.2m ± 7%   101.3m ± 6%   -8.91% (p=0.001 n=10)
+geomean         15.50m        12.43m       -19.81%
+
+              │  /dev/fd/63   │              /dev/fd/62              │
+              │     B/op      │     B/op      vs base                │
+Day21Part1-16   1122.5Ki ± 0%   734.2Ki ± 0%  -34.60% (p=0.000 n=10)
+Day21Part2-16    35.91Mi ± 0%   33.13Mi ± 0%   -7.76% (p=0.000 n=10)
+geomean          6.274Mi        4.873Mi       -22.33%
+
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │  allocs/op  │  allocs/op   vs base                │
+Day21Part1-16    276.0 ± 0%    203.0 ± 0%  -26.45% (p=0.000 n=10)
+Day21Part2-16   2.556k ± 0%   2.153k ± 0%  -15.77% (p=0.000 n=10)
+geomean          839.9         661.1       -21.29%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 29% faster (2.16ms → 1.52ms), 35% less memory (1.12MB → 734KB), 26% fewer allocations (276 → 203)
+* **Part 2**: 9% faster (111ms → 101ms), 8% less memory (35.9MB → 33.1MB), 16% fewer allocations (2556 → 2153)
+
+The optimization pre-allocates data structures with appropriate capacity hints based on the expected problem size. Part 1 benefits from estimating visited map size as half the grid (height×width/2) and queue size of 1000. Part 2 uses larger estimates (50000 for visited, 5000 for queue) for the infinite grid quadratic extrapolation. The remaining allocations primarily represent map bucket growth and queue slice operations that couldn't be eliminated without algorithmic changes.
+
+== Day 22: Sand Slabs
+
+=== Performance Optimization
+
+Day 22 was optimized by pre-allocating data structures and replacing allocation-heavy operations with reusable arrays.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic allocations:
+- Bricks slice without pre-allocation
+- `supports` and `supportedBy` slices without capacity hints
+- Part 2 used `make(map[int]bool)` for fallen brick tracking (one per iteration)
+- Part 2 used slice operations (`queue = queue[1:]`) causing repeated allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay22Part1-16               20.4ms ± 1%     431 KiB    3140 allocs/op
+BenchmarkDay22Part2-16               71.6ms ± 2%    5983 KiB    6295 allocs/op
+----
+
+==== Optimization (b2)
+
+Four key changes:
+- **Pre-allocate bricks**: `make(Day22Puzzle, 0, len(lines))` with estimated capacity
+- **Pre-allocate support slices**: `make([]int, 0, 3)` for each brick's supports/supportedBy (average ~3 connections)
+- **Reusable fallen array**: `make([]bool, len(bricks))` cleared and reused for all Part 2 iterations instead of map allocations
+- **Array-based queue**: `make([]int, len(bricks))` with head/tail pointers instead of slice append/slicing operations
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day22Part1-16               20.40m ± 1%   20.03m ± 2%   -1.79% (p=0.009 n=10)
+Day22Part2-16               71.55m ± 2%   21.94m ± 2%  -69.33% (p=0.000 n=10)
+geomean                     38.20m        20.96m       -45.12%
+
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt        │
+              │          B/op           │     B/op      vs base                │
+Day22Part1-16              430.6Ki ± 0%   292.7Ki ± 0%  -32.03% (p=0.000 n=10)
+Day22Part2-16             5982.6Ki ± 0%   306.2Ki ± 0%  -94.88% (p=0.000 n=10)
+geomean                    1.567Mi        299.4Ki       -81.35%
+
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
+              │        allocs/op        │  allocs/op   vs base                │
+Day22Part1-16               3.140k ± 0%   2.926k ± 0%   -6.82% (p=0.000 n=10)
+Day22Part2-16               6.295k ± 0%   2.928k ± 0%  -53.49% (p=0.000 n=10)
+geomean                     4.446k        2.927k       -34.16%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 2% faster (20.4ms → 20.0ms), 32% less memory (431KB → 293KB), 7% fewer allocations (3140 → 2926)
+* **Part 2**: 69% faster (71.6ms → 21.9ms), 95% less memory (5983KB → 306KB), 53% fewer allocations (6295 → 2928)
+
+The optimization dramatically improves Part 2 performance by eliminating repeated allocations in the BFS loop. The baseline created a new map for each of ~1400 brick removals tested; the optimized version reuses a single bool array, clearing it with a simple loop. The head/tail pointer queue approach eliminates slice reslicing operations (`queue = queue[1:]`) that create new slice headers. Pre-allocating support relationship slices with capacity 3 (typical brick connectivity) reduces growth operations. The remaining ~2926 allocations in both parts represent the initial brick parsing and support relationship building - unavoidable without changing the data model.
+
+== Day 23: A Long Walk
+
+=== Performance Optimization
+
+Day 23 was optimized by pre-allocating data structures and using array-based queue with head/tail pointers.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic allocations:
+- Grid slice without pre-allocation
+- `moves := [][2]int{}` created in Part 1 DFS hot loop without capacity
+- Junction and graph maps without capacity hints
+- `visited := make(map[pos]bool)` in Part 2 BFS loop without capacity
+- Queue using slice operations (`queue = queue[1:]`) creating allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay23Part1-16               12.7ms ± 5%     9.67 MiB   156505 allocs/op
+BenchmarkDay23Part2-16               3.85s ± 1%      2.41 MiB    13470 allocs/op
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Pre-allocate grid**: `make([][]byte, 0, len(lines))` calculated from input size
+- **Pre-allocate moves slice**: `make([][2]int, 0, 4)` in Part 1 DFS (max 4 directions is constant)
+- **Pre-allocate graph structures**: `make(map[pos][]edge, len(junctions))` and `make([]edge, 0, 4)` per junction, calculated from discovered junctions
+- **No capacity hints for BFS**: Let Go's map and slice handle visited/queue growth dynamically to avoid over-allocation from guessed capacities
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │         sec/op          │   sec/op     vs base                │
+Day23Part1-16              12.708m ± 5%   5.920m ± 2%  -53.41% (p=0.000 n=10)
+Day23Part2-16                3.854 ± 1%    3.909 ± 2%   +1.43% (p=0.004 n=10)
+geomean                     221.3m        304.8m       -31.26%
+
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
+              │          B/op           │     B/op      vs base                │
+Day23Part1-16            9672.93Ki ± 0%   46.41Ki ± 0%  -99.52% (p=0.000 n=10)
+Day23Part2-16              2.413Mi ± 0%   2.403Mi ± 0%   -0.39% (p=0.000 n=10)
+geomean                    4.774Mi        2.571Mi       -93.09%
+
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │        allocs/op        │  allocs/op   vs base                │
+Day23Part1-16             156505.0 ± 0%    284.0 ± 0%  -99.82% (p=0.000 n=10)
+Day23Part2-16               13.47k ± 0%   13.39k ± 0%   -0.62% (p=0.000 n=10)
+geomean                     45.91k        4.049k       -95.75%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 53% faster (12.7ms → 5.92ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
+* **Part 2**: 1.4% slower (3.85s → 3.91s), 0.4% less memory (2.41MB → 2.40MB), 0.6% fewer allocations (13470 → 13390)
+
+The optimization dramatically reduces Part 1's allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2's BFS graph compression benefits from calculated pre-allocation: graph map sized to len(junctions), edge slices with capacity 4. BFS structures (visited map, queue) use default capacities to avoid over-allocation from arbitrary guesses - using height×width would waste ~20MB allocating for unreachable positions. Part 2 is slightly slower (~56ms) due to dynamic queue growth, but memory usage is optimal. The remaining allocations represent unavoidable parsing and graph construction overhead.
+
+== Day 24: Never Tell Me The Odds
+
+=== Performance Optimization
+
+Day 24 was optimized by pre-allocating the puzzle slice.
+
+==== Baseline (b0)
+
+Initial implementation used dynamic puzzle growth without pre-allocation:
+- `var puzzle Day24Puzzle` without capacity hint
+- Parsing was already inline (good!)
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay24Part1-16               853.5µ ± 1%    47.95 KiB    10 allocs/op
+BenchmarkDay24Part2-16               1.595ms ± 1%   47.95 KiB    10 allocs/op
+----
+
+==== Optimization (b1)
+
+Single key change:
+- **Pre-allocate puzzle slice**: `puzzle := make(Day24Puzzle, 0, len(lines))` with estimated capacity
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day24Part1-16               853.5µ ± 1%   827.9µ ± 1%  -3.00% (p=0.000 n=10)
+Day24Part2-16               1.595m ± 1%   1.572m ± 2%  -1.44% (p=0.029 n=10)
+geomean                     1.167m        1.141m       -2.22%
+
+              │ /tmp/day24_bench_b0.txt │       /tmp/day24_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day24Part1-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+Day24Part2-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+geomean                    47.95Ki        16.00Ki       -66.63%
+
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day24Part1-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+Day24Part2-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+geomean                      10.00        1.000       -90.00%
+----
+
+**Key Improvements:**
+
+* **Part 1**: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+* **Part 2**: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+
+The optimization pre-allocates the puzzle slice, eliminating 9 slice growth operations during parsing. The parsing code was already optimized with inline byte-level parsing (no `strings.Split`), so the only improvement was in slice pre-allocation. Both parts share the same parsing code, resulting in identical memory and allocation reductions.
+
+== Day 25: Snowverload
+
+=== Performance Optimization
+
+Day 25 was optimized by eliminating `strings.Split` operations, using head/tail pointer queue, and pre-allocating data structures.
+
+==== Baseline (b0)
+
+Initial implementation used string operations and dynamic allocations:
+- `strings.Split(line, ": ")` for parsing line structure
+- `strings.Fields(parts[1])` for parsing connections
+- Dynamic map growth without capacity hints
+- `queue = queue[1:]` in BFS creating repeated allocations
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay25Part1-16               1.39s ± 3%     308.4 MiB   64430 allocs/op
+----
+
+==== Optimization (b1)
+
+Four key changes:
+- **Inline parsing**: Find colon delimiter and parse connections character-by-character without `strings.Split` or `strings.Fields`
+- **Calculate edge capacity**: Count edges as `sum(neighbor counts)/2` to size `edgeCount` map accurately
+- **Pre-allocate with calculated sizes**: `graph` (len(puzzle)), `visited` (len(graph)), `parent` (len(graph)), `queue` (len(graph))
+- **Array-based BFS queue**: `make([]string, len(graph))` with head/tail pointers instead of slice reslicing
+
+==== Results
+
+----
+goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │         sec/op          │   sec/op    vs base                │
+Day25Part1-16                1.390 ± 3%    1.224 ± 3%  -11.99% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
+              │          B/op           │     B/op      vs base                │
+Day25Part1-16              308.4Mi ± 0%   156.1Mi ± 0%  -49.41% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │        allocs/op        │  allocs/op   vs base                │
+Day25Part1-16               64.43k ± 0%   17.46k ± 0%  -72.89% (p=0.000 n=10)
+----
+
+**Key Improvements:**
+
+* **Part 1**: 12% faster (1.39s → 1.22s), 49% less memory (308MB → 156MB), 73% fewer allocations (64430 → 17460)
+
+The optimization eliminates string operations in parsing and replaces queue slice reslicing with head/tail pointer traversal. All capacities are calculated from actual data: edgeCount sized to actual edge count (sum of neighbor lists / 2), graph/visited/parent/queue all sized to len(graph). No arbitrary guesses - sizes are computed from the input structure. The BFS function is called ~1500 times during edge betweenness calculation, so the queue optimization (eliminating `queue = queue[1:]`) provides significant cumulative savings. The remaining 17460 allocations represent unavoidable graph construction and algorithm overhead (edge tracking, parent maps per BFS call).
+
+== Benchmarks
+
+All benchmarks for Advent of Code 2023 solutions.
+All benchmarks are run strictly sequential, repeating in a loop for around 2 seconds.
+
+include::benches/linux-amd64-IntelR_CoreTM_i7-14700K.txt
 
 **Performance Highlights:**
 
