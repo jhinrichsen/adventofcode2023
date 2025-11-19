@@ -100,8 +100,7 @@ func TestDay10Part1ExampleChatGPT(t *testing.T) {
 
 func TestDay10Part1Example1(t *testing.T) {
 	const want = 4
-	lines, err := bytesFromFilename(exampleFilename(10))
-	diet(t, err)
+	lines := bytesFromFilename(t, exampleFilename(10))
 	got, err := Day10(lines, true)
 	diet(t, err)
 	if want != got {
@@ -111,10 +110,7 @@ func TestDay10Part1Example1(t *testing.T) {
 
 func TestDay10Part1Example2(t *testing.T) {
 	const want = 8
-	lines, err := bytesFromFilename("testdata/day10_example2.txt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	lines := bytesFromFilename(t, "testdata/day10_example2.txt")
 	got, err := Day10(lines, true)
 	diet(t, err)
 	if want != got {
@@ -160,10 +156,7 @@ func TestDay10Part2Examples(t *testing.T) {
 	for i := range wants {
 		want := wants[i]
 		t.Run(fmt.Sprintf("#%d", i+1), func(t *testing.T) {
-			lines, err := bytesFromFilename(fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
-			if err != nil {
-				t.Fatal(err)
-			}
+			lines := bytesFromFilename(t, fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
 			fmt.Println()
 			fmt.Printf("Example #%d:\n", i+1)
 			got, err := Day10(lines, false)
