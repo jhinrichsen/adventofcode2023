@@ -71,25 +71,26 @@ func fileFromFilename(tb testing.TB, filenameFunc func(uint8) string, day uint8)
 	return buf
 }
 
+// readFileFromPath reads a file from a given path and returns the bytes.
+func readFileFromPath(tb testing.TB, path string) []byte {
+	tb.Helper()
+	buf, err := os.ReadFile(path)
+	if err != nil {
+		tb.Fatal(err)
+	}
+	if b, ok := tb.(*testing.B); ok {
+		b.ResetTimer()
+	}
+	return buf
+}
+
 const (
 	MagicMaxLines    = 140 // maximum number of lines for any puzzle input
 	MagicLongestLine = 307 // longest line of any puzzle input
 )
 
-// bytesFromFilename reads newline separated lines from a file and returns them as [][]byte.
-func bytesFromFilename(tb testing.TB, filename string) [][]byte {
-	tb.Helper()
-	f, err := os.Open(filename)
-	if err != nil {
-		tb.Fatal(err)
-	}
-	defer f.Close()
-
-	buf, err := io.ReadAll(f)
-	if err != nil {
-		tb.Fatal(err)
-	}
-
+// splitIntoByteLines splits a byte buffer into lines ([][]byte).
+func splitIntoByteLines(buf []byte) [][]byte {
 	var result [][]byte
 	start := 0
 	l := len(buf)
@@ -107,10 +108,14 @@ func bytesFromFilename(tb testing.TB, filename string) [][]byte {
 		result = append(result, append([]byte(nil), buf[start:]...))
 	}
 
-	if b, ok := tb.(*testing.B); ok {
-		b.ResetTimer()
-	}
 	return result
+}
+
+// bytesFromFilename reads newline separated lines from a file and returns them as [][]byte.
+func bytesFromFilename(tb testing.TB, filename string) [][]byte {
+	tb.Helper()
+	buf := readFileFromPath(tb, filename)
+	return splitIntoByteLines(buf)
 }
 
 func DayAdapterV1(day func([][]byte, bool) (uint, error), filename string, part1 bool) (uint, error) {
@@ -118,23 +123,8 @@ func DayAdapterV1(day func([][]byte, bool) (uint, error), filename string, part1
 	if err != nil {
 		return 0, err
 	}
-
-	var result [][]byte
-	start := 0
-	l := len(buf)
-
-	for i := 0; i < l; i++ {
-		if buf[i] == '\n' {
-			result = append(result, append([]byte(nil), buf[start:i]...))
-			start = i + 1
-		}
-	}
-
-	if start < l {
-		result = append(result, append([]byte(nil), buf[start:]...))
-	}
-
-	return day(result, part1)
+	lines := splitIntoByteLines(buf)
+	return day(lines, part1)
 }
 
 func DayAdapterV2(day func([][]byte, bool) (uint, error), filename string, part1 bool) (uint, error) {
