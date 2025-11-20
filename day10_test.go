@@ -86,12 +86,20 @@ func TestOtherVer(t *testing.T) {
 }
 
 func TestDay10Part1Example1(t *testing.T) {
-	testSolver(t, 10, exampleFilename, true, Day10, 4)
+	lines := linesFromFilename(t, exampleFilename(10))
+	got, err := Day10(lines, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = 4
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
 }
 
 func TestDay10Part1Example2(t *testing.T) {
-	buf := fileFromFilename(t, func(uint8) string { return "testdata/day10_example2.txt" }, 0)
-	got, err := Day10(buf, true)
+	lines := linesFromFilename(t, "testdata/day10_example2.txt")
+	got, err := Day10(lines, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,11 +110,27 @@ func TestDay10Part1Example2(t *testing.T) {
 }
 
 func TestDay10Part1(t *testing.T) {
-	testSolver(t, 10, filename, true, Day10, 6956)
+	lines := linesFromFilename(t, filename(10))
+	got, err := Day10(lines, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = 6956
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
 }
 
 func TestDay10Part2(t *testing.T) {
-	testSolver(t, 10, filename, false, Day10, 455)
+	lines := linesFromFilename(t, filename(10))
+	got, err := Day10(lines, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const want = 455
+	if want != got {
+		t.Fatalf("want %d but got %d", want, got)
+	}
 }
 
 func BenchmarkOpposite(b *testing.B) {
@@ -129,12 +153,10 @@ func TestDay10Part2Examples(t *testing.T) {
 	for i := range wants {
 		want := wants[i]
 		t.Run(fmt.Sprintf("#%d", i+1), func(t *testing.T) {
-			buf := fileFromFilename(t, func(uint8) string {
-				return fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1)
-			}, 0)
+			lines := linesFromFilename(t, fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
 			fmt.Println()
 			fmt.Printf("Example #%d:\n", i+1)
-			got, err := Day10(buf, false)
+			got, err := Day10(lines, false)
 			fmt.Println()
 			if err != nil {
 				t.Fatal(err)
@@ -147,15 +169,15 @@ func TestDay10Part2Examples(t *testing.T) {
 }
 
 func BenchmarkDay10Part1(b *testing.B) {
-	buf := fileFromFilename(b, filename, 10)
+	lines := linesFromFilename(b, filename(10))
 	for b.Loop() {
-		_, _ = Day10(buf, true)
+		_, _ = Day10(lines, true)
 	}
 }
 
 func BenchmarkDay10Part2(b *testing.B) {
-	buf := fileFromFilename(b, filename, 10)
+	lines := linesFromFilename(b, filename(10))
 	for b.Loop() {
-		_, _ = Day10(buf, false)
+		_, _ = Day10(lines, false)
 	}
 }

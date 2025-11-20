@@ -4,30 +4,19 @@ import (
 	"image"
 )
 
-func Day11(buf []byte, part1 bool) (uint, error) {
+func Day11(lines []string, part1 bool) uint {
 	expansion := uint(1)
 	if !part1 {
 		expansion = 1_000_000
 	}
-	return day11Solver(buf, expansion)
+	return day11Solver(lines, expansion)
 }
 
-func day11Solver(buf []byte, expansion uint) (uint, error) {
-	// Parse buf into [][]byte
-	var grid [][]byte
-	start := 0
-	for i := 0; i < len(buf); i++ {
-		if buf[i] == '\n' {
-			line := make([]byte, i-start)
-			copy(line, buf[start:i])
-			grid = append(grid, line)
-			start = i + 1
-		}
-	}
-	if start < len(buf) {
-		line := make([]byte, len(buf)-start)
-		copy(line, buf[start:])
-		grid = append(grid, line)
+func day11Solver(lines []string, expansion uint) uint {
+	// Parse lines into [][]byte
+	grid := make([][]byte, len(lines))
+	for i, line := range lines {
+		grid[i] = []byte(line)
 	}
 
 	const galaxy = '#'
@@ -85,7 +74,7 @@ func day11Solver(buf []byte, expansion uint) (uint, error) {
 			}
 		}
 	}
-	return total, nil
+	return total
 }
 
 func abs(n int) uint {
