@@ -4,7 +4,32 @@ import (
 	"image"
 )
 
-func Day11(grid [][]byte, expansion uint) uint {
+func Day11(buf []byte, part1 bool) (uint, error) {
+	expansion := uint(1)
+	if !part1 {
+		expansion = 1_000_000
+	}
+	return day11Solver(buf, expansion)
+}
+
+func day11Solver(buf []byte, expansion uint) (uint, error) {
+	// Parse buf into [][]byte
+	var grid [][]byte
+	start := 0
+	for i := 0; i < len(buf); i++ {
+		if buf[i] == '\n' {
+			line := make([]byte, i-start)
+			copy(line, buf[start:i])
+			grid = append(grid, line)
+			start = i + 1
+		}
+	}
+	if start < len(buf) {
+		line := make([]byte, len(buf)-start)
+		copy(line, buf[start:])
+		grid = append(grid, line)
+	}
+
 	const galaxy = '#'
 	dimX, dimY := len(grid[0]), len(grid)
 
@@ -60,7 +85,7 @@ func Day11(grid [][]byte, expansion uint) uint {
 			}
 		}
 	}
-	return total
+	return total, nil
 }
 
 func abs(n int) uint {

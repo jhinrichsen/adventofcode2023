@@ -74,7 +74,24 @@ func other(idx byte, d direction) direction {
 	return connects[idx] & ^d
 }
 
-func Day10(lines [][]byte, part1 bool) (uint, error) {
+func Day10(buf []byte, part1 bool) (uint, error) {
+	// Parse buf into [][]byte
+	var lines [][]byte
+	lineStart := 0
+	for i := 0; i < len(buf); i++ {
+		if buf[i] == '\n' {
+			line := make([]byte, i-lineStart)
+			copy(line, buf[lineStart:i])
+			lines = append(lines, line)
+			lineStart = i + 1
+		}
+	}
+	if lineStart < len(buf) {
+		line := make([]byte, len(buf)-lineStart)
+		copy(line, buf[lineStart:])
+		lines = append(lines, line)
+	}
+
 	const (
 		startChar = 'S'
 	)

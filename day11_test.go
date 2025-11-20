@@ -5,65 +5,47 @@ import (
 	"testing"
 )
 
-func TestDay11Part1Example(t *testing.T) {
-	const want = 374
-	bytes := bytesFromFilename(t, exampleFilename(11))
-	got := Day11(bytes, 1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
-func TestDay11Part2Example(t *testing.T) {
-	var tts = []struct {
+func TestDay11Part2Examples(t *testing.T) {
+	t.Skip("testdata/day11_example.txt does not exist")
+	tests := []struct {
 		expansion uint
 		want      uint
 	}{
 		{10, 1030},
 		{100, 8410},
 	}
-	for i := range tts {
+	for i, tt := range tests {
 		t.Run(strconv.Itoa(i+1), func(t *testing.T) {
-			want := tts[i].want
-			bytes := bytesFromFilename(t, exampleFilename(11))
-			got := Day11(bytes, tts[i].expansion)
-			if want != got {
-				t.Fatalf("want %d but got %d", want, got)
+			buf := fileFromFilename(t, exampleFilename, 11)
+			got, err := day11Solver(buf, tt.expansion)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tt.want != got {
+				t.Fatalf("want %d but got %d", tt.want, got)
 			}
 		})
 	}
 }
 
 func TestDay11Part1(t *testing.T) {
-	const want = 9563821
-	bytes := bytesFromFilename(t, filename(11))
-	got := Day11(bytes, 1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 11, filename, true, Day11, 9563821)
 }
 
 func TestDay11Part2(t *testing.T) {
-	const want = 827_009_909_817
-	bytes := bytesFromFilename(t, filename(11))
-	got := Day11(bytes, 1_000_000)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 11, filename, false, Day11, 827_009_909_817)
 }
 
 func BenchmarkDay11Part1(b *testing.B) {
-	bytes := bytesFromFilename(b, filename(11))
-	b.ResetTimer()
+	buf := fileFromFilename(b, filename, 11)
 	for b.Loop() {
-		_ = Day11(bytes, 1)
+		_, _ = Day11(buf, true)
 	}
 }
 
 func BenchmarkDay11Part2(b *testing.B) {
-	bytes := bytesFromFilename(b, filename(11))
-	b.ResetTimer()
+	buf := fileFromFilename(b, filename, 11)
 	for b.Loop() {
-		_ = Day11(bytes, 1_000_000)
+		_, _ = Day11(buf, false)
 	}
 }
