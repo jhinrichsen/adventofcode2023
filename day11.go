@@ -13,14 +13,16 @@ func Day11(lines []string, part1 bool) uint {
 }
 
 func day11Solver(lines []string, expansion uint) uint {
-	// Parse lines into [][]byte
-	grid := make([][]byte, len(lines))
-	for i, line := range lines {
-		grid[i] = []byte(line)
+	// Parse lines into flat []byte array
+	dimY := len(lines)
+	dimX := len(lines[0])
+	grid := make([]byte, dimX*dimY)
+
+	for y, line := range lines {
+		copy(grid[y*dimX:y*dimX+dimX], line)
 	}
 
 	const galaxy = '#'
-	dimX, dimY := len(grid[0]), len(grid)
 
 	if expansion > 1 {
 		expansion--
@@ -30,24 +32,24 @@ func day11Solver(lines []string, expansion uint) uint {
 	var points []image.Point
 	for y := range dimY {
 		for x := range dimX {
-			if grid[y][x] == galaxy {
+			if grid[y*dimX+x] == galaxy {
 				points = append(points, image.Point{X: x, Y: y})
 			}
 		}
 	}
 
-	// mark all rows as expanded
+	// mark all rows as expanded (column 0)
 	for y := range dimY {
-		grid[y][0] = 1
+		grid[y*dimX] = 1
 	}
-	// mark all columns as expanded
+	// mark all columns as expanded (row 0)
 	for x := range dimX {
-		grid[0][x] = 1
+		grid[x] = 1
 	}
 	// unset cols and rows that contain galaxies
 	for _, p := range points {
-		grid[0][p.X] = 0
-		grid[p.Y][0] = 0
+		grid[p.X] = 0        // column flag at row 0
+		grid[p.Y*dimX] = 0   // row flag at column 0
 	}
 
 	var total uint
@@ -64,13 +66,13 @@ func day11Solver(lines []string, expansion uint) uint {
 			// Add expanded spaces (horizontal)
 			x0, x1 := min(p1.X, p2.X), max(p1.X, p2.X)
 			for x := x0; x < x1; x++ {
-				total += uint(grid[0][x]) * expansion
+				total += uint(grid[x]) * expansion
 			}
 
 			// Add expanded spaces (vertical)
 			y0, y1 := min(p1.Y, p2.Y), max(p1.Y, p2.Y)
 			for y := y0; y < y1; y++ {
-				total += uint(grid[y][0]) * expansion
+				total += uint(grid[y*dimX]) * expansion
 			}
 		}
 	}

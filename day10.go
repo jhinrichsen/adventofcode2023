@@ -75,10 +75,13 @@ func other(idx byte, d direction) direction {
 }
 
 func Day10(input []string, part1 bool) (uint, error) {
-	// Parse lines into [][]byte
-	lines := make([][]byte, len(input))
-	for i, line := range input {
-		lines[i] = []byte(line)
+	// Parse lines into flat []byte array
+	dimY := len(input)
+	dimX := len(input[0])
+	grid := make([]byte, dimX*dimY)
+
+	for y, line := range input {
+		copy(grid[y*dimX:y*dimX+dimX], line)
 	}
 
 	const (
@@ -87,12 +90,12 @@ func Day10(input []string, part1 bool) (uint, error) {
 	part2 := !part1
 	var notFound = image.Point{-1, -1}
 
-	dim := image.Rectangle{image.Point{0, 0}, image.Point{len(lines[0]), len(lines)}}
+	dim := image.Rectangle{image.Point{0, 0}, image.Point{dimX, dimY}}
 
 	var vertices uint
 	// Pre-allocate poly with maximum possible size (grid perimeter)
 	// The polygon loop can't be larger than the perimeter of the grid
-	maxPolySize := 2 * (len(lines[0]) + len(lines))
+	maxPolySize := 2 * (dimX + dimY)
 	var poly []image.Point
 	if part2 {
 		poly = make([]image.Point, 0, maxPolySize)
@@ -115,15 +118,15 @@ func Day10(input []string, part1 bool) (uint, error) {
 		const TRACE_PATH = false
 		if TRACE_PATH {
 			fmt.Println()
-			for y := range lines {
-				for x := range lines[0] {
+			for y := range dimY {
+				for x := range dimX {
 					p_ := image.Point{x, y}
 					if p == p_ {
 						fmt.Printf("*")
 					} else if in(p_) {
 						fmt.Printf("@")
 					} else {
-						fmt.Printf("%s", string(lines[y][x]))
+						fmt.Printf("%s", string(grid[y*dimX+x]))
 					}
 				}
 				fmt.Println()
@@ -138,9 +141,9 @@ func Day10(input []string, part1 bool) (uint, error) {
 	}
 
 	start := func() image.Point {
-		for y := range lines {
-			for x := range lines[0] {
-				if lines[y][x] == startChar {
+		for y := range dimY {
+			for x := range dimX {
+				if grid[y*dimX+x] == startChar {
 					return image.Point{x, y}
 				}
 			}
@@ -169,9 +172,9 @@ func Day10(input []string, part1 bool) (uint, error) {
 			}
 
 			// precondition 2: exit must match neighbor's entrance
-			cell := lines[e.p.Y][e.p.X]
+			cell := grid[e.p.Y*dimX+e.p.X]
 			if hasConnection(cell, e.d) {
-				return e.p, other(lines[e.p.Y][e.p.X], e.d)
+				return e.p, other(grid[e.p.Y*dimX+e.p.X], e.d)
 			}
 		}
 		return notFound, 0
@@ -196,7 +199,7 @@ func Day10(input []string, part1 bool) (uint, error) {
 
 		next = next.Add(delta)
 		track(next) // in the last step, close polygon => poly[0] == poly[N]
-		d = other(lines[next.Y][next.X], opposite1(d))
+		d = other(grid[next.Y*dimX+next.X], opposite1(d))
 	}
 
 	if part1 {
@@ -206,8 +209,8 @@ func Day10(input []string, part1 bool) (uint, error) {
 
 	const TRACE_GRID = false
 	var inside uint
-	for y := range lines {
-		for x := range lines[y] {
+	for y := range dimY {
+		for x := range dimX {
 			p := image.Point{x, y}
 			// do not count the polygon itself, only embedded points
 			if in(p) {
