@@ -7,19 +7,12 @@ import (
 	"strings"
 )
 
-func Day06(ts, ds []int) (int, error) {
-	if len(ts) != len(ds) {
-		return 0, fmt.Errorf("need two arrays of same length but got %d and %d", len(ts), len(ds))
-	}
-	rc := 1
-	for i := range ts {
-		n := Farther(ts[i], ds[i])
-		rc *= n
-	}
-	return rc, nil
+type Day06Puzzle struct {
+	times     []int
+	distances []int
 }
 
-func NewDay06(lines []string) ([]int, []int, error) {
+func NewDay06(lines []string) (Day06Puzzle, error) {
 	const (
 		wantLines    = 2
 		wantTime     = "Time:"
@@ -27,48 +20,73 @@ func NewDay06(lines []string) ([]int, []int, error) {
 	)
 	gotLines := len(lines)
 	if wantLines != gotLines {
-		return nil, nil, fmt.Errorf("want %d lines but got %d", wantLines, gotLines)
+		return Day06Puzzle{}, fmt.Errorf("want %d lines but got %d", wantLines, gotLines)
 	}
-	var ts, ds []int
 
 	// parse times
-
 	parts := strings.Fields(lines[0])
 	if parts[0] != wantTime {
-		return nil, nil, fmt.Errorf("want first line to start with %s but got %s", wantTime, parts[0])
+		return Day06Puzzle{}, fmt.Errorf("want first line to start with %s but got %s", wantTime, parts[0])
 	}
+	var ts []int
 	for i, p := range parts[1:] {
 		n, err := strconv.Atoi(p)
 		if err != nil {
-			return nil, nil, fmt.Errorf("line %d: cannot convert to numeric: %s: %v", i, p, err)
+			return Day06Puzzle{}, fmt.Errorf("line %d: cannot convert to numeric: %s: %v", i, p, err)
 		}
 		ts = append(ts, n)
 	}
 
-	// parse Distances
-
+	// parse distances
 	parts = strings.Fields(lines[1])
 	if parts[0] != wantDistance {
-		return nil, nil, fmt.Errorf("want second line to start with %s but got %s", wantTime, parts[0])
+		return Day06Puzzle{}, fmt.Errorf("want second line to start with %s but got %s", wantTime, parts[0])
 	}
+	var ds []int
 	for i, p := range parts[1:] {
 		n, err := strconv.Atoi(p)
 		if err != nil {
-			return nil, nil, fmt.Errorf("line %d: cannot convert to numeric: %s: %v", i, p, err)
+			return Day06Puzzle{}, fmt.Errorf("line %d: cannot convert to numeric: %s: %v", i, p, err)
 		}
 		ds = append(ds, n)
 	}
 
-	return ts, ds, nil
+	return Day06Puzzle{times: ts, distances: ds}, nil
 }
 
-// Farther calculates the number of ways to beat the distance record.
+func Day06(puzzle Day06Puzzle, part1 bool) uint {
+	if len(puzzle.times) != len(puzzle.distances) {
+		return 0
+	}
+
+	if !part1 {
+		// Part 2: Concatenate all digits into single race
+		var timeStr, distStr string
+		for i := range puzzle.times {
+			timeStr += strconv.Itoa(puzzle.times[i])
+			distStr += strconv.Itoa(puzzle.distances[i])
+		}
+		time, _ := strconv.Atoi(timeStr)
+		dist, _ := strconv.Atoi(distStr)
+		return uint(farther(time, dist))
+	}
+
+	// Part 1: Multiple races
+	result := 1
+	for i := range puzzle.times {
+		n := farther(puzzle.times[i], puzzle.distances[i])
+		result *= n
+	}
+	return uint(result)
+}
+
+// farther calculates the number of ways to beat the distance record.
 // This is a quadratic equation: we want h*(t-h) > d
 // Rearranging: -h² + h*t - d > 0, or h² - h*t + d < 0
 // Using quadratic formula: h = (t ± sqrt(t² - 4d)) / 2
 // The solutions give us the boundary points where distance equals d.
 // We want integers strictly between these boundaries.
-func Farther(t, d int) int {
+func farther(t, d int) int {
 	// Convert to float64 for math operations
 	tf := float64(t)
 	df := float64(d)
