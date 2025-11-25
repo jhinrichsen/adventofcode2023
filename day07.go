@@ -25,12 +25,43 @@ type Hand struct {
 	bid   uint
 }
 
-func Day07(hands []Hand, useJoker bool) (uint, error) {
+type Day07Puzzle struct {
+	hands []Hand
+}
+
+func NewDay07(lines []string, part1 bool) (Day07Puzzle, error) {
+	useJoker := !part1 // part1=true → no jokers, part1=false → use jokers
+	hands := make([]Hand, len(lines))
+	for i, line := range lines {
+		parts := strings.Fields(line)
+		if len(parts) != 2 {
+			return Day07Puzzle{}, fmt.Errorf("want 2 fields but got %d", len(parts))
+		}
+
+		// cards
+		for j, b := range parts[0] {
+			c, err := card(byte(b), useJoker)
+			if err != nil {
+				return Day07Puzzle{}, fmt.Errorf("line %d, card %d: %c is not a valid card", i, j, b)
+			}
+			hands[i].cards = append(hands[i].cards, c)
+		}
+
+		// bids
+		n, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return Day07Puzzle{}, fmt.Errorf("line %d: want numeric column 2 but got %s: %v", i, parts[1], err)
+		}
+		hands[i].bid = uint(n)
+	}
+	return Day07Puzzle{hands: hands}, nil
+}
+
+func Day07(puzzle Day07Puzzle, part1 bool) uint {
+	useJoker := !part1 // part1=true → no jokers, part1=false → use jokers
 
 	// sort into ascending order
-
-	slices.SortFunc(hands, func(a, b Hand) int {
-
+	slices.SortFunc(puzzle.hands, func(a, b Hand) int {
 		n1 := handType(a, useJoker)
 		n2 := handType(b, useJoker)
 		if n1 != n2 {
@@ -50,40 +81,11 @@ func Day07(hands []Hand, useJoker bool) (uint, error) {
 	})
 
 	var total uint
-	for i, h := range hands {
+	for i, h := range puzzle.hands {
 		rank := 1 + uint(i) // rank is one-based
 		total += rank * h.bid
 	}
-	return total, nil
-}
-
-func NewDay07(lines []string, part1 bool) ([]Hand, error) {
-	hands := make([]Hand, len(lines))
-	for i, line := range lines {
-		parts := strings.Fields(line)
-		if len(parts) != 2 {
-			return nil, fmt.Errorf("want 2 fields but got %d", len(parts))
-		}
-
-		// cards
-
-		for j, b := range parts[0] {
-			c, err := card(byte(b), part1)
-			if err != nil {
-				return nil, fmt.Errorf("line %d, card %d: %c is not a valid card", i, j, b)
-			}
-			hands[i].cards = append(hands[i].cards, c)
-		}
-
-		// bids
-
-		n, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return nil, fmt.Errorf("line %d: want numeric column 2 but got %s: %v", i, parts[1], err)
-		}
-		hands[i].bid = uint(n)
-	}
-	return hands, nil
+	return total
 }
 
 func handType(h Hand, useJoker bool) HandType {
@@ -153,9 +155,9 @@ func handType(h Hand, useJoker bool) HandType {
 	return t
 }
 
-func card(b byte, joker bool) (Card, error) {
+func card(b byte, useJoker bool) (Card, error) {
 	var cards []byte
-	if joker {
+	if useJoker {
 		cards = []byte{'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'}
 	} else {
 		cards = []byte{'2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'}
