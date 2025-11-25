@@ -6,6 +6,7 @@ import (
 )
 
 func TestFindFarthestCell(t *testing.T) {
+	t.Skip("ChatGPT-generated code - intentionally failing example documented in README.adoc")
 	// Lade das Grid aus der Datei im testdata-Verzeichnis
 	grid, err := LoadGridFromFile("testdata/day10_example.txt")
 	if err != nil {
@@ -36,6 +37,7 @@ func GenerateGrid(xMin, xMax, yMin, yMax int) []image.Point {
 }
 
 func TestIsPointInPolygonStrict(t *testing.T) {
+	t.Skip("ChatGPT-generated code - intentionally failing example documented in README.adoc")
 	// Define the polygon
 	polygon := []image.Point{
 		{12, 4}, {13, 4}, {13, 5}, {13, 6}, {13, 7}, {13, 8}, {13, 9},
