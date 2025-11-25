@@ -6,14 +6,14 @@ import (
 	"github.com/fatih/color"
 )
 
-func Day03(lines []string, part1 bool) int {
+func Day03(lines []string, part1 bool) uint {
 	if part1 {
 		return Day03Part1(lines)
 	}
-	return int(Day03Part2(lines))
+	return Day03Part2(lines)
 }
 
-func Day03Part1(lines []string) (sum int) {
+func Day03Part1(lines []string) (sum uint) {
 	isSurrounded := func(x, y, l int) bool {
 		x1 := max(x-l-1, 0)
 		x2 := min(x, len(lines[y])-1)
@@ -45,14 +45,15 @@ func Day03Part1(lines []string) (sum int) {
 
 	// events for digits and numbers
 
-	var n, l int
+	var n uint
+	var l int
 	exit := func(x, y int) {
 		if isSurrounded(x, y, l) {
 			sum += n
 		}
 	}
 	digit := func(b byte) {
-		n = 10*n + int(b-'0')
+		n = 10*n + uint(b-'0')
 		l++
 	}
 
@@ -82,7 +83,7 @@ func Day03Part1(lines []string) (sum int) {
 	return
 }
 
-func Day03ColoredLogging(lines []string) (sum int) {
+func Day03ColoredLogging(lines []string) (sum uint) {
 	isSurrounded := func(x, y, l int) bool {
 		x1 := max(x-l-1, 0)
 		x2 := min(x, len(lines[y])-1)
@@ -114,7 +115,8 @@ func Day03ColoredLogging(lines []string) (sum int) {
 
 	// events for digits and numbers
 
-	var n, l int
+	var n uint
+	var l int
 	enter := func() {
 		n, l = 0, 0
 		// color.Set(color.FgYellow)
@@ -130,7 +132,7 @@ func Day03ColoredLogging(lines []string) (sum int) {
 		color.Unset()
 	}
 	digit := func(b byte) {
-		n = 10*n + int(b-'0')
+		n = 10*n + uint(b-'0')
 		l++
 	}
 
