@@ -866,6 +866,8 @@ The optimization eliminates heap escaping by sizing arrays based on actual input
 
 == Day 10: Pipe Maze
 
+NOTE: AI-generated code attempts (ChatGPT and Gemini) are preserved in the `doc/` folder for reference.
+
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
 Right down to the location of the input puzzle file, and its filename.
 Plus a unit test that uses the example puzzle input.

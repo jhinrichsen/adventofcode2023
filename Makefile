@@ -69,7 +69,7 @@ golangci-lint.json:
 govulncheck.sarif:
 	which govulncheck || $(GO) install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck -version
-	govulncheck -format=sarif ./... > $@
+	govulncheck -format=sarif . > $@
 
 $(BENCH_FILE): $(wildcard *.go)
 	echo "Running benchmarks and saving to $@..."
