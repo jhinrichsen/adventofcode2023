@@ -48,8 +48,8 @@ func day11Solver(lines []string, expansion uint) uint {
 	}
 	// unset cols and rows that contain galaxies
 	for _, p := range points {
-		grid[p.X] = 0        // column flag at row 0
-		grid[p.Y*dimX] = 0   // row flag at column 0
+		grid[p.X] = 0      // column flag at row 0
+		grid[p.Y*dimX] = 0 // row flag at column 0
 	}
 
 	var total uint
