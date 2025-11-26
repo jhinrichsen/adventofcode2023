@@ -7,17 +7,24 @@ import (
 )
 
 // Day09V1 returns the sum of the next values for an OASIS sequence.
-// This implementation implements lessons learned from day 8 part 2 - visually check the input
-// and only do as little as possible.
-func Day09V1(lines []string) int {
+// This implementation uses strings.Fields for parsing.
+func Day09V1(lines []string, part1 bool) uint {
 	const DIM = 100
 
 	var (
 		ns [DIM][DIM]int
 	)
-	var total int
+	var total uint
 	for _, line := range lines {
 		parts := strings.Fields(line)
+
+		if !part1 {
+			// Part 2: reverse the sequence
+			for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
+				parts[i], parts[j] = parts[j], parts[i]
+			}
+		}
+
 		for j, s := range parts {
 			n, _ := strconv.Atoi(s)
 			ns[0][j] = n
@@ -44,10 +51,10 @@ func Day09V1(lines []string) int {
 		x := len(parts) - y
 
 		// work way up
-		next := 0
+		next := uint(0)
 		for y >= 0 {
-			next += ns[y][x-1]
-			ns[y][x] = next
+			next += uint(ns[y][x-1])
+			ns[y][x] = int(next)
 			y--
 			x++
 		}
@@ -57,9 +64,8 @@ func Day09V1(lines []string) int {
 }
 
 // Day09V2 returns the sum of the next values for an OASIS sequence.
-// This implementation implements lessons learned from day 8 part 2 - visually check the input
-// and only do as little as possible.
-func Day09V2(buf []byte, part1 bool) int {
+// This implementation uses byte-level parsing for better performance.
+func Day09V2(buf []byte, part1 bool) (uint, error) {
 	const (
 		LINES   = 200 // Number of input lines
 		MAXNUMS = 30  // Max numbers per line (input has 21, use 30 for safety)
@@ -95,7 +101,7 @@ func Day09V2(buf []byte, part1 bool) int {
 		negative = true
 	}
 
-	newline := func() int {
+	newline := func() uint {
 		if !part1 {
 			slices.Reverse(ns[0][:idx])
 		}
@@ -120,10 +126,10 @@ func Day09V2(buf []byte, part1 bool) int {
 		x := idx - y
 
 		// work way up
-		next := 0
+		next := uint(0)
 		for y >= 0 {
-			next += ns[y][x-1]
-			ns[y][x] = next
+			next += uint(ns[y][x-1])
+			ns[y][x] = int(next)
 			y--
 			x++
 		}
@@ -131,7 +137,7 @@ func Day09V2(buf []byte, part1 bool) int {
 		return next
 	}
 
-	var total int
+	var total uint
 	for _, b := range buf {
 		if b >= '0' && b <= '9' {
 			digit(int(b - '0'))
@@ -146,5 +152,10 @@ func Day09V2(buf []byte, part1 bool) int {
 			startN()
 		}
 	}
-	return total
+	return total, nil
+}
+
+// Day09 is the standard solver that delegates to Day09V2 (the optimized implementation).
+func Day09(buf []byte, part1 bool) (uint, error) {
+	return Day09V2(buf, part1)
 }

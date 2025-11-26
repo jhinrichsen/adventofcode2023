@@ -1,11 +1,14 @@
 = Advent of code 2023
 :doctype: book
-:toc:
+:toc: macro
 
 image:https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg["godoc", link="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023["Go report card", link="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main",title="pipeline status"]
 image:https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg[link="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg",title="coverage report"]
+image:https://img.shields.io/badge/runtime-7.2s-blue["runtime"]
+
+toc::[]
 
 [quote, me]
 Same procedure as every year, Eric.
@@ -862,6 +865,8 @@ Key Improvements:
 The optimization eliminates heap escaping by sizing arrays based on actual input dimensions rather than worst-case estimates. Go's compiler allocates small arrays (<64KB typically) on the stack, but large arrays escape to the heap. By reducing from 320KB to 48KB, the array now stays on the stack. This eliminates allocation overhead and improves cache locality. The analysis step (checking input dimensions) is crucial - blindly using large fixed arrays can defeat the performance benefits of avoiding dynamic allocations.
 
 == Day 10: Pipe Maze
+
+NOTE: AI-generated code attempts (ChatGPT and Gemini) are preserved in the `doc/` folder for reference.
 
 I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
 Right down to the location of the input puzzle file, and its filename.

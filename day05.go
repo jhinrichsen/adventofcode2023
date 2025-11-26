@@ -2,8 +2,25 @@ package adventofcode2023
 
 import (
 	"math"
+	"strconv"
 	"strings"
 )
+
+func lineAsNumbers(line string) ([]int, error) {
+	var (
+		n   int
+		ns  []int
+		err error
+	)
+	for _, s := range strings.Fields(line) {
+		n, err = strconv.Atoi(s)
+		if err != nil {
+			break
+		}
+		ns = append(ns, n)
+	}
+	return ns, err
+}
 
 func Day05(lines []string, part1 bool) (uint, error) {
 	seeds, err := lineAsNumbers(lines[0][len("seeds: "):])

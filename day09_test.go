@@ -1,117 +1,93 @@
 package adventofcode2023
 
 import (
-	"os"
 	"testing"
 )
 
-func TestDay09V1Part1Example(t *testing.T) {
-	const want = 114
-	lines := linesFromFilename(t, exampleFilename(9))
-	got := Day09V1(lines)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+func TestDay09Part1Example(t *testing.T) {
+	testSolver(t, 9, exampleFilename, true, Day09, 114)
 }
 
-func TestDay09V2Part1Example(t *testing.T) {
-	const (
-		part1 = true
-		want  = 114
-	)
-	buf, err := os.ReadFile(exampleFilename(9))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := Day09V2(buf, part1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+func TestDay09Part1(t *testing.T) {
+	testSolver(t, 9, filename, true, Day09, 2075724761)
+}
+
+func TestDay09V1Part1Example(t *testing.T) {
+	testLines(t, 9, exampleFilename, true, Day09V1, 114)
 }
 
 func TestDay09V1Part1(t *testing.T) {
-	const want = 2075724761
-	lines := linesFromFilename(t, filename(9))
-	got := Day09V1(lines)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testLines(t, 9, filename, true, Day09V1, 2075724761)
+}
+
+func TestDay09V2Part1Example(t *testing.T) {
+	testSolver(t, 9, exampleFilename, true, Day09V2, 114)
 }
 
 func TestDay09V2Part1(t *testing.T) {
-	const (
-		part1 = true
-		want  = 2075724761
-	)
-	buf, err := os.ReadFile(filename(9))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := Day09V2(buf, part1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
+	testSolver(t, 9, filename, true, Day09V2, 2075724761)
+}
+
+func BenchmarkDay09Part1(b *testing.B) {
+	buf := file(b, 9)
+	b.ResetTimer()
+	for b.Loop() {
+		_, _ = Day09(buf, true)
 	}
 }
 
 func BenchmarkDay09V1Part1(b *testing.B) {
-	lines := linesFromFilename(b, filename(9))
-	b.ResetTimer()
-	for b.Loop() {
-		_ = Day09V1(lines)
-	}
+	benchLines(b, 9, true, Day09V1)
 }
 
 func BenchmarkDay09V2Part1(b *testing.B) {
-	buf, _ := os.ReadFile(filename(9))
+	buf := file(b, 9)
 	b.ResetTimer()
 	for b.Loop() {
-		_ = Day09V2(buf, true)
-	}
-}
-
-func BenchmarkDay09Part1(b *testing.B) {
-	buf, _ := os.ReadFile(filename(9))
-	b.ResetTimer()
-	b.ReportAllocs()
-	for b.Loop() {
-		_ = Day09V2(buf, true)
+		_, _ = Day09V2(buf, true)
 	}
 }
 
 func TestDay09Part2Example(t *testing.T) {
-	const (
-		part1 = false
-		want  = 2
-	)
-	buf, err := os.ReadFile(exampleFilename(9))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := Day09V2(buf, part1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 9, exampleFilename, false, Day09, 2)
 }
 
 func TestDay09Part2(t *testing.T) {
-	const (
-		part1 = false
-		want  = 1072
-	)
-	buf, err := os.ReadFile(filename(9))
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := Day09V2(buf, part1)
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
+	testSolver(t, 9, filename, false, Day09, 1072)
+}
+
+func TestDay09V1Part2Example(t *testing.T) {
+	testLines(t, 9, exampleFilename, false, Day09V1, 2)
+}
+
+func TestDay09V1Part2(t *testing.T) {
+	testLines(t, 9, filename, false, Day09V1, 1072)
+}
+
+func TestDay09V2Part2Example(t *testing.T) {
+	testSolver(t, 9, exampleFilename, false, Day09V2, 2)
+}
+
+func TestDay09V2Part2(t *testing.T) {
+	testSolver(t, 9, filename, false, Day09V2, 1072)
 }
 
 func BenchmarkDay09Part2(b *testing.B) {
-	buf, _ := os.ReadFile(filename(9))
+	buf := file(b, 9)
 	b.ResetTimer()
 	for b.Loop() {
-		_ = Day09V2(buf, false)
+		_, _ = Day09(buf, false)
+	}
+}
+
+func BenchmarkDay09V1Part2(b *testing.B) {
+	benchLines(b, 9, false, Day09V1)
+}
+
+func BenchmarkDay09V2Part2(b *testing.B) {
+	buf := file(b, 9)
+	b.ResetTimer()
+	for b.Loop() {
+		_, _ = Day09V2(buf, false)
 	}
 }

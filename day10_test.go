@@ -85,56 +85,49 @@ func TestOtherVer(t *testing.T) {
 	}
 }
 
-/* not working
-func TestDay10Part1ExampleChatGPT(t *testing.T) {
-	const want = 4
-	got, err := Day10ChatGPT()
+func TestDay10Part1Example1(t *testing.T) {
+	lines := linesFromFilename(t, exampleFilename(10))
+	got, err := Day10(lines, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-*/
-
-func TestDay10Part1Example1(t *testing.T) {
 	const want = 4
-	lines, err := bytesFromFilename(exampleFilename(10))
-	diet(t, err)
-	got, err := Day10(lines, true)
-	diet(t, err)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay10Part1Example2(t *testing.T) {
-	const want = 8
-	lines, err := bytesFromFilename("testdata/day10_example2.txt")
+	lines := linesFromFilename(t, "testdata/day10_example2.txt")
+	got, err := Day10(lines, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day10(lines, true)
-	diet(t, err)
+	const want = 8
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay10Part1(t *testing.T) {
+	lines := linesFromFilename(t, filename(10))
+	got, err := Day10(lines, true)
+	if err != nil {
+		t.Fatal(err)
+	}
 	const want = 6956
-	got, err := DayAdapterV2(Day10, filename(10), true)
-	diet(t, err)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay10Part2(t *testing.T) {
+	lines := linesFromFilename(t, filename(10))
+	got, err := Day10(lines, false)
+	if err != nil {
+		t.Fatal(err)
+	}
 	const want = 455
-	got, err := DayAdapterV2(Day10, filename(10), false)
-	diet(t, err)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -160,15 +153,14 @@ func TestDay10Part2Examples(t *testing.T) {
 	for i := range wants {
 		want := wants[i]
 		t.Run(fmt.Sprintf("#%d", i+1), func(t *testing.T) {
-			lines, err := bytesFromFilename(fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
-			if err != nil {
-				t.Fatal(err)
-			}
+			lines := linesFromFilename(t, fmt.Sprintf("testdata/day10_part2_example%d.txt", i+1))
 			fmt.Println()
 			fmt.Printf("Example #%d:\n", i+1)
 			got, err := Day10(lines, false)
 			fmt.Println()
-			diet(t, err)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if want != got {
 				t.Fatalf("want %d but got %d", want, got)
 			}
@@ -176,33 +168,16 @@ func TestDay10Part2Examples(t *testing.T) {
 	}
 }
 
-// BenchmarkDay10Part1V1 includes parsing puzzzle input.
-func BenchmarkDay10Part1V1(b *testing.B) {
-	name := filename(10)
-	for b.Loop() {
-		_, _ = DayAdapterV1(Day10, name, true)
-	}
-}
-
-// BenchmarkDay10Part1V2 includes parsing puzzzle input.
-func BenchmarkDay10Part1V2(b *testing.B) {
-	name := filename(10)
-	for b.Loop() {
-		_, _ = DayAdapterV2(Day10, name, true)
-	}
-}
-
 func BenchmarkDay10Part1(b *testing.B) {
-	name := filename(10)
-	b.ReportAllocs()
+	lines := linesFromFilename(b, filename(10))
 	for b.Loop() {
-		_, _ = DayAdapterV2(Day10, name, true)
+		_, _ = Day10(lines, true)
 	}
 }
 
 func BenchmarkDay10Part2(b *testing.B) {
-	name := filename(10)
+	lines := linesFromFilename(b, filename(10))
 	for b.Loop() {
-		_, _ = DayAdapterV2(Day10, name, false)
+		_, _ = Day10(lines, false)
 	}
 }

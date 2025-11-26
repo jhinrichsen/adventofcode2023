@@ -9,6 +9,7 @@ import (
 // ... (Rest der Funktion Day10Gemini bleibt unverändert)
 
 func TestDay10Gemini(t *testing.T) {
+	t.Skip("Gemini-generated code - intentionally failing example documented in README.adoc")
 	grid, err := loadGridFromText("testdata/day10_example.txt")
 	if err != nil {
 		t.Fatalf("Fehler beim Laden der Datei: %v", err)

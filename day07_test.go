@@ -5,60 +5,47 @@ import (
 )
 
 func TestDay07Part1Example(t *testing.T) {
-	const (
-		joker = false
-		want  = 6440
-	)
+	const want = 6440
 	lines := linesFromFilename(t, exampleFilename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
+	got := Day07(puzzle, true)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay07Part1(t *testing.T) {
-	const (
-		joker = false
-		want  = 246424613
-	)
+	const want = 246424613
 	lines := linesFromFilename(t, filename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
+	got := Day07(puzzle, true)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func BenchmarkDay07Part1(b *testing.B) {
-	const joker = false
 	lines := linesFromFilename(b, filename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, true)
 	if err != nil {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
 	for b.Loop() {
-		_, _ = Day07(hands, joker)
+		_ = Day07(puzzle, true)
 	}
 }
 
 func TestCard(t *testing.T) {
 	const want = 0
-	var mu bool
-	got, err := card('2', mu)
+	useJoker := false
+	got, err := card('2', useJoker)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,58 +55,26 @@ func TestCard(t *testing.T) {
 }
 
 func TestDay07Part2Example(t *testing.T) {
-	const (
-		joker = true
-		want  = 5905
-	)
+	const want = 5905
 	lines := linesFromFilename(t, exampleFilename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if want != got {
-		t.Fatalf("want %d but got %d", want, got)
-	}
-}
-
-func TestDay07Part2Example2(t *testing.T) {
-	const (
-		joker = true
-		want  = 6839
-	)
-	lines := linesFromFilename(t, exampleFilename(7))
-	hands, err := NewDay07(lines, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := Day07(hands, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
+	got := Day07(puzzle, false)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
 }
 
 func TestDay07Part2(t *testing.T) {
-	const (
-		joker = true
-		// want  = 248822253 too high
-		want = 248256639
-	)
+	const want = 248256639
 	lines := linesFromFilename(t, filename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Day07(hands, joker)
-	if err != nil {
-		t.Fatal(err)
-	}
+	got := Day07(puzzle, false)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -134,7 +89,8 @@ func TestQ2KJJ(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := handType(Hand{cards: cs}, true)
+	useJoker := true
+	got := handType(Hand{cards: cs}, useJoker)
 	if want != got {
 		t.Fatalf("want %d but got %d", want, got)
 	}
@@ -142,8 +98,9 @@ func TestQ2KJJ(t *testing.T) {
 
 func cards(s string) ([]Card, error) {
 	var hand = make([]Card, len(s))
+	useJoker := true
 	for i, b := range s {
-		c, err := card(byte(b), true)
+		c, err := card(byte(b), useJoker)
 		if err != nil {
 			return nil, err
 		}
@@ -153,14 +110,13 @@ func cards(s string) ([]Card, error) {
 }
 
 func BenchmarkDay07Part2(b *testing.B) {
-	const joker = true
 	lines := linesFromFilename(b, filename(7))
-	hands, err := NewDay07(lines, joker)
+	puzzle, err := NewDay07(lines, false)
 	if err != nil {
 		b.Fatal(err)
 	}
 	b.ResetTimer()
 	for b.Loop() {
-		_, _ = Day07(hands, joker)
+		_ = Day07(puzzle, false)
 	}
 }
