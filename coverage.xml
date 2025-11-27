@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage line-rate="0.7878788" branch-rate="0" version="" timestamp="1698256588859" lines-covered="26" lines-valid="33" branches-covered="0" branches-valid="0" complexity="0">
+  <sources>
+    <source>/home/jot/repos/adventofcode2023</source>
+  </sources>
+  <packages>
+    <package name="gitlab.com/jhinrichsen/adventofcode2023" line-rate="0.7878788" branch-rate="0" complexity="0">
+      <classes>
+        <class name="-" filename="day00.go" line-rate="1" branch-rate="0" complexity="0">
+          <methods>
+            <method name="Day00" signature="" line-rate="1" branch-rate="0" complexity="0">
+              <lines>
+                <line number="3" hits="3"></line>
+                <line number="4" hits="3"></line>
+                <line number="5" hits="3"></line>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="3" hits="3"></line>
+            <line number="4" hits="3"></line>
+            <line number="5" hits="3"></line>
+          </lines>
+        </class>
+        <class name="-" filename="input.go" line-rate="0.76666665" branch-rate="0" complexity="0">
+          <methods>
+            <method name="linesFromFilename" signature="" line-rate="0.5" branch-rate="0" complexity="0">
+              <lines>
+                <line number="11" hits="4"></line>
+                <line number="12" hits="4"></line>
+                <line number="13" hits="0"></line>
+                <line number="14" hits="0"></line>
+                <line number="15" hits="0"></line>
+                <line number="16" hits="4"></line>
+              </lines>
+            </method>
+            <method name="linesFromReader" signature="" line-rate="1" branch-rate="0" complexity="0">
+              <lines>
+                <line number="19" hits="4"></line>
+                <line number="20" hits="4"></line>
+                <line number="21" hits="4"></line>
+                <line number="22" hits="1"></line>
+                <line number="23" hits="1"></line>
+                <line number="24" hits="1"></line>
+                <line number="25" hits="1"></line>
+                <line number="26" hits="4"></line>
+              </lines>
+            </method>
+            <method name="exampleFilename" signature="" line-rate="1" branch-rate="0" complexity="0">
+              <lines>
+                <line number="29" hits="1"></line>
+                <line number="30" hits="1"></line>
+                <line number="31" hits="1"></line>
+              </lines>
+            </method>
+            <method name="filename" signature="" line-rate="1" branch-rate="0" complexity="0">
+              <lines>
+                <line number="33" hits="2"></line>
+                <line number="34" hits="2"></line>
+                <line number="35" hits="2"></line>
+              </lines>
+            </method>
+            <method name="linesAsNumbers" signature="" line-rate="0.6" branch-rate="0" complexity="0">
+              <lines>
+                <line number="38" hits="1"></line>
+                <line number="39" hits="1"></line>
+                <line number="40" hits="1"></line>
+                <line number="41" hits="10"></line>
+                <line number="42" hits="0"></line>
+                <line number="43" hits="0"></line>
+                <line number="44" hits="0"></line>
+                <line number="45" hits="0"></line>
+                <line number="46" hits="10"></line>
+                <line number="48" hits="1"></line>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="11" hits="4"></line>
+            <line number="12" hits="4"></line>
+            <line number="13" hits="0"></line>
+            <line number="14" hits="0"></line>
+            <line number="15" hits="0"></line>
+            <line number="16" hits="4"></line>
+            <line number="19" hits="4"></line>
+            <line number="20" hits="4"></line>
+            <line number="21" hits="4"></line>
+            <line number="22" hits="1"></line>
+            <line number="23" hits="1"></line>
+            <line number="24" hits="1"></line>
+            <line number="25" hits="1"></line>
+            <line number="26" hits="4"></line>
+            <line number="29" hits="1"></line>
+            <line number="30" hits="1"></line>
+            <line number="31" hits="1"></line>
+            <line number="33" hits="2"></line>
+            <line number="34" hits="2"></line>
+            <line number="35" hits="2"></line>
+            <line number="38" hits="1"></line>
+            <line number="39" hits="1"></line>
+            <line number="40" hits="1"></line>
+            <line number="41" hits="10"></line>
+            <line number="42" hits="0"></line>
+            <line number="43" hits="0"></line>
+            <line number="44" hits="0"></line>
+            <line number="45" hits="0"></line>
+            <line number="46" hits="10"></line>
+            <line number="48" hits="1"></line>
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

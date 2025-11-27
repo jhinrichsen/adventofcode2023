@@ -1,0 +1,3809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 10.2.0" />
+<title>Advent of code 2023</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overridden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="book">
+<div id="header">
+<h1>Advent of code 2023</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p><span class="image">
+<a class="image" href="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023">
+<img src="https://godoc.org/gitlab.com/jhinrichsen/adventofcode2023?status.svg" alt="godoc" />
+</a>
+</span>
+<span class="image">
+<a class="image" href="https://goreportcard.com/report/gitlab.com/jhinrichsen/adventofcode2023">
+<img src="https://goreportcard.com/badge/gitlab.com/jhinrichsen/adventofcode2023" alt="Go report card" />
+</a>
+</span>
+<span class="image">
+<a class="image" href="https://gitlab.com/jhinrichsen/adventofcode2023/-/commits/main">
+<img src="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg" alt="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/pipeline.svg" title="pipeline status" />
+</a>
+</span>
+<span class="image">
+<a class="image" href="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg">
+<img src="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg" alt="https://gitlab.com/jhinrichsen/adventofcode2023/badges/main/coverage.svg" title="coverage report" />
+</a>
+</span></p></div>
+<div class="quoteblock">
+<div class="content">Same procedure as every year, Eric.</div>
+<div class="attribution">
+&#8212; me
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/gitlab-history.png" alt="static/gitlab-history.png" />
+</div>
+</div>
+<div class="paragraph"><p>My take on <a href="https://adventofcode.com/2023/">https://adventofcode.com/2023/</a> in Go. As usual, i don&#8217;t particularly
+care if i provide my solutions <em>fast</em>, i try to be <em>correct</em> on the first
+answer, and care for being runtime efficient.
+All puzzles are backed by unit testing the examples and the puzzles.
+Results are hard coded into the unit tests, so you might not want to peek at <code>_test.go</code> files.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_environment">Environment</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2023">2023</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Go 1.22, 1.23
+</p>
+</li>
+<li>
+<p>
+vim, vim-go, gopls, fed by an HHKB
+</p>
+</li>
+<li>
+<p>
+VisualStudio Code for debugging
+</p>
+</li>
+<li>
+<p>
+Fedora up to 41 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
+</p>
+</li>
+<li>
+<p>
+Fedora up to 41 @ custom build (AMD Ryzen 5 3400G on a Gigabyte B450)
+</p>
+</li>
+<li>
+<p>
+OSX @ 16" Macbook Pro 2019 (Intel&#174; Core&#8482; i9-9980HK CPU @ 2.40GHz)
+</p>
+</li>
+<li>
+<p>
+Prompts: Tabnine, ChatGPT, Gemini
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_november_2025">November 2025</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Go 1.24 (1.25 not yet supported by claude.ai/code research preview)
+</p>
+</li>
+<li>
+<p>
+vim, lazygit
+</p>
+</li>
+<li>
+<p>
+Fedora 43 @ Framework 16" (AMD Ryzen 7 7840HS w/ Radeon 780M Graphics)
+</p>
+</li>
+<li>
+<p>
+Fedora 43 @ custom build (Intel i7 14700K)
+</p>
+</li>
+<li>
+<p>
+Ubuntu 24.04.3 LTS (Noble Numbat) @ Intel&#174; Xeon&#174; CPU @ 2.60GHz (Claude research preview)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>I&#8217;d love to try one of those Risc-V boards but can&#8217;t decide between
+<a href="https://github.com/openwch/ch32v003">a bare metal 48 MHz</a>
+- probably requiring tinygo - or a full fledge
+<a href="https://www.sifive.com/cores/performance-p870-p870a">multicore GHz monster</a>.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_project_structure">Project structure</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Each day lives separately in a <code>day{{.n}}.go</code> and <code>day{{.n}}_test.go</code> file.
+Unit test data, both examples and puzzle input, is in
+<code>testdata/day{{.n}}.txt</code>, and <code>testdata/day{{.n}}_example.txt</code>.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_intel_p_cores_and_e_cores_performance">Intel P-cores and E-cores Performance</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Modern Intel CPUs (12th gen and later) feature a hybrid architecture with Performance cores (P-cores) and Efficiency cores (E-cores). Understanding their interaction with Go&#8217;s garbage collector is crucial for benchmark performance.</p></div>
+<div class="sect2">
+<h3 id="_architecture_overview">Architecture Overview</h3>
+<div class="paragraph"><p>The Intel Core i7-14700K used for benchmarking has:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>8 P-cores</strong> (Performance): CPUs 0-15 with Hyper-Threading, 3.4 GHz base, 5.6 GHz max boost
+</p>
+</li>
+<li>
+<p>
+<strong>12 E-cores</strong> (Efficiency): CPUs 16-27 without Hyper-Threading, 2.6 GHz base, ~4.2 GHz max boost
+</p>
+</li>
+<li>
+<p>
+<strong>Total: 28 logical processors</strong> (GOMAXPROCS=28 by default)
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_benchmarking_single_threaded_workloads">Benchmarking Single-Threaded Workloads</h3>
+<div class="paragraph"><p>Go&#8217;s benchmark runner executes benchmarks serially (one at a time), meaning only one CPU core actively runs benchmark code while others remain idle. This raises the question: should we restrict benchmarks to fast P-cores only?</p></div>
+</div>
+<div class="sect2">
+<h3 id="_the_gc_parallelism_paradox">The GC Parallelism Paradox</h3>
+<div class="paragraph"><p>Counter-intuitively, <strong>restricting to P-cores significantly degrades performance</strong> for allocation-heavy benchmarks:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>Benchmark Performance Comparison - Day16Part2 (119 MB, 103K allocs):
+GOMAXPROCS=28 (all cores):      43,514,553 ns/op  (baseline)
+GOMAXPROCS=16 (P-cores+HT):    129,132,958 ns/op  (197% slower!)
+GOMAXPROCS=8  (P-cores only):  121,963,069 ns/op  (180% slower!)
+
+Benchmark Performance Comparison - Day12Part2 (95 MB, 20K allocs):
+GOMAXPROCS=28 (all cores):      53,833,117 ns/op  (baseline)
+GOMAXPROCS=16 (P-cores+HT):    139,680,222 ns/op  (159% slower)
+GOMAXPROCS=8  (P-cores only):  122,367,892 ns/op  (127% slower)</code></pre>
+</div></div>
+<div class="paragraph"><p>Benchmarks with <strong>zero allocations</strong> show no performance difference, confirming the issue is GC-related.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_why_e_cores_improve_performance">Why E-cores Improve Performance</h3>
+<div class="paragraph"><p>Go&#8217;s garbage collector spawns <strong>mark workers = 25% of GOMAXPROCS</strong>:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+GOMAXPROCS=28 → ~7 mark workers (fast parallel GC)
+</p>
+</li>
+<li>
+<p>
+GOMAXPROCS=16 → ~4 mark workers (moderate parallelism)
+</p>
+</li>
+<li>
+<p>
+GOMAXPROCS=8  → ~2 mark workers (GC bottleneck)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>With fewer mark workers, the GC cannot keep up with allocation rate, forcing <strong>GC assist</strong>: the allocating goroutine must stop and help with garbage collection work, directly blocking benchmark execution.</p></div>
+<div class="paragraph"><p>E-cores at 4.2 GHz are perfectly adequate for memory scanning work. Having <strong>7 workers on mixed cores</strong> completes GC cycles faster than <strong>2 workers on 5.6 GHz P-cores</strong>.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_cpu_utilization_during_benchmarks">CPU Utilization During Benchmarks</h3>
+<div class="paragraph"><p>Monitoring during <code>make total</code> with GOMAXPROCS=28 shows:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Overall CPU usage:</strong> 5-8% (single-threaded nature)
+</p>
+</li>
+<li>
+<p>
+<strong>Active cores:</strong> Typically 1-2 P-cores running at 5.3-5.6 GHz
+</p>
+</li>
+<li>
+<p>
+<strong>Idle cores:</strong> Majority at 800 MHz (power saving)
+</p>
+</li>
+<li>
+<p>
+<strong>Package temperature:</strong> 31-69°C (no thermal throttling)
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_recommendations">Recommendations</h3>
+<div class="paragraph"><p>For <strong>Go benchmarks with allocations</strong>:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+✅ Use default GOMAXPROCS (all cores available)
+</p>
+</li>
+<li>
+<p>
+✅ Let OS scheduler pick fast P-cores for benchmark work
+</p>
+</li>
+<li>
+<p>
+✅ Let GC use all cores (including E-cores) for parallel marking
+</p>
+</li>
+<li>
+<p>
+❌ Do not restrict to P-cores only
+</p>
+</li>
+<li>
+<p>
+❌ Do not use <code>taskset</code> to limit CPU affinity
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>For <strong>allocation-free benchmarks</strong>, core configuration has negligible impact.</p></div>
+<div class="paragraph"><p>The hybrid architecture works optimally when Go&#8217;s runtime can leverage all available cores for concurrent GC work while the OS scheduler naturally prefers P-cores for compute-intensive tasks.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Number of tries for a correct answer:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Day</p></td>
+<td align="left" valign="top"><p class="table">Part 1</p></td>
+<td align="left" valign="top"><p class="table">Part 2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">3</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">2</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">3</p></td>
+<td align="left" valign="top"><p class="table">3</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">4</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">5</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">6</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">7</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">8</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">2</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">9</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">10</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">11</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">12</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">13</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">14</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">15</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">16</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">17</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">18</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">19</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">20</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">21</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">22</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">23</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">24</p></td>
+<td align="left" valign="top"><p class="table">2 (7278 too low)</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">25</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+<td align="left" valign="top"><p class="table">1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_1_trebuchet">Day 1: Trebuchet?!</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Writing a custom one-pass parser for V2 because why not.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: darwin
+goarch: amd64
+pkg: adventofcode2023
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkDay01V1
+BenchmarkDay01V1-16                 5516            214078 ns/op            5006 B/op       2207 allocs/op
+BenchmarkDay01V2
+BenchmarkDay01V2-16                21414             55737 ns/op               0 B/op          0 allocs/op
+BenchmarkDay01Large
+BenchmarkDay01Large-16               462           2582112 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>Solving part 1 takes 55 μs.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_3_gear_ratios">Day 3: Gear Ratios</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Looks like a flood fill, aka seed fill.
+Doing my homework on the internet, lots of recursive solutions.
+I personally avoid recursion, because it will blow up in your face,
+right when the beeper goes on alert in the middle of deep sleep.</p></div>
+<div class="paragraph"><p><a href="https://github.com/erich666/GraphicsGems/blob/master/gems/SeedFill.c">Heckbert</a>
+has a solid looking implementation as part of his "Graphic Gems" Series in part 1, <code>A SEED FILL ALGORITHM</code>.
+This one is also referenced by Wikipedia as <code>Span Filling</code>.</p></div>
+<div class="paragraph"><p><a href="https://lodev.org/cgtutor/floodfill.html">Lode Vandevenne</a> has an interesting looking <code>Scanline Floodfill Algorithm With Stack (floodFillScanlineStack)</code>.</p></div>
+<div class="paragraph"><p>Then there&#8217;s Windows C++ Code by <a href="https://www.codeproject.com/Articles/6017/QuickFill-An-efficient-flood-fill-algorithm">John R Shaw</a>.</p></div>
+<div class="paragraph"><p><a href="http://unity3dmc.blogspot.com/2017/02/ultimate-3d-floodfill-scanline.html">This</a> one claims to be 1000 times faster than anything else, but looks kinda weird.</p></div>
+<div class="paragraph"><p><a href="https://en.wikipedia.org/wiki/Flood_fill#Walk-based_filling_(Fixed-memory_method)">Wikipedia</a> describes an O(1) memory <code>Walk-based filling (Fixed-memory method)</code>, but it is only valid for 4-connected, and we need 8-connected because diagonals count as well.</p></div>
+<div class="paragraph"><p>A version from 2007 named <code>A Linear-Time Constant-Space Algorithm for the Boundary Fill Problem</code> looks very efficient.
+The pseudo-code provided is a real pseudo, as in</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>next.blockednodes:={u|dist(u,next)==1 &amp;&amp; u.color!=black}</code></pre>
+</div></div>
+<div class="paragraph"><p>The newest publication i found is <a href="https://arxiv.org/abs/1906.03366">Scan-flood Fill(SCAFF): an Efficient Automatic Precise Region Filling Algorithm for Complicated Regions</a> by Yixuan He, Tianyi Hu, Delu Zeng.
+It mentions large scale auto-learning.</p></div>
+<div class="paragraph"><p>But then we would have to XOR the whole thing because we need those numbers that are reachable, not islands.
+Thinking again, KISS to the rescue. Just parse numbers, and check if the C8 environment contains any special characters.</p></div>
+<div class="paragraph"><p>It took me three turns to make the algorithm work. Yes, numbers can end directly at the end of the line.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/day03.png" alt="static/day03.png" />
+</div>
+</div>
+<div class="sect2">
+<h3 id="_power_mode_em_balanced_em">Power Mode <em>Balanced</em></h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay03Part1-16             19702             57430 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             41658             32092 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             41925             28282 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             42114             29990 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             38536             28438 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_power_mode_em_power_saver_em">Power Mode <em>Power Saver</em></h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay03Part1-16             10586            111056 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             10000            101209 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             10000            112834 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             10000            115926 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             10000            101594 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_power_mode_em_performance_em">Power Mode <em>Performance</em></h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay03Part1-16             42468             30711 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             38066             30958 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             42180             28016 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             37698             31678 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part1-16             41976             30219 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_part_2">Part 2</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay03Part2-16             74426             15353 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             78756             15988 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77714             15708 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             72922             15024 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77499             15244 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74164             16153 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74095             15557 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             77061             15753 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             74888             15874 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             71414             16128 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: darwin
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+BenchmarkDay03Part2-16             34120             35665 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35691             33231 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             36195             33311 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35734             35594 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35541             33427 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35611             33519 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35823             34799 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             33032             33603 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             36066             33785 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-16             35368             33881 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay03Part2-8              29594             39583 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              30244             39643 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              31123             40310 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              27504             38278 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              26856             40871 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              28608             39918 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              28083             40723 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              28372             40097 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              27661             40784 ns/op               0 B/op          0 allocs/op
+BenchmarkDay03Part2-8              30015             41826 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_4_scratchcards">Day 4: Scratchcards</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization">Performance Optimization</h3>
+<div class="paragraph"><p>Day 04 Part 2 was optimized to achieve zero allocations by replacing a dynamic slice with a fixed-size array.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic slice allocation for tracking card counts:
+- <code>ns := make([]uint, cardCount)</code> allocated a slice based on actual card count
+- For 224 cards, this resulted in 1792 bytes (224 × 8 bytes/uint)
+- Part 2 had 1 allocation per call</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay04Part1-16              36.28µ ± 2%
+BenchmarkDay04Part2-16              53.40µ ± 1%    1792 B/op    1 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1">Optimization (b1)</h4>
+<div class="paragraph"><p>Replaced dynamic slice with fixed-size stack-allocated array:
+- <code>var ns [256]uint</code> uses compile-time known size
+- Array allocated on stack instead of heap
+- Comment documents safety: "AoC inputs have &lt;256 cards, so this is safe"
+- Loop over actual card count using <code>for i := range cardCount</code></p></div>
+</div>
+<div class="sect3">
+<h4 id="_results">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day04_bench_b0.txt │       /tmp/day04_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day04Part1-16               36.28µ ± 2%   43.86µ ± 2%  +20.90% (p=0.000 n=10)
+Day04Part2-16               53.40µ ± 1%   52.28µ ± 1%   -2.08% (p=0.001 n=10)
+geomean                     44.01µ        47.89µ        +8.80%
+
+              │ /tmp/day04_bench_b0.txt │          /tmp/day04_bench_b1.txt          │
+              │          B/op           │     B/op      vs base                     │
+Day04Part1-16              0.000 ± 0%       0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Day04Part2-16            1.750Ki ± 0%     0.000Ki ± 0%  -100.00% (p=0.000 n=10)
+geomean                               ²                 ?                       ² ³
+¹ all samples are equal
+² summaries must be &gt;0 to compute geomean
+³ ratios must be &gt;0 to compute geomean
+
+              │ /tmp/day04_bench_b0.txt │         /tmp/day04_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day04Part1-16              0.000 ± 0%     0.000 ± 0%         ~ (p=1.000 n=10) ¹
+Day04Part2-16              1.000 ± 0%     0.000 ± 0%  -100.00% (p=0.000 n=10)
+geomean                               ²               ?                       ² ³
+¹ all samples are equal
+² summaries must be &gt;0 to compute geomean
+³ ratios must be &gt;0 to compute geomean</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 2</strong>: 2.08% faster (53.4µs → 52.3µs)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 100% reduction in allocations (1 → 0 allocs/op)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 100% reduction in memory (1792 B → 0 B)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization achieves zero-allocation performance by leveraging compile-time knowledge about input constraints. AoC puzzle inputs have fewer than 256 cards, making a fixed-size <code>[256]uint</code> array safe. The Go compiler allocates this array on the stack rather than the heap, eliminating the dynamic allocation overhead entirely. The array uses 2048 bytes of stack space (256 × 8), but only the first <code>cardCount</code> elements are accessed.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_5_if_you_give_a_seed_a_fertilizer">Day 5: If You Give A Seed A Fertilizer</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_2">Performance Optimization</h3>
+<div class="paragraph"><p>Day 05 was optimized by pre-allocating slices in parsing to reduce memory allocations.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_2">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic slice growth with <code>append()</code> operations without capacity hints:
+- <code>parseDay05</code> allocated slices without initial capacity
+- Resulted in multiple reallocations as slices grew</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay05Part1-16             18293             64980 ns/op           40960 B/op        972 allocs/op
+BenchmarkDay05Part2-16              3074            390274 ns/op          253200 B/op       8322 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_2">Optimization (b1)</h4>
+<div class="paragraph"><p>Pre-allocated slices with estimated capacities:
+- <code>parseDay05</code>: Pre-allocate <code>rss</code> with capacity 7 (typical number of map sections)
+- <code>parseDay05</code>: Pre-allocate <code>rs</code> with capacity 40 per map section
+- <code>Day05</code>: Pre-allocate <code>seedRanges</code> with exact capacity <code>len(seeds)/2</code></p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_2">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ benches/day05_bench_b0.txt │   benches/day05_bench_b1_v2.txt    │
+              │           sec/op           │   sec/op     vs base               │
+Day05Part1-16                  64.98µ ± 2%   64.01µ ± 3%  -1.49% (p=0.035 n=10)
+Day05Part2-16                  390.3µ ± 3%   377.6µ ± 2%  -3.25% (p=0.011 n=10)
+geomean                        159.2µ        155.5µ       -2.37%
+
+              │ benches/day05_bench_b0.txt │    benches/day05_bench_b1_v2.txt    │
+              │            B/op            │     B/op      vs base               │
+Day05Part1-16                 40.00Ki ± 0%   37.23Ki ± 0%  -6.91% (p=0.000 n=10)
+Day05Part2-16                 247.3Ki ± 0%   244.0Ki ± 0%  -1.32% (p=0.000 n=10)
+geomean                       99.45Ki        95.32Ki       -4.16%
+
+              │ benches/day05_bench_b0.txt │   benches/day05_bench_b1_v2.txt    │
+              │         allocs/op          │  allocs/op   vs base               │
+Day05Part1-16                   972.0 ± 0%    934.0 ± 0%  -3.91% (p=0.000 n=10)
+Day05Part2-16                  8.322k ± 0%   8.280k ± 0%  -0.50% (p=0.000 n=10)
+geomean                        2.844k        2.781k       -2.22%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 1.49% faster (65.0µs → 64.0µs), 6.91% less memory (40KB → 37KB), 3.91% fewer allocations (972 → 934)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 3.25% faster (390µs → 378µs), 1.32% less memory (247KB → 244KB), 0.50% fewer allocations (8322 → 8280)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization works by eliminating repeated slice reallocations during parsing. By pre-allocating slices with appropriate capacities based on known input patterns, the Go runtime avoids multiple copy operations as slices grow. The parsing phase benefits most from this optimization, as it processes hundreds of numbers across multiple map sections.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_part_2_2">Part 2</h3>
+<div class="paragraph"><p>Part 2 reinterprets the seed numbers as ranges (start, length) instead of individual seeds.
+This makes brute force iteration infeasible - the example has 27 seeds, but the real input has billions.</p></div>
+<div class="paragraph"><p>The solution uses range splitting to process entire ranges through each map layer without enumerating individual values.
+When a range overlaps with a map entry, it splits into:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Unmapped portions (before and after the overlap) that pass through unchanged
+</p>
+</li>
+<li>
+<p>
+Overlapped portion that transforms to destination space
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Each range tracks its Min/Max values in the current space (seed → soil → &#8230; → location).</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>Answer: 52210644</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">First attempt accumulated deltas (offset transformations) but kept ranges in seed space.
+This produced answer 14209264, which was too low because the final minimum was calculated in the wrong coordinate system.</td>
+</tr></table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_6_wait_for_it">Day 6: Wait For It</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_3">Performance Optimization</h3>
+<div class="paragraph"><p>Day 06 was optimized by replacing brute force iteration with a mathematical solution using the quadratic formula.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_3">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation iterated through all possible hold times to count winning strategies:
+- <code>Farther()</code> used a loop from 1 to t-1, testing each value
+- For Part 1 (small races), this was fast
+- For Part 2 (single race with t=42,686,985), this meant ~42 million iterations</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay06Part1-16              212.25n ± 3%
+BenchmarkDay06Part2-16         35521415.50n ± 3%    (35.5 milliseconds)</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_3">Optimization (b1)</h4>
+<div class="paragraph"><p>The problem is actually a quadratic equation:
+- We want: <code>h*(t-h) &gt; d</code> where h is hold time, t is total time, d is record distance
+- Rearranging: <code>h² - h*t + d &lt; 0</code>
+- Use quadratic formula to find boundary points: <code>h = (t ± sqrt(t² - 4d)) / 2</code>
+- Count integers strictly between the two roots</p></div>
+<div class="paragraph"><p>This changes the algorithm from O(n) iteration to O(1) calculation.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_3">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day06_bench_b0.txt │       /tmp/day06_bench_b1.txt        │
+              │         sec/op          │   sec/op     vs base                 │
+Day06Part1-16              212.25n ± 3%   41.81n ± 3%   -80.30% (p=0.000 n=10)
+Day06Part2-16         35521415.50n ± 3%   11.01n ± 3%  -100.00% (p=0.000 n=10)
+geomean                     86.83µ        21.46n        -99.98%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 80.3% faster (212ns → 42ns) - 5x speedup
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 99.99997% faster (35.5ms → 11ns) - <strong>3.2 million times faster!</strong>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization transforms the problem from iterating through millions of values to a single mathematical calculation. The quadratic formula gives exact boundary points, eliminating the need to test each individual hold time. Part 2&#8217;s dramatic improvement (from 35 milliseconds to 11 nanoseconds) demonstrates the power of choosing the right algorithm - O(1) vs O(n) where n=42 million.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_7_camel_cards">Day 7: Camel Cards</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay07Part1-16               494           2360739 ns/op</code></pre>
+</div></div>
+<div class="paragraph"><p>For part 2, i was promoting <code>OnePair</code> and a Joker to <code>TwoPairs</code> instead of <code>ThreeOfAKind</code>. Damn.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay07Part1-8                220           4891596 ns/op           72576 B/op       1001 allocs/op
+BenchmarkDay07Part2-8                222           5629774 ns/op           72576 B/op       1001 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>To get rid of the memory allocation, pack cards and their bid into a struct, so it is not required to backreference the bid after ranking.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay07Part1-8               5211            222719 ns/op               0 B/op          0 allocs/op
+BenchmarkDay07Part2-8               4837            233281 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>Thats 230 μs, and no memory allocation.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_haunted_wasteland">Haunted Wasteland</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>A straight forward puzzle to implement, no algorithm background required.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay08Part1-8               1884            554004 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="sect2">
+<h3 id="_part_2_3">Part 2</h3>
+<div class="paragraph"><p>Part 2 requires starting at all nodes ending with <em>A</em> simultaneously and moving all "ghosts" in sync until ALL reach nodes ending with <em>Z</em> at the same time.</p></div>
+<div class="paragraph"><p>The naive approach of simulating all ghosts step-by-step works for the example (6 steps) but would never terminate for the actual input - it would need to run for over 18 trillion steps.</p></div>
+<div class="paragraph"><p>The solution exploits a special property of the input: each ghost&#8217;s path forms a cycle with exactly one Z node at regular intervals. By finding when each ghost first reaches a Z node, we can use the Least Common Multiple (LCM) to calculate when all cycles align.</p></div>
+<div class="paragraph"><p>For each starting node ending in <em>A</em>:
+- Follow the path until reaching a node ending in <em>Z</em>
+- Record the number of steps (cycle length)
+- Calculate LCM of all cycle lengths</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>Answer: 18024643846273</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">First attempt used synchronous simulation which ran &gt;10s without completing, making it clear the input requires mathematical insight rather than brute force.</td>
+</tr></table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_performance_optimization_4">Performance Optimization</h3>
+<div class="paragraph"><p>Day 08 was optimized by pre-allocating slices with exact capacities to reduce memory allocations.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_4">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic slice growth without capacity hints:
+- <code>var cycleLengths []uint</code> in Part 2 grew dynamically via append
+- <code>var nodes []string</code> in <code>startNodes()</code> grew dynamically via append
+- Part 2 resulted in 12 allocations per call</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay08Part1-16              615.4µ ± 1%     56.09 KiB    4 allocs/op
+BenchmarkDay08Part2-16              3.226m ± 2%     56.44 KiB   12 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_4">Optimization (b1)</h4>
+<div class="paragraph"><p>Pre-allocated slices with exact capacities:
+- <code>cycleLengths := make([]uint, 0, len(starts))</code> - pre-allocate for known number of starting nodes
+- In <code>startNodes()</code>: count nodes first, then pre-allocate with exact capacity
+- Eliminates repeated reallocation as slices grow</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_4">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day08_bench_b0.txt │      /tmp/day08_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day08Part1-16               615.4µ ± 1%   557.2µ ± 1%  -9.47% (p=0.000 n=10)
+Day08Part2-16               3.226m ± 2%   3.125m ± 1%  -3.11% (p=0.000 n=10)
+geomean                     1.409m        1.320m       -6.34%
+
+              │ /tmp/day08_bench_b0.txt │       /tmp/day08_bench_b1.txt       │
+              │          B/op           │     B/op      vs base               │
+Day08Part1-16              56.09Ki ± 0%   56.09Ki ± 0%       ~ (p=0.582 n=10)
+Day08Part2-16              56.44Ki ± 0%   56.23Ki ± 0%  -0.37% (p=0.000 n=10)
+geomean                    56.26Ki        56.16Ki       -0.19%
+
+              │ /tmp/day08_bench_b0.txt │       /tmp/day08_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day08Part1-16                4.000 ± 0%   4.000 ± 0%        ~ (p=1.000 n=10) ¹
+Day08Part2-16               12.000 ± 0%   6.000 ± 0%  -50.00% (p=0.000 n=10)
+geomean                      6.928        4.899       -29.29%
+¹ all samples are equal</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 9.47% faster (615µs → 557µs)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 3.11% faster (3.23ms → 3.13ms), 50% reduction in allocations (12 → 6 allocs/op)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization reduces allocations by eliminating dynamic slice growth. Pre-allocating with exact capacity prevents the Go runtime from repeatedly allocating larger backing arrays and copying data as slices grow. Part 2 benefits most because it processes multiple starting nodes, each requiring cycle length tracking. The <code>startNodes()</code> optimization uses a two-pass approach: count first, then allocate exact capacity - trading a small amount of iteration overhead for predictable memory allocation.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_9_mirage_maintenance">Day 9: Mirage Maintenance</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>These timings include parsing the puzzle input:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09Part1-8               5962            378392 ns/op           70400 B/op        200 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>The corresponding CPU profile shows that most of the time is spent parsing.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/profile09-01.svg" alt="Embedded" />
+</div>
+</div>
+<div class="paragraph"><p>Spinning a custom parser:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09V1Part1-8             6135            398102 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V2Part1-8             9898            113864 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>400% faster, and no more memory allocations.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/profile09-02.svg" alt="Embedded" />
+</div>
+</div>
+<div class="paragraph"><p>Function names from the parser&#8217;s state machine are mangled, such as <code>func1</code>.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>ROUTINE ======================== gitlab.com/jhinrichsen/adventofcode2023.Day09V2.func1 in /home/jot/repos/adventofcode2023/day09.go <b>&lt;1&gt;</b>
+     430ms      430ms (flat, cum) 19.46% of Total
+         .          .     74:   clear := func() { <b>&lt;2&gt;</b>
+         .          .     75:           for y := range ns {
+     430ms      430ms     76:                   for x := range ns[y] {
+         .          .     77:                           ns[y][x] = -1
+         .          .     78:                   }
+         .          .     79:           }
+         .          .     80:   }
+         .          .     81:   clear()</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+mangled function name
+</p>
+</li>
+<li>
+<p>
+function name
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>The <code>clear()/ func1</code> function helped to make sure all (x/y) positions are correct, it can safely be removed now.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09V2Part1-8            14719             83811 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-8            13400             84512 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-8            13508             84898 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-8            14628             84776 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-8            14185             84671 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>As suggested, removing <code>clear()/ func1</code> shaves off another 20% from 114 to 84 μs.
+20% is spent in an inlined function building numbers from digits:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>ROUTINE ======================== gitlab.com/jhinrichsen/adventofcode2023.Day09V2.func2 in /home/jot/repos/adventofcode2023/day09.go
+     1.84s      1.84s (flat, cum) 19.70% of Total
+         .          .     79:   digit := func(d int) {
+     1.84s      1.84s     80:           n = 10*n + d
+         .          .     81:   }</code></pre>
+</div></div>
+<div class="paragraph"><p>ChatGPT 4o confirms that this is already pretty optimized, and slightly suggests trying bit shifting <code>(n &lt;&lt; 3) + (n &lt;&lt; 1) + d</code>.
+The Go compiler decides to take another route, the disassembly for <code>n = 10 * n + d</code> on AMD looks like this:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>     170ms      170ms     50f6ca: MOVQ 0x4e220(SP), DI                    ;gitlab.com/jhinrichsen/adventofcode2023.Day09V2 day09.go:80
+     980ms      980ms     50f6d2: LEAQ 0(DI)(DI*4), DI
+      90ms       90ms     50f6d6: LEAQ 0(SI)(DI*2), SI
+     600ms      600ms     50f6da: MOVQ SI, 0x4e220(SP)</code></pre>
+</div></div>
+<div class="paragraph"><p><code>DI + DI * 4</code> (5) and then <code>SI + DI * 2</code> (10 * DI + SI).
+Well, compiler people know way better than me, so i leave it like that.</p></div>
+<div class="paragraph"><p>For part 2, i had to add a single line, and BÄM</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay09Part2-8              13662             86871 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-8              12366             86868 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-8              13159             88358 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-8              13674             89267 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-8              12960             89872 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>This one line for part 2 adds 3% runtime penalty.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name          old time/op    new time/op    delta
+Day09Part2-8    87.2µs ± 2%    89.4µs ± 3%   ~     (p=0.095 n=5+5)
+
+name          old alloc/op   new alloc/op   delta
+Day09Part2-8     0.00B          0.00B        ~     (all equal)
+
+name          old allocs/op  new allocs/op  delta
+Day09Part2-8      0.00           0.00        ~     (all equal)</code></pre>
+</div></div>
+<div class="paragraph"><p>Framework 16" in Performance Mode:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay09V1Part1-16           13080             91186 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16           13360             90379 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16           13119             91153 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16           13088             91441 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16           13124             91989 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V2Part1-16           28809             41317 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16           29056             41194 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16           28704             41308 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16           28743             41222 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16           29160             41331 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             27960             42377 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28038             42533 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28312             42262 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28311             42283 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28095             42474 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>and in Power Saver Mode:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay09V1Part1-16            3446            298572 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16            3676            296005 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16            3806            294459 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16            3470            297215 ns/op           70400 B/op        200 allocs/op
+BenchmarkDay09V1Part1-16            3666            297516 ns/op           70400 B/op        200 allocs/op
+
+BenchmarkDay09V2Part1-16            7330            143001 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16            7080            148411 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09V2Part1-16            8065            135634 ns/op               0 B/op          0 allocs/op <b>&lt;1&gt;</b>
+BenchmarkDay09V2Part1-16           28040             40523 ns/op               0 B/op          0 allocs/op <b>&lt;2&gt;</b>
+BenchmarkDay09V2Part1-16           29444             40772 ns/op               0 B/op          0 allocs/op
+
+BenchmarkDay09Part2-16             28267             42077 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28153             42776 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             27757             44260 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28194             41942 ns/op               0 B/op          0 allocs/op
+BenchmarkDay09Part2-16             28086             42086 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+right before turbo
+</p>
+</li>
+<li>
+<p>
+in turbo
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Interesting that power mode starts about 3 x slower, but then reaches the same performance for part 2.
+Looks like power saver mode is more resistent to CPU peaks, but then goes all in when required.</p></div>
+<div class="sect2">
+<h3 id="_performance_optimization_stack_allocation">Performance Optimization (Stack Allocation)</h3>
+<div class="paragraph"><p>Day 09 was further optimized by reducing array dimensions to fit within stack size limits, eliminating heap escaping.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_5">Baseline (b0)</h4>
+<div class="paragraph"><p>The Day09V2 implementation used a fixed-size array <code>var ns [DIM][DIM]int</code> with <code>DIM = 200</code>:
+- Array size: [200][200]int = 200 × 200 × 8 bytes = 320 KB
+- Exceeded typical stack frame limits, causing heap allocation
+- Resulted in 1 allocation per call despite using a "fixed-size" array</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay09Part1-16             171.18µ ± 27%    320 KiB    1 allocs/op
+BenchmarkDay09Part2-16             206.22µ ±  6%    320 KiB    1 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_5">Optimization (b1)</h4>
+<div class="paragraph"><p>Analyzed actual input dimensions:
+- 200 lines (matching original DIM)
+- Maximum 21 numbers per line (much less than 200)</p></div>
+<div class="paragraph"><p>Reduced array to actual requirements with safety margin:
+- Changed from <code>var ns [200][200]int</code> to <code>var ns [LINES][MAXNUMS]int</code>
+- Where <code>LINES = 200</code> and <code>MAXNUMS = 30</code>
+- New array size: [200][30]int = 200 × 30 × 8 bytes = 48 KB
+- Now fits comfortably within stack limits</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_5">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day09_bench_b0.txt │       /tmp/day09_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day09Part1-16             171.18µ ± 27%   75.61µ ± 2%  -55.83% (p=0.000 n=10)
+Day09Part2-16             206.22µ ±  6%   77.02µ ± 2%  -62.65% (p=0.000 n=10)
+geomean                    187.9µ         76.31µ       -59.38%
+
+              │ /tmp/day09_bench_b0.txt │         /tmp/day09_bench_b1.txt         │
+              │          B/op           │    B/op     vs base                     │
+Day09Part1-16              320.0Ki ± 0%   0.0Ki ± 0%  -100.00% (p=0.000 n=10)
+Day09Part2-16              320.0Ki ± 0%   0.0Ki ± 0%  -100.00% (p=0.000 n=10)
+geomean                    320.0Ki                    ?                       ¹ ²
+¹ summaries must be &gt;0 to compute geomean
+² ratios must be &gt;0 to compute geomean
+
+              │ /tmp/day09_bench_b0.txt │         /tmp/day09_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day09Part1-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+Day09Part2-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+geomean                      1.000                    ?                       ¹ ²
+¹ summaries must be &gt;0 to compute geomean
+² ratios must be &gt;0 to compute geomean</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 55.83% faster (171µs → 76µs), 100% reduction in allocations and memory (320 KB → 0 B)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 62.65% faster (206µs → 77µs), 100% reduction in allocations and memory (320 KB → 0 B)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates heap escaping by sizing arrays based on actual input dimensions rather than worst-case estimates. Go&#8217;s compiler allocates small arrays (&lt;64KB typically) on the stack, but large arrays escape to the heap. By reducing from 320KB to 48KB, the array now stays on the stack. This eliminates allocation overhead and improves cache locality. The analysis step (checking input dimensions) is crucial - blindly using large fixed arrays can defeat the performance benefits of avoiding dynamic allocations.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_10_pipe_maze">Day 10: Pipe Maze</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>I prompted ChatGPT for the first example puzzle, taking around 10 iterations aggregating details.
+Right down to the location of the input puzzle file, and its filename.
+Plus a unit test that uses the example puzzle input.
+The resulting code is pretty standard stuff, at least junior Go developer.</p></div>
+<div class="paragraph"><p>But then, running the tests `panic()`s.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ go test -run=Day10
+--- FAIL: TestDay10Part1ExampleChatGPT (0.00s)
+panic: runtime error: index out of range [0] with length 0 [recovered]
+        panic: runtime error: index out of range [0] with length 0</code></pre>
+</div></div>
+<div class="paragraph"><p>Seems as if some structure is not properly initialized.
+<code>LoadGridFromFile</code> contains solid line parser code with a twist.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>        var grid *Day10Grid <b>&lt;1&gt;</b>
+        scanner := bufio.NewScanner(file)
+        y := 0
+        for scanner.Scan() {
+                line := scanner.Text()
+                if grid == nil { <b>&lt;1&gt;</b>
+                        grid = Day10NewGrid(len(line), 0) <b>&lt;2&gt;</b>
+                }
+                grid.height++ <b>&lt;3&gt;</b>
+                for x, char := range line {
+                        grid.SetExits(x, y, string(char)) <b>&lt;4&gt;</b>
+                }
+                y++
+        }
+
+        return grid, scanner.Err()</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+declaration for lazy initialization of a 2D grid until width is known
+</p>
+</li>
+<li>
+<p>
+initializes correct width, but height 0
+</p>
+</li>
+<li>
+<p>
+increasing the height afterwards, this will work because underlying type is an int
+</p>
+</li>
+<li>
+<p>
+trying to store exit of cells, but no cells inside the grid have been allocated
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Manually fixing the incorrect memory management, we get a test result.
+It is not the expected 4 steps, but <code>with a distance of 2 steps</code>.</p></div>
+<div class="paragraph"><p>ChatGPT applies a standard BFS, and instead of counting the steps as in</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>-L|F7        .....
+7S-7|        .S12.
+L|7||        .1.3.
+-L-J|        .234.
+L|-JF        .....</code></pre>
+</div></div>
+<div class="paragraph"><p>it tracks the distance to S.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>-L|F7        .....
+7S-7|        .S...
+L|7||        ..1..
+-L-J|        ...2.
+L|-JF        .....</code></pre>
+</div></div>
+<div class="paragraph"><p>I am trying different prompts, but cannot get ChatGPT off the BFS.
+Gemini to the rescue? Not really.
+The code looks a little bit more friendly, but this is just a matter of taste i guess.
+Nevertheless, the result is also wrong.
+Instead of 4, ChatGPT calculates 2, Gemini 6.</p></div>
+<div class="paragraph"><p>Rolling my own version&#8230;</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay10Part1-8              11338            106754 ns/op               0 B/op          0 allocs/op
+BenchmarkDay10Part1-8              11493            107613 ns/op               0 B/op          0 allocs/op
+BenchmarkDay10Part1-8              11535            101549 ns/op               0 B/op          0 allocs/op
+BenchmarkDay10Part1-8              10000            105559 ns/op               0 B/op          0 allocs/op
+BenchmarkDay10Part1-8              10000            103705 ns/op               0 B/op          0 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>Benchmarking different implementation of <code>opposite()</code> direction:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code> 19 func opposite1(d direction) direction {
+ 20         switch d {
+ 21         case North:
+ 22                 return South
+ 23         case South:
+ 24                 return North
+ 25         case West:
+ 26                 return East
+ 27         case East:
+ 28                 return West
+ 29         }
+ 30         return d
+ 31 }
+ 32
+
+TEXT command-line-arguments.opposite1(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:20           0x61ac                  3c02                    CMPL AL, $0x2
+  day10.go:23           0x61ae                  7714                    JA 0x61c4
+  day10.go:21           0x61b0                  3c01                    CMPL AL, $0x1
+  day10.go:21           0x61b2                  740a                    JE 0x61be
+  day10.go:20           0x61b4                  3c02                    CMPL AL, $0x2
+  day10.go:23           0x61b6                  7518                    JNE 0x61d0
+  day10.go:24           0x61b8                  b801000000              MOVL $0x1, AX
+  day10.go:24           0x61bd                  c3                      RET
+  day10.go:22           0x61be                  b802000000              MOVL $0x2, AX
+  day10.go:22           0x61c3                  c3                      RET
+  day10.go:25           0x61c4                  3c04                    CMPL AL, $0x4
+  day10.go:25           0x61c6                  740f                    JE 0x61d7
+  day10.go:25           0x61c8                  0f1f4000                NOPL 0(AX)
+  day10.go:27           0x61cc                  3c08                    CMPL AL, $0x8
+  day10.go:27           0x61ce                  7401                    JE 0x61d1
+  day10.go:30           0x61d0                  c3                      RET
+  day10.go:28           0x61d1                  b804000000              MOVL $0x4, AX
+  day10.go:28           0x61d6                  c3                      RET
+  day10.go:26           0x61d7                  b808000000              MOVL $0x8, AX
+  day10.go:26           0x61dc                  c3                      RET</code></pre>
+</div></div>
+<div class="listingblock">
+<div class="content">
+<pre><code> 33 func opposite2(d direction) direction {
+ 34         switch d {
+ 35         case North:
+ 36                 d = South
+ 37         case South:
+ 38                 d = North
+ 39         case West:
+ 40                 d = East
+ 41         case East:
+ 42                 d = West
+ 43         }
+ 44         return d
+ 45 }
+
+TEXT command-line-arguments.opposite2(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:34           0x61dd                  3c02                    CMPL AL, $0x2
+  day10.go:37           0x61df                  7716                    JA 0x61f7
+  day10.go:35           0x61e1                  3c01                    CMPL AL, $0x1
+  day10.go:35           0x61e3                  7507                    JNE 0x61ec
+  day10.go:35           0x61e5                  b802000000              MOVL $0x2, AX
+  day10.go:36           0x61ea                  eb1f                    JMP 0x620b
+  day10.go:34           0x61ec                  3c02                    CMPL AL, $0x2
+  day10.go:37           0x61ee                  751b                    JNE 0x620b
+  day10.go:37           0x61f0                  b801000000              MOVL $0x1, AX
+  day10.go:38           0x61f5                  eb14                    JMP 0x620b
+  day10.go:39           0x61f7                  3c04                    CMPL AL, $0x4
+  day10.go:39           0x61f9                  7507                    JNE 0x6202
+  day10.go:39           0x61fb                  b808000000              MOVL $0x8, AX
+  day10.go:40           0x6200                  eb09                    JMP 0x620b
+  day10.go:41           0x6202                  3c08                    CMPL AL, $0x8
+  day10.go:41           0x6204                  7505                    JNE 0x620b
+  day10.go:41           0x6206                  b804000000              MOVL $0x4, AX
+  day10.go:44           0x620b                  c3                      RET</code></pre>
+</div></div>
+<div class="paragraph"><p>Comparing <code>opposite1()</code> against <code>opposite2()</code> reveals no performance impact.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ benchstat opposite1.bench opposite2.bench
+name        old time/op    new time/op    delta
+Opposite-8    1.58µs ± 4%    1.58µs ± 7%   ~     (p=0.591 n=10+10)</code></pre>
+</div></div>
+<div class="paragraph"><p>For the next implementation, we calculate the bit position, and shift between corresponding pairs (N &lt;&#8594; S, W &lt;&#8594; E).</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code> 47 func opposite3(in direction) direction {
+ 48         var out direction
+ 49         bitPosition := bits.Len8(uint8(in))
+ 50         if bitPosition%2 == 0 {
+ 51                 out = in &gt;&gt; 1
+ 52         } else {
+ 53                 out = in &lt;&lt; 1
+ 54         }
+ 55         return out
+ 56 }
+
+TEXT command-line-arguments.opposite3(SB) /home/jot/repos/adventofcode2023/day10.go
+  day10.go:49           0x620c                  0fb6c8                  MOVZX AL, CX
+  day10.go:49           0x620f                  8d0c09                  LEAL 0(CX)(CX*1), CX
+  day10.go:49           0x6212                  8d4901                  LEAL 0x1(CX), CX
+  day10.go:49           0x6215                  0fbdc9                  BSRL CX, CX <b>&lt;1&gt;</b>
+  day10.go:50           0x6218                  0fbae100                BTL $0x0, CX <b>&lt;2&gt;</b>
+  day10.go:50           0x621c                  7204                    JB 0x6222
+  day10.go:51           0x621e                  d0e8                    SHRL $0x1, AL
+  day10.go:51           0x6220                  eb02                    JMP 0x6224
+  day10.go:53           0x6222                  d1e0                    SHLL $0x1, AX
+  day10.go:55           0x6224                  c3                      RET</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+Bit Scan Reverse
+</p>
+</li>
+<li>
+<p>
+Bit Test, n % 2 == 0
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Now this one flies.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ benchstat opposite1.bench opposite3.bench
+name        old time/op    new time/op    delta
+Opposite-8    1.58µs ± 4%    0.31µs ± 3%  -80.70%  (p=0.000 n=10+9)</code></pre>
+</div></div>
+<div class="paragraph"><p>Although, to be honest, there&#8217;s not much difference in total runtime because it is called exactly once for each step through the maze,
+which gives it O(n) complexity.</p></div>
+<div class="sect2">
+<h3 id="_part_2_4">Part 2</h3>
+<div class="paragraph"><p>For part 2, the way through the maze needs to be marked so that a floodfill algorithm can be used.
+Instead of copying the maze into another data structure, i want to keep track of touched cells while traversing.
+The puzzle input is passed as []string, which are immutable in Go, so input type is changed from <code>[]string</code> to <code>[][]byte</code>.
+While we&#8217;re at it, why not memory map the puzzle input using <code>syscall.Mmap()</code>.
+Then, in one sweep, use <code>unsafe.Slice()</code> to have <code>[]byte</code> pointers into the first dimension of the backing buffer.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay10PrepareInputV1-8             12436             99907 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             10000            101277 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             10000            102784 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             12861            100193 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV1-8             11898             96631 ns/op           48504 B/op        153 allocs/op
+BenchmarkDay10PrepareInputV2-8             19634             57425 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             21196             49831 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             22878             51329 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             20284             54254 ns/op            3792 B/op          5 allocs/op
+BenchmarkDay10PrepareInputV2-8             22527             53402 ns/op            3792 B/op          5 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>Runtime down 50%, byte allocation down 92%, allocations down 97%.
+<em>old</em> is V1, <em>new</em> is V2:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name                  old time/op    new time/op    delta
+Day10PrepareInputV-8    99.0µs ± 4%    52.6µs ± 6%  -46.85%  (p=0.008 n=5+5)
+
+name                  old alloc/op   new alloc/op   delta
+Day10PrepareInputV-8    48.5kB ± 0%     3.8kB ± 0%  -92.18%  (p=0.008 n=5+5)
+
+name                  old allocs/op  new allocs/op  delta
+Day10PrepareInputV-8       153 ± 0%         5 ± 0%  -96.73%  (p=0.008 n=5+5)</code></pre>
+</div></div>
+<div class="paragraph"><p>Let&#8217;s check where these remaining allocations come from.
+<code>go build -gcflage="m"</code> to the rescue:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>   176  func bytesFromMappedFilename(filename string) ([][]byte, error) { <b>&lt;1&gt;</b>
+   177          f, err := os.Open(filename) <b>&lt;2&gt;</b>
+   178          if err != nil {
+   179                  return nil, err
+   180          }
+   181          defer f.Close() <b>&lt;3&gt;</b> <b>&lt;4&gt;</b>
+   182
+   183          // Get the file size
+   184          stat, err := f.Stat()
+   185          if err != nil {
+   186                  return nil, err
+   187          }
+   188
+   189          size := int(stat.Size())
+   190          if size == 0 {
+   191                  return nil, err
+   192          }
+   193
+   194          // Memory map the file
+   195          data, err := syscall.Mmap(int(f.Fd()), 0, size, syscall.PROT_READ, syscall.MAP_SHARED) <b>&lt;5&gt;</b> <b>&lt;6&gt;</b>
+   196          if err != nil {
+   197                  return nil, err
+   198          }
+   199
+   200          // Defer unmapping the memory
+   201          defer func() { <b>&lt;7&gt;</b> <b>&lt;8&gt;</b>
+   202                  _ = syscall.Munmap(data) <b>&lt;9&gt;</b>
+   203          }()
+   204
+   205          // Pre-allocate a fixed array for lines
+   206          var lines [MaxLines][]byte <b>&lt;10&gt;</b>
+   207          lineIndex := 0
+   208
+   209          start := 0
+   210          for i := 0; i &lt; size; i++ {
+   211                  if data[i] == '\n' {
+   212                          lines[lineIndex] = unsafe.Slice(&amp;data[start], i-start)
+   213                          lineIndex++
+   214                          start = i + 1
+   215                  }
+   216          }
+   217
+   218          // Handle the last line if it doesn't end with a newline
+   219          if start &lt; size {
+   220                  lines[lineIndex] = unsafe.Slice(&amp;data[start], size-start)
+   221                  lineIndex++
+   222          }
+   223          return lines[:lineIndex], nil
+   224
+   225  }</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+leaking param: filename
+</p>
+</li>
+<li>
+<p>
+inlining call to os.Open
+</p>
+</li>
+<li>
+<p>
+inlining call to os.(*File).Close
+</p>
+</li>
+<li>
+<p>
+can inline bytesFromMappedFilename.deferwrap1
+</p>
+</li>
+<li>
+<p>
+inlining call to syscall.Mmap
+</p>
+</li>
+<li>
+<p>
+inlining call to os.(*File).Fd
+</p>
+</li>
+<li>
+<p>
+can inline bytesFromMappedFilename.func1
+</p>
+</li>
+<li>
+<p>
+func literal does not escape
+</p>
+</li>
+<li>
+<p>
+inlining call to syscall.Munmap
+</p>
+</li>
+<li>
+<p>
+moved to heap: lines
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>The parameter <code>filename</code> is leaking, because it is</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+passed to <code>os.Open()</code>, a file handle is returned, which is then passed to
+</p>
+</li>
+<li>
+<p>
+<code>syscall.Mmap()</code>, which may hold a back reference.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The compiler doesn`t know about <code>syscall.Munmap()</code>, so it makes sure the original string is kept unchanged.</p></div>
+<div class="paragraph"><p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+=== Holes</p></div>
+<div class="paragraph"><p>Now, analyzing failing example unit tests, i see that flood fill doesn&#8217;t cut it.
+The examples contain <em>holes</em>, cells that are completely surrounded by the path, but still count as <code>outside</code>.
+Vanilla flood fill cannot handle holes &#8594; research.</p></div>
+<div class="paragraph"><p>Wikipedia mentions a
+<a href="https://web.archive.org/web/20130126163405/http://geomalgorithms.com/a03-_inclusion.html"><code>winding number</code></a>
+Algorithm by Dan Sunday, 2001.</p></div>
+<div class="paragraph"><p>It works for examples #1, #2, and #4, but fails for #3.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_chatgpt">ChatGPT</h3>
+<div class="paragraph"><p>No matter what i prompt, i cannot make ChatGPT 4o step through the maze correctly.
+It stumbles around, and usually stops near somewhere close to the border of the grid.</p></div>
+<div class="paragraph"><p>But when given the coordinates, it correctly determines the number of embedded cells <em>without generating any code</em>.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/day10_example4_poly_tiles.png" alt="Example #4: embedded cells" />
+</div>
+</div>
+<div class="paragraph"><p>Quite impressive. Focussing on the path through the maze:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/day10_example4_poly_tiles_enclosed.png" alt="Example #4: pipeline" />
+</div>
+</div>
+<div class="paragraph"><p>So, for the failing example #3, AOC expects 8 embedded cells.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>O···············OOOO
+O···············OOOO
+O··O············OOOO
+··············1···OO
+····O··111·········O
+OOOO···11···········
+OOOO··1·······1·····
+OOOOO············O··
+OOOO·····O··O····OOO
+OOOO·····O··O····OOO</code></pre>
+</div></div>
+<div class="paragraph"><p>My polygon is correct:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/day10_example3_poly_tiles_enclosed.png" alt="Example #3: pipeline" />
+</div>
+</div>
+<div class="paragraph"><p>So it seems <code>wnPnPoly</code> does not consider some edge cases we have here.
+Instead of <code>8</code>, it returns <code>0</code>.</p></div>
+<div class="paragraph"><p>There&#8217;s a newer publication from 2018, <a href="https://www.dgp.toronto.edu/projects/fast-winding-numbers/">Fast winding numbers</a>.
+But the <a href="https://github.com/libigl/libigl">implementation</a> for <code>igl::fast_winding_number</code> is way too much code.
+I will need to find a simpler solution.
+I let ChatGPT translate some code from Matlib to Go, functions <code>IsPointInPolygonStrict</code> and
+<code>IsPointOnLine</code>, and a corresponding unit test, but that fails miserably.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>--- FAIL: TestIsPointInPolygonStrict (0.00s)
+    day10_chatgpt_test.go:75: Expected strictly inside points, but found none
+    day10_chatgpt_test.go:77: Points strictly inside: []
+FAIL</code></pre>
+</div></div>
+<div class="paragraph"><p>So i end up with generating a polygon of 13_913 ( &#8592; proper Go notation) vertices and
+ask ChatGPT to show the polygon.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/tilt.png" alt="static/tilt.png" />
+</div>
+</div>
+<div class="paragraph"><p>So, let&#8217;s just give wnPnPoly one shot, although one example fails.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/day10.png" alt="Success" />
+</div>
+</div>
+<div class="paragraph"><p>Duh.
+Well, for AOC this will be fine.
+Better not load that code into a Taurus.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_benchmark">Benchmark</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 5 3400G with Radeon Vega Graphics
+BenchmarkDay10Part2-8                  7         156833521 ns/op          918669 B/op         25 allocs/op
+BenchmarkDay10Part2-8                  7         156975458 ns/op          918683 B/op         26 allocs/op
+BenchmarkDay10Part2-8                  7         159191464 ns/op          919382 B/op         26 allocs/op
+BenchmarkDay10Part2-8                  7         151711689 ns/op          918669 B/op         25 allocs/op
+BenchmarkDay10Part2-8                  7         161608936 ns/op          918669 B/op         25 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>That&#8217;s 157 ms, too slow. Said flying object will move 51 m in this time.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_performance_optimization_5">Performance Optimization</h3>
+<div class="paragraph"><p>Day 10 Part 2 was optimized by pre-allocating the polygon vertex slice to reduce memory allocations.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_6">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic slice growth for tracking polygon vertices:
+- <code>var poly []image.Point</code> declared without capacity
+- <code>poly = append(poly, p)</code> grew the slice dynamically as the maze was traversed
+- Resulted in 25 allocations for Part 2 as the slice was reallocated multiple times</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay10Part1-16              432.5µ ± 6%    3.7 KiB     5 allocs/op
+BenchmarkDay10Part2-16              219.8m ± 2%    897 KiB    25 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_6">Optimization (b1)</h4>
+<div class="paragraph"><p>Pre-allocated polygon slice with maximum possible capacity:
+- Polygon loop bounded by grid perimeter: <code>maxPolySize := 2 * (len(lines[0]) + len(lines))</code>
+- Only allocate for Part 2: <code>if part2 { poly = make([]image.Point, 0, maxPolySize) }</code>
+- Eliminates repeated reallocation as vertices are appended</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_6">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day10_bench_b0.txt │       /tmp/day10_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day10Part1-16               432.5µ ± 6%   386.9µ ± 4%  -10.54% (p=0.001 n=10)
+Day10Part2-16               219.8m ± 2%   221.5m ± 2%        ~ (p=0.315 n=10)
+geomean                     9.750m        9.258m        -5.04%
+
+              │ /tmp/day10_bench_b0.txt │        /tmp/day10_bench_b1.txt        │
+              │          B/op           │     B/op       vs base                │
+Day10Part1-16              3.703Ki ± 0%    3.703Ki ± 0%        ~ (p=1.000 n=10)
+Day10Part2-16              896.9Ki ± 0%   1032.2Ki ± 0%  +15.08% (p=0.000 n=10)
+geomean                    57.63Ki         61.83Ki        +7.28%
+
+              │ /tmp/day10_bench_b0.txt │       /tmp/day10_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day10Part1-16                5.000 ± 0%   5.000 ± 0%        ~ (p=1.000 n=10) ¹
+Day10Part2-16                25.00 ± 0%   16.00 ± 0%  -36.00% (p=0.000 n=10)
+geomean                      11.18        8.944       -20.00%
+¹ all samples are equal</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 10.54% faster (433µs → 387µs)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 36% reduction in allocations (25 → 16 allocs/op)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>Trade-off:</strong>
+- Memory capacity increased by 15% due to pre-allocation with maximum perimeter estimate
+- The actual polygon is smaller than the perimeter, so some capacity goes unused
+- This is a standard optimization pattern: trading memory for fewer allocations and reduced GC pressure</p></div>
+<div class="paragraph"><p>The optimization reduces allocations by eliminating slice growth operations. The pre-allocated capacity (grid perimeter) is an upper bound - the actual polygon follows the pipe maze and is typically smaller. While this increases allocated capacity, it significantly reduces allocation count and associated overhead. The 9 eliminated allocations (25→16) indicate the slice was growing ~9 times during traversal.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_11_cosmos_expansion">Day 11: Cosmos Expansion</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_part_1">Part 1</h3>
+<div class="paragraph"><p>Possible alternative implementations:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Literally expand the existing grid, and then use a line draw algo to count points. Drawback: many heap allocations
+</p>
+</li>
+<li>
+<p>
+Use Dijkstra&#8217;s <code>shortest path</code> or an A* implementation, giving regular cells +1, and expanded cells +2. Drawback: runs long time.
+</p>
+</li>
+<li>
+<p>
+On further thought, we need to cross all expanded spaces exactly once when traversing from P<sub>1</sub> to P<sub>2</sub>. Use a stright manhattan distance as a baseline, and add horizontal and vertical expanded spaces while crossing.
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay11Part1-16               109          10496351 ns/op        16419453 B/op         39 allocs/op
+BenchmarkDay11Part1-16               100          10961495 ns/op        16419441 B/op         39 allocs/op
+BenchmarkDay11Part1-16                88          11417915 ns/op        16419422 B/op         39 allocs/op
+BenchmarkDay11Part1-16               108          11328097 ns/op        16419430 B/op         39 allocs/op
+BenchmarkDay11Part1-16               105          11440845 ns/op        16419426 B/op         39 allocs/op
+PASS</code></pre>
+</div></div>
+<div class="paragraph"><p>Thats 10.5 ms, with <em>LOTS</em> of memory allocations.
+These stem from closures inside the Day11 implementation, such as</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>func Day11(grid [][]byte) uint {
+        ...
+        points := func() []image.Point { <b>&lt;1&gt;</b>
+                var ps []image.Point
+                for y ... {
+                        for x ... {
+                                ps = append(ps, ...)
+                        }
+                }
+                return ps
+        }()
+        ...
+        pairs := func() [][2]image.Point { <b>&lt;2&gt;</b>
+                var pairs [][2]image.Point
+                for i... {
+                        for j ... {
+                                pairs = append(pairs, ...)
+
+                        }
+                }
+        }()
+        ...
+}</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+parse grid to detect galaxies (<code>'#'</code>)
+</p>
+</li>
+<li>
+<p>
+create a unique list of galaxy pairs (1&#8594;3, 2&#8594;7, &#8230;)
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Let&#8217;s see if and how ChatGPT can squeeze some performance out of this code.</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+It shows alternative code that compiles, and runs, and has the same test results as before. Good.
+</p>
+</li>
+<li>
+<p>
+It also unrolls the closures into straight <code>for</code> loops. Good.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>After ChatGPTs suggestions:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name           old time/op    new time/op    delta
+Day11Part1-16    10.5ms ± 7%     4.7ms ± 5%  -55.46%  (p=0.008 n=5+5)
+
+name           old alloc/op   new alloc/op   delta
+Day11Part1-16    16.4MB ± 0%     0.0MB ± 0%  -99.90%  (p=0.008 n=5+5)
+
+name           old allocs/op  new allocs/op  delta
+Day11Part1-16      39.0 ± 0%      10.0 ± 0%  -74.36%  (p=0.008 n=5+5)</code></pre>
+</div></div>
+<div class="paragraph"><p>Runtime down by 50%, garbage collection down close to nothing, 39 allocations down to 10.</p></div>
+<div class="paragraph"><p>However, it does not seem to know about Go&#8217;s new <code>range</code> operator, it unrolls the loop, which should not have any performance impact.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>-       for x := range dimX {
++       for x := 0; x &lt; dimX; x++ {</tt></pre></div></div>
+<div class="paragraph"><p>It also changes what i consider idiomatic Go code, a zero slice and <code>append()</code> operations, to</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>- var points []image.Point
++ points := []image.Point{}</tt></pre></div></div>
+<div class="paragraph"><p>There&#8217;s two more little improvements.
+- Two counter, one for the number of points between galaxies, and one for the total, can be combined.
+- Using the expanded step count <code>1</code> and not the more human readable <code>'1'</code>.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name \ time/op    day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16       10.5ms ± 7%     4.7ms ± 5%     4.4ms ± 1%     4.0ms ± 1%
+
+name \ alloc/op   day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16       16.4MB ± 0%     0.0MB ± 0%     0.0MB ± 0%     0.0MB ± 0%
+
+name \ allocs/op  day11#1.bench  day11#2.bench  day11#3.bench  day11#4.bench
+Day11Part1-16         39.0 ± 0%      10.0 ± 0%      10.0 ± 0%      10.0 ± 0%</code></pre>
+</div></div>
+<div class="paragraph"><p>Down from 10.5 to 4.0 ms.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_part_2_5">Part 2</h3>
+<div class="paragraph"><p>No changes other than the introduction of a factor.
+Same O(n) as part 1, so same performance.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_12_hot_springs">Day 12: Hot Springs</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_part_1_2">Part 1</h3>
+<div class="paragraph"><p>Using a ChatGPT prompt to generate the <code>validate</code> function, which checks if one line of input has
+- the correct syntax (format), and
+- correct semantics, i.e. it is well formed with regard to the checksum.</p></div>
+<div class="paragraph"><p>The generated code does not compile.</p></div>
+<div class="sect3">
+<h4 id="_error_1">Error #1</h4>
+<div class="paragraph"><p>The loop value variable <code>cs</code> shadows the outer checksum list, and cannot be assigned to.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>        cs := make([]int, len(csParts)) <b>&lt;1&gt;</b>
+        for i, cs := range csParts { <b>&lt;2&gt;</b>
+                ...
+                cs[i] = val <b>&lt;3&gt;</b>
+        }</code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+allocate a list of checksums
+</p>
+</li>
+<li>
+<p>
+iterate comma separated checksums
+</p>
+</li>
+<li>
+<p>
+assign to the loop var <code>cs</code> which shadows the outer <code>cs</code> list
+</p>
+</li>
+</ol></div>
+</div>
+<div class="sect3">
+<h4 id="_error_2">Error #2</h4>
+<div class="paragraph"><p>The regular expression is invalid.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>        re := regexp.MustCompile(`#++`) <b>&lt;1&gt;</b></code></pre>
+</div></div>
+<div class="colist arabic"><ol>
+<li>
+<p>
+not a valid regexp in Go
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>which leads to</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>panic: regexp: Compile(`#++`): error parsing regexp: invalid nested repetition operator: `++` [recovered]</code></pre>
+</div></div>
+<div class="paragraph"><p>When asked if <code>#++</code> is a valid regular expression, ChatGPT reports</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>To clarify:
+
+    In Go (and many other regex engines), the regular expression #++ means "match one or more # characters", but this expression can be simplified to #+ (the ++ is redundant and unnecessary).
+    The + quantifier matches one or more of the preceding element (in this case, the # symbol).
+
+Thus, the correct and simpler expression to match one or more consecutive # characters is:
+
+    #+</code></pre>
+</div></div>
+<div class="paragraph"><p>Again one of those cases, if you know what you are doing, you can lead ChatGPT to the right result.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_error_3">Error #3</h4>
+<div class="paragraph"><p>One of the table driven tests is correct, but assumed to fail.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>                {".###.# 3,1", false},            // Invalid checksum</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_error_4">Error #4</h4>
+<div class="paragraph"><p>When introducing multiple lines of input, unit tests get foobar.
+Marking those as broken, and focusing on the AOC example.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">These are all easy fixes, but they need to be fixed.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>Last but not least, we have a valid solution for part 1, which has <code>7645760</code> combinations.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay12Part1-16                 1        9028157768 ns/op        11055737728 B/op        159898391 allocs/op
+BenchmarkDay12Part1-16                 1        8920444172 ns/op        11052763680 B/op        159897947 allocs/op
+BenchmarkDay12Part1-16                 1        8828484981 ns/op        11055648928 B/op        159898309 allocs/op
+BenchmarkDay12Part1-16                 1        8946485053 ns/op        11058248832 B/op        159898634 allocs/op
+BenchmarkDay12Part1-16                 1        8819827656 ns/op        11059230112 B/op        159898843 allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p>That&#8217;s about 9s, 160,000 memory allocations for a total of 11 GB for mostly AI generated code.</p></div>
+<div class="paragraph"><p>Most of the time is spent in GC and <code>regexp</code> package.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>(pprof) top10
+Showing nodes accounting for 25.22s, 43.74% of 57.66s total
+Dropped 278 nodes (cum &lt;= 0.29s)
+Showing top 10 nodes out of 134
+      flat  flat%   sum%        cum   cum%
+     4.22s  7.32%  7.32%     16.94s 29.38%  runtime.mallocgc
+     3.96s  6.87% 14.19%      4.75s  8.24%  runtime.findObject
+     3.89s  6.75% 20.93%      3.89s  6.75%  runtime.memclrNoHeapPointers
+     3.11s  5.39% 26.33%      6.05s 10.49%  regexp.(*Regexp).tryBacktrack
+     2.68s  4.65% 30.97%      2.68s  4.65%  runtime.nextFreeFast (inline)
+     1.91s  3.31% 34.29%      1.91s  3.31%  regexp.(*bitState).shouldVisit (inline)
+     1.80s  3.12% 37.41%      9.18s 15.92%  runtime.scanobject
+     1.33s  2.31% 39.72%     11.06s 19.18%  runtime.growslice
+     1.22s  2.12% 41.83%      1.22s  2.12%  runtime.memmove
+     1.10s  1.91% 43.74%      1.74s  3.02%  runtime.(*mspan).writeHeapBitsSmall</code></pre>
+</div></div>
+<div class="imageblock">
+<div class="content">
+<img src="static/profile12-01.svg" alt="Embedded" />
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_performance_tweak_1_remove_regexp">Performance tweak #1: remove regexp</h4>
+<div class="paragraph"><p>In <code>validateCombinations</code>, remove the regexp based validation with a custom state machine parser.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>(pprof) top10
+Showing nodes accounting for 2240ms, 64.18% of 3490ms total
+Dropped 65 nodes (cum &lt;= 17.45ms)
+Showing top 10 nodes out of 102
+      flat  flat%   sum%        cum   cum%
+     550ms 15.76% 15.76%      550ms 15.76%  runtime.memclrNoHeapPointers
+     330ms  9.46% 25.21%      330ms  9.46%  runtime.memmove
+     240ms  6.88% 32.09%      300ms  8.60%  runtime.findObject
+     200ms  5.73% 37.82%      200ms  5.73%  runtime.madvise
+     180ms  5.16% 42.98%      180ms  5.16%  runtime.procyield
+     180ms  5.16% 48.14%      650ms 18.62%  runtime.scanobject
+     170ms  4.87% 53.01%     2030ms 58.17%  gitlab.com/jhinrichsen/adventofcode2023.generateCombinations
+     130ms  3.72% 56.73%      130ms  3.72%  gitlab.com/jhinrichsen/adventofcode2023.isValidCombination
+     130ms  3.72% 60.46%      640ms 18.34%  runtime.concatstrings
+     130ms  3.72% 64.18%      930ms 26.65%  runtime.mallocgc</code></pre>
+</div></div>
+<div class="paragraph"><p>We can see that the payload is starting to eat our resources, not GC/ runtime, which is a good thing.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_performance_tweak_2_streamline_code_generatecombinations_code">Performance tweak #2: streamline <code>generateCombinations</code></h4>
+<div class="paragraph"><p>Renamed to <code>permute</code>.
+Instead of slaying strings, we determine how much combinations we have, and copy the original <code>string</code> N times as a modifyable <code>[][]byte</code>.
+Then, using a period length generator, we toggle high and low values and let them trickle columnwise into place.</p></div>
+<div class="paragraph"><p>Think "Matrix".</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: AMD Ryzen 7 7840HS w/ Radeon 780M Graphics
+BenchmarkDay12Part1-16                 2         682096490 ns/op        660100384 B/op  15296534 allocs/op
+BenchmarkDay12Part1-16                 2         557446960 ns/op        660092560 B/op  15296523 allocs/op
+BenchmarkDay12Part1-16                 2         551328090 ns/op        660092896 B/op  15296527 allocs/op
+BenchmarkDay12Part1-16                 2         550182100 ns/op        660092808 B/op  15296526 allocs/op
+BenchmarkDay12Part1-16                 2         546589624 ns/op        660092752 B/op  15296525 allocs/op
+PASS</code></pre>
+</div></div>
+<div class="paragraph"><p>Good, we&#8217;re down to 550 ms.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name           old time/op    new time/op    delta
+Day12Part1-16     8.91s ± 1%     0.56s ± 1%  -93.72%  (p=0.008 n=5+5)
+
+name           old alloc/op   new alloc/op   delta
+Day12Part1-16    11.1GB ± 0%     0.7GB ± 0%  -94.03%  (p=0.008 n=5+5)
+
+name           old allocs/op  new allocs/op  delta
+Day12Part1-16      160M ± 0%       15M ± 0%  -90.43%  (p=0.008 n=5+5)</code></pre>
+</div></div>
+<div class="paragraph"><p>Compared to the AI generated code, we&#8217;re down in all categories by a factor between 11 and 16.
+Instead of cloud based CPU costs of one million $, that&#8217;s just $ 62.500.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_performance_tweak_3_dynamic_programming_with_memoization">Performance tweak #3: Dynamic Programming with Memoization</h4>
+<div class="paragraph"><p>While the permutation approach works for Part 1, it becomes infeasible for Part 2 where inputs are unfolded 5x.
+A pattern with 15 wildcards becomes 2<sup>15 = 32,768 combinations, but unfolded becomes 2</sup>75+ combinations - impossible to enumerate.</p></div>
+<div class="paragraph"><p>The solution: dynamic programming with memoization.
+Instead of generating all possible arrangements, we recursively explore valid placements while caching results for identical subproblems.
+The state space is (position, group_index, group_length), which is much smaller than the exponential number of combinations.</p></div>
+<div class="paragraph"><p>This approach also benefits Part 1, even though brute force permutation was fast enough.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>name           old time/op    new time/op    delta
+Day12Part1-16     622.4ms ±65%     4.5ms ± 3%  -99.28%  (p=0.000 n=8+8)
+Day12Part2-16      73.9ms ± 2%    72.9ms ± 4%     ~     (p=0.645 n=8+8)
+
+name           old alloc/op   new alloc/op   delta
+Day12Part1-16     629.5Mi ± 0%     5.5Mi ± 0%  -99.12%  (p=0.000 n=8+8)
+Day12Part2-16      90.7Mi ± 0%    90.7Mi ± 0%     ~     (p=0.536 n=8+8)
+
+name           old allocs/op  new allocs/op  delta
+Day12Part1-16      15.30M ± 0%     0.01M ± 0%  -99.94%  (p=0.000 n=8+8)
+Day12Part2-16      20.15k ± 0%    20.15k ± 0%     ~     (all equal)</code></pre>
+</div></div>
+<div class="paragraph"><p>The DP approach is:
+- <strong>138x faster</strong> for Part 1 (622ms → 4.5ms)
+- <strong>114x less memory</strong> for Part 1 (629 MiB → 5.5 MiB)
+- <strong>1604x fewer allocations</strong> for Part 1 (15.3M → 9.5k)
+- Makes Part 2 tractable without RAM explosion</p></div>
+<div class="paragraph"><p>Final performance: Part 1 runs in <sub>5ms, Part 2 in </sub>73ms.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_14_parabolic_reflector_dish">Day 14: Parabolic Reflector Dish</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_6">Performance Optimization</h3>
+<div class="paragraph"><p>Day 14 Part 2 was optimized by reusing a bytes.Buffer for grid serialization and pre-allocating the cycle detection map.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_7">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation had multiple allocation issues in Part 2&#8217;s cycle detection:
+- Called <code>gridToString()</code> for every iteration, creating a new bytes.Buffer each time
+- Map <code>seen</code> grew without pre-allocation
+- For ~165 cycles before detection, this meant 165 buffer allocations + map growth</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay14Part1-16               44.75µ ± 4%    27.12 KiB    202 allocs/op
+BenchmarkDay14Part2-16               38.98m ± 1%     6.35 MiB   1617 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_7">Optimization (b1)</h4>
+<div class="paragraph"><p>Two key changes:
+- <strong>Buffer reuse</strong>: Create single <code>bytes.Buffer</code> outside loop, pre-grow with grid capacity, reset on each iteration
+- <strong>Map pre-allocation</strong>: <code>make(map[string]int, 200)</code> - cycle typically found within 200 iterations
+- Moved gridToString logic inline to eliminate function call overhead</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_7">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day14_bench_b0.txt │      /tmp/day14_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day14Part1-16               44.75µ ± 4%   43.83µ ± 3%       ~ (p=0.218 n=10)
+Day14Part2-16               38.98m ± 1%   36.68m ± 2%  -5.90% (p=0.000 n=10)
+geomean                     1.321m        1.268m       -3.99%
+
+              │ /tmp/day14_bench_b0.txt │        /tmp/day14_bench_b1.txt         │
+              │          B/op           │     B/op      vs base                  │
+Day14Part1-16              27.12Ki ± 0%   27.12Ki ± 0%        ~ (p=1.000 n=10) ¹
+Day14Part2-16              6.345Mi ± 0%   1.566Mi ± 0%  -75.32% (p=0.000 n=10)
+geomean                    419.8Ki        208.6Ki       -50.32%
+¹ all samples are equal
+
+              │ /tmp/day14_bench_b0.txt │       /tmp/day14_bench_b1.txt        │
+              │        allocs/op        │ allocs/op   vs base                  │
+Day14Part1-16                202.0 ± 0%   202.0 ± 0%        ~ (p=1.000 n=10) ¹
+Day14Part2-16               1617.0 ± 0%   362.0 ± 0%  -77.61% (p=0.000 n=10)
+geomean                      571.5        270.4       -52.68%
+¹ all samples are equal</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 2</strong>: 5.90% faster (38.98ms → 36.68ms)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 75.32% less memory (6.3MB → 1.5MB)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 77.61% fewer allocations (1617 → 362 allocs/op)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates repeated buffer allocations by reusing a single <code>bytes.Buffer</code> across all cycle detection iterations. Buffer growth uses <code>.Grow()</code> with exact grid capacity to prevent internal reallocations. Map pre-allocation avoids repeated growth operations as cycle states are recorded. The <sub>1255 eliminated allocations (1617→362) represent the </sub>165 buffer creations and ~90 map growth operations from the baseline.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_15_lens_library">Day 15: Lens Library</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_7">Performance Optimization</h3>
+<div class="paragraph"><p>Day 15 was optimized by eliminating string operations and parsing input inline without intermediate allocations.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_8">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used string operations heavily:
+- <code>strings.Join(lines, "")</code> - allocated joined input string (64KB)
+- <code>strings.Split(input, ",")</code> - allocated slice of step strings
+- <code>strings.Split(step, "=")</code> and <code>strings.TrimSuffix(step, "-")</code> - allocated parsed parts for each step
+- Dynamic box slice growth without pre-allocation</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay15Part1-16               93.11µ ± 3%    64.00 KiB     1 allocs/op
+BenchmarkDay15Part2-16              360.2µ ± 4%   146.96 KiB  2464 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_8">Optimization (b1)</h4>
+<div class="paragraph"><p>Three key changes:
+- <strong>Inline parsing</strong>: Parse input character-by-character in Part 1, avoiding hash function calls and string splits
+- <strong>Direct input access</strong>: Use <code>lines[0]</code> directly for single-line input (typical case)
+- <strong>Pre-allocate boxes</strong>: Initialize each box with capacity 8 (<code>make([]lens, 0, 8)</code>)
+- <strong>Inline step parsing</strong>: Parse operations without <code>strings.Split/Contains/TrimSuffix</code></p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_8">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day15_bench_b0.txt │       /tmp/day15_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day15Part1-16               93.11µ ± 3%   48.33µ ± 1%  -48.09% (p=0.000 n=10)
+Day15Part2-16               360.2µ ± 4%   170.0µ ± 1%  -52.82% (p=0.000 n=10)
+geomean                     183.1µ        90.64µ       -50.51%
+
+              │ /tmp/day15_bench_b0.txt │          /tmp/day15_bench_b1.txt          │
+              │          B/op           │     B/op      vs base                     │
+Day15Part1-16              64.00Ki ± 0%    0.00Ki ± 0%  -100.00% (p=0.000 n=10)
+Day15Part2-16             146.96Ki ± 0%   48.00Ki ± 0%   -67.34% (p=0.000 n=10)
+geomean                    96.98Ki                      ?                       ¹ ²
+¹ summaries must be &gt;0 to compute geomean
+² ratios must be &gt;0 to compute geomean
+
+              │ /tmp/day15_bench_b0.txt │         /tmp/day15_bench_b1.txt         │
+              │        allocs/op        │ allocs/op   vs base                     │
+Day15Part1-16                1.000 ± 0%   0.000 ± 0%  -100.00% (p=0.000 n=10)
+Day15Part2-16               2464.0 ± 0%   256.0 ± 0%   -89.61% (p=0.000 n=10)
+geomean                      49.64                    ?                       ¹ ²
+¹ summaries must be &gt;0 to compute geomean
+² ratios must be &gt;0 to compute geomean</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 48% faster (93µs → 48µs), 100% reduction in memory and allocations (64KB → 0B, 1 → 0)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 53% faster (360µs → 170µs), 67% less memory (147KB → 48KB), 90% fewer allocations (2464 → 256)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates all string manipulation overhead by parsing directly from input. Part 1 benefits from inline hash calculation without creating substring allocations. Part 2 reduces allocations from ~2464 to 256 by pre-allocating box slices and avoiding <code>strings.Split/TrimSuffix</code>. The remaining 256 allocations represent the 256 pre-allocated box slices - one per hash bucket.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_16_the_floor_will_be_lava">Day 16: The Floor Will Be Lava</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_8">Performance Optimization</h3>
+<div class="paragraph"><p>Day 16 was optimized by replacing maps with fixed-size arrays and reusing data structures across multiple simulations.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_9">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used maps and dynamic slice allocations:
+- <code>make(map[pos]bool)</code> for visited tracking - map with position+direction keys
+- <code>make(map[[2]int]bool)</code> for energized cell tracking
+- <code>queue</code> slice with dynamic growth via append
+- Part 2 creates new maps for each of ~440 edge configurations (110×4 edges)</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay16Part1-16              3.45ms ± 6%    3.07 MiB   11113 allocs/op
+BenchmarkDay16Part2-16              660ms ± ?      665 MiB    2.4M allocs/op (estimated)</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_9">Optimization (b1)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Fixed-size arrays</strong>: <code>var visited [120][120][4]bool</code> for position+direction states (stack-allocated)
+- <strong>Energized array</strong>: <code>var energized [120][120]bool</code> instead of map
+- <strong>Array reuse</strong>: Clear and reuse same arrays across all Part 2 energize calls (~440 calls)
+- <strong>Pre-allocated queue</strong>: <code>make([]pos, 0, 1000)</code> with capacity hint</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_9">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day16_bench_b0.txt │       /tmp/day16_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day16Part1-16              3445.0µ ± 6%   428.5µ ± 7%  -87.56% (p=0.000 n=10)
+
+              │ /tmp/day16_bench_b0.txt │       /tmp/day16_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day16Part1-16             3067.6Ki ± 0%   556.9Ki ± 0%  -81.85% (p=0.000 n=10)
+
+              │ /tmp/day16_bench_b0.txt │      /tmp/day16_bench_b1.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day16Part1-16              11113.0 ± 0%   496.0 ± 0%  -95.54% (p=0.000 n=10)</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Part 2 Results:</strong></p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>BenchmarkDay16Part2-16                12         101.6ms ± 2%   119.6 MiB         103.8k allocs/op</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 87.56% faster (3.4ms → 428µs), 81.85% less memory (3.1MB → 557KB), 95.54% fewer allocations (11113 → 496)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: <sub>84% faster (660ms → 102ms), </sub>82% less memory (665MB → 120MB), 95.7% fewer allocations (2.4M → 103.8k)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization replaces hash-based maps with direct array indexing, eliminating hashing overhead and memory allocations. The 120×120×4 visited array (230KB) and 120×120 energized array (14KB) are stack-allocated and reused across all <sub>440 Part 2 simulations, reducing allocations from </sub>2.4M to <sub>104k. The remaining allocations are primarily from queue slice operations (496 per simulation × </sub>210 simulations ≈ 104k). Array clearing is fast due to CPU cache locality compared to map reallocation.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_17_clumsy_crucible">Day 17: Clumsy Crucible</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_9">Performance Optimization</h3>
+<div class="paragraph"><p>Day 17 was optimized by replacing <code>container/heap</code> with a custom generic heap implementation.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_10">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation using <code>container/heap</code> with day-specific <code>priorityQueue17</code> type wrapping <code>heap.Interface</code>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_failed_optimization_b1_b2">Failed Optimization (b1, b2)</h4>
+<div class="paragraph"><p>Attempted generic implementations still using <code>container/heap</code> were 18-22% slower due to <code>heap.Interface</code> overhead, not generics themselves.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_successful_optimization_b3">Successful Optimization (b3)</h4>
+<div class="paragraph"><p>Custom generic heap implementation without <code>container/heap</code>, using Go&#8217;s monomorphization for zero-abstraction cost.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_10">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ day17_bench_b0.txt │         day17_bench_b3.txt          │
+              │       sec/op       │   sec/op     vs base                │
+Day17Part1-16          309.3m ± 9%   269.6m ± 5%  -12.86% (p=0.000 n=10)
+Day17Part2-16         1135.0m ± 6%   907.5m ± 5%  -20.04% (p=0.000 n=10)
+geomean                592.5m        494.6m       -16.53%
+
+              │ day17_bench_b0.txt │          day17_bench_b3.txt          │
+              │        B/op        │     B/op      vs base                │
+Day17Part1-16         99.85Mi ± 0%   90.18Mi ± 0%   -9.69% (p=0.000 n=10)
+Day17Part2-16         251.9Mi ± 0%   225.4Mi ± 0%  -10.49% (p=0.000 n=10)
+geomean               158.6Mi        142.6Mi       -10.09%
+
+              │ day17_bench_b0.txt │         day17_bench_b3.txt         │
+              │     allocs/op      │  allocs/op   vs base               │
+Day17Part1-16          1.017M ± 0%   1.017M ± 0%       ~ (p=0.424 n=10)
+Day17Part2-16          2.953M ± 0%   2.953M ± 0%  -0.00% (p=0.001 n=10)
+geomean                1.733M        1.733M       -0.00%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 13% faster (309ms → 270ms)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 20% faster (1135ms → 908ms)
+</p>
+</li>
+<li>
+<p>
+<strong>Memory</strong>: 10% less (99.8Mi → 90.2Mi)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>Conclusion:</strong></p></div>
+<div class="paragraph"><p>The overhead was from <code>container/heap</code>'s <code>heap.Interface</code>, not Go generics. A proper generic heap using monomorphization outperforms hand-written type-specific code. Go generics have zero abstraction cost when designed correctly - the key is avoiding unnecessary interface indirection.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_18_lavaduct_lagoon">Day 18: Lavaduct Lagoon</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Calculate the area of a lagoon by tracing its perimeter with dig instructions.</p></div>
+<div class="paragraph"><p><strong>Algorithm:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Shoelace formula</strong> to compute polygon area from vertices
+</p>
+</li>
+<li>
+<p>
+<strong>Pick&#8217;s theorem</strong> to convert area and perimeter to total interior + boundary points
+</p>
+</li>
+<li>
+<p>
+Formula: <code>total = area + perimeter/2 + 1</code>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>Part 1:</strong> Use direction and distance from instruction lines</p></div>
+<div class="paragraph"><p><strong>Part 2:</strong> Decode hexadecimal color codes where first 5 hex digits = distance, last digit = direction (0=R, 1=D, 2=L, 3=U)</p></div>
+<div class="paragraph"><p>Both parts use the same geometric approach, with Part 2 handling much larger distances (up to 1 million vs. single digits).</p></div>
+<div class="sect2">
+<h3 id="_performance_optimization_10">Performance Optimization</h3>
+<div class="paragraph"><p>Day 18 was optimized by eliminating <code>strings.Fields</code> and pre-allocating slices with exact capacities.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_11">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used string operations:
+- <code>strings.Fields(line)</code> allocated slice of field strings for each line
+- Dynamic vertex slice growth without pre-allocation
+- Dynamic puzzle slice growth</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay18Part1-16               107.89µ ± 14%   132.03 KiB   685 allocs/op
+BenchmarkDay18Part2-16               115.14µ ±  5%   132.03 KiB   685 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_10">Optimization (b1)</h4>
+<div class="paragraph"><p>Three key changes:
+- <strong>Inline parsing</strong>: Parse direction, distance, and color character-by-character without <code>strings.Fields</code>
+- <strong>Pre-allocate puzzle</strong>: <code>make(Day18Puzzle, 0, len(lines))</code>
+- <strong>Pre-allocate vertices</strong>: <code>make([][2]int, 0, len(puzzle)+1)</code> with exact capacity</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_11">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt        │
+              │         sec/op         │   sec/op     vs base                │
+Day18Part1-16            107.89µ ± 14%   17.26µ ± 4%  -84.00% (p=0.000 n=10)
+Day18Part2-16            115.14µ ±  5%   18.91µ ± 3%  -83.58% (p=0.000 n=10)
+geomean                   111.5µ         18.07µ       -83.79%
+
+              │ /tmp/day18_b0_only.txt │        /tmp/day18_b1_only.txt        │
+              │          B/op          │     B/op      vs base                │
+Day18Part1-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+Day18Part2-16            128.94Ki ± 0%   31.88Ki ± 0%  -75.28% (p=0.000 n=10)
+geomean                   128.9Ki        31.88Ki       -75.28%
+
+              │ /tmp/day18_b0_only.txt │       /tmp/day18_b1_only.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day18Part1-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+Day18Part2-16             685.000 ± 0%   2.000 ± 0%  -99.71% (p=0.000 n=10)
+geomean                     685.0        2.000       -99.71%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 84% faster (108µs → 17µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 84% faster (115µs → 19µs), 75% less memory (129KB → 32KB), 99.7% fewer allocations (685 → 2)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates all string field splitting by parsing input character-by-character. The remaining 2 allocations are the puzzle slice and vertices slice, both pre-allocated with exact capacities. The 683 eliminated allocations (685→2) represent the per-line <code>strings.Fields</code> calls and dynamic slice growth operations.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_19_aplenty">Day 19: Aplenty</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_11">Performance Optimization</h3>
+<div class="paragraph"><p>Day 19 was optimized by eliminating <code>strings.Split</code> operations and pre-allocating data structures.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_12">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used string operations heavily:
+- <code>strings.IndexByte</code> for finding braces
+- <code>strings.Split(rulesStr, ",")</code> for parsing rules
+- <code>strings.Split(ruleStr, ":")</code> for conditional rules
+- <code>strings.Split(line, ",")</code> and <code>strings.Split(attr, "=")</code> for parts parsing
+- Dynamic map and slice growth without pre-allocation</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay19Part1-16               404.4µ ± 4%    308.2 KiB   4287 allocs/op
+BenchmarkDay19Part2-16               427.7µ ± 3%    308.2 KiB   4287 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_11">Optimization (b1)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Inline workflow parsing</strong>: Parse rules character-by-character, find colons without <code>strings.Split</code>
+- <strong>Inline part parsing</strong>: Parse attributes without <code>strings.Split</code>
+- <strong>Pre-allocate workflows map</strong>: <code>make(map[string]workflow, 600)</code> with capacity hint
+- <strong>Pre-allocate parts slice</strong>: <code>make([]part, 0, 200)</code>
+- <strong>Pre-allocate rule slices</strong>: <code>make([]rule, 0, 4)</code> per workflow</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_12">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │         sec/op         │   sec/op     vs base               │
+Day19Part1-16              404.4µ ± 4%   161.5µ ± 2%  -60.06% (p=0.000 n=10)
+Day19Part2-16              427.7µ ± 3%   156.9µ ± 3%  -63.32% (p=0.000 n=10)
+geomean                    415.9µ        159.2µ       -61.72%
+
+              │ /tmp/day19_b0_only.txt │       /tmp/day19_bench_b1.txt        │
+              │          B/op          │     B/op      vs base                │
+Day19Part1-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+Day19Part2-16             308.2Ki ± 0%   127.1Ki ± 0%  -58.76% (p=0.000 n=10)
+geomean                   308.2Ki        127.1Ki       -58.76%
+
+              │ /tmp/day19_b0_only.txt │      /tmp/day19_bench_b1.txt       │
+              │       allocs/op        │ allocs/op   vs base                │
+Day19Part1-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+Day19Part2-16              4.287k ± 0%   0.586k ± 0%  -86.33% (p=0.000 n=10)
+geomean                    4.287k        0.586k       -86.33%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 60% faster (404µs → 162µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 63% faster (428µs → 157µs), 59% less memory (308KB → 127KB), 86% fewer allocations (4287 → 586)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates all <code>strings.Split</code> operations by parsing character-by-character. Pre-allocating the workflows map (600 capacity), parts slice (200 capacity), and rule slices (4 capacity each) reduces growth operations. The 3701 eliminated allocations (4287→586) represent the string split operations and dynamic growth from the baseline.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_20_pulse_propagation">Day 20: Pulse Propagation</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_12">Performance Optimization</h3>
+<div class="paragraph"><p>Day 20 was optimized by eliminating <code>strings.Split</code> operations and pre-allocating data structures.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_13">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used string operations:
+- <code>strings.Split(line, " -&gt; ")</code> for parsing module and destinations
+- <code>strings.Split(parts[1], ", ")</code> for parsing destination list
+- Dynamic map and slice growth without pre-allocation
+- Queue slicing with <code>queue = queue[1:]</code> creating allocations</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay20Part1-16               5.47ms ± 4%    5.43 MiB    9162 allocs/op
+BenchmarkDay20Part2-16               23.1ms ± 4%    21.1 MiB   35864 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_12">Optimization (b1)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Inline module parsing</strong>: Find " &#8594; " delimiter by checking 4-character sequence instead of <code>strings.Split</code>
+- <strong>Inline destination parsing</strong>: Parse comma-separated destinations character-by-character
+- <strong>Pre-allocate structures</strong>: <code>make(Day20Puzzle, len(lines))</code> for modules, <code>make(map[string]bool, 4)</code> for inputs
+- <strong>Pre-allocate queue</strong>: <code>make([]pulse, 0, 100)</code> with capacity hint for BFS queue</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_13">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │   sec/op    │   sec/op     vs base                │
+Day20Part1-16   5.466m ± 4%   3.009m ± 2%  -44.95% (p=0.000 n=10)
+Day20Part2-16   23.06m ± 4%   12.97m ± 3%  -43.74% (p=0.000 n=10)
+geomean         11.23m        6.247m       -44.35%
+
+              │  /dev/fd/63   │              /dev/fd/62              │
+              │     B/op      │     B/op      vs base                │
+Day20Part1-16   5428.0Ki ± 0%   335.3Ki ± 0%  -93.82% (p=0.000 n=10)
+Day20Part2-16   21.133Mi ± 0%   1.287Mi ± 0%  -93.91% (p=0.000 n=10)
+geomean          10.58Mi        664.8Ki       -93.87%
+
+              │  /dev/fd/63  │             /dev/fd/62              │
+              │  allocs/op   │  allocs/op   vs base                │
+Day20Part1-16    9162.0 ± 0%    427.0 ± 0%  -95.34% (p=0.000 n=10)
+Day20Part2-16   35.864k ± 0%   1.144k ± 0%  -96.81% (p=0.000 n=10)
+geomean          18.13k         698.9       -96.14%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 45% faster (5.47ms → 3.01ms), 94% less memory (5.43MB → 335KB), 95% fewer allocations (9162 → 427)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 44% faster (23.1ms → 13.0ms), 94% less memory (21.1MB → 1.29MB), 97% fewer allocations (35864 → 1144)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates all <code>strings.Split</code> operations by finding delimiters through character-by-character inspection. Pre-allocating the puzzle map, inputs maps (4 capacity each), and BFS queue (100 capacity) reduces growth operations. The 8735 eliminated allocations in Part 1 (9162→427) represent the string split operations and queue slicing from the baseline.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_21_step_counter">Day 21: Step Counter</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_13">Performance Optimization</h3>
+<div class="paragraph"><p>Day 21 was optimized by pre-allocating data structures with capacity hints.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_14">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic growth:
+- Grid slice without pre-allocation
+- <code>make(map[pos]int)</code> for visited tracking without capacity hint
+- <code>make([]struct{...}, 0)</code> for queue without capacity hint
+- Part 2 infinite grid uses larger structures but also grows dynamically</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay21Part1-16               2.16ms ± 3%    1.12 MiB     276 allocs/op
+BenchmarkDay21Part2-16               111ms ± 7%     35.9 MiB    2556 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_13">Optimization (b1)</h4>
+<div class="paragraph"><p>Three key changes:
+- <strong>Pre-allocate grid</strong>: <code>make([][]byte, 0, len(lines))</code> with estimated capacity
+- <strong>Pre-allocate visited map</strong>: <code>make(map[pos]int, height*width/2)</code> for Part 1, <code>make(map[pos]int, 50000)</code> for Part 2
+- <strong>Pre-allocate queue</strong>: <code>make([]struct{...}, 0, 1000)</code> for Part 1, <code>make([]struct{...}, 0, 5000)</code> for Part 2</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_14">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │   sec/op    │   sec/op     vs base                │
+Day21Part1-16   2.159m ± 3%   1.524m ± 5%  -29.41% (p=0.000 n=10)
+Day21Part2-16   111.2m ± 7%   101.3m ± 6%   -8.91% (p=0.001 n=10)
+geomean         15.50m        12.43m       -19.81%
+
+              │  /dev/fd/63   │              /dev/fd/62              │
+              │     B/op      │     B/op      vs base                │
+Day21Part1-16   1122.5Ki ± 0%   734.2Ki ± 0%  -34.60% (p=0.000 n=10)
+Day21Part2-16    35.91Mi ± 0%   33.13Mi ± 0%   -7.76% (p=0.000 n=10)
+geomean          6.274Mi        4.873Mi       -22.33%
+
+              │ /dev/fd/63  │             /dev/fd/62              │
+              │  allocs/op  │  allocs/op   vs base                │
+Day21Part1-16    276.0 ± 0%    203.0 ± 0%  -26.45% (p=0.000 n=10)
+Day21Part2-16   2.556k ± 0%   2.153k ± 0%  -15.77% (p=0.000 n=10)
+geomean          839.9         661.1       -21.29%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 29% faster (2.16ms → 1.52ms), 35% less memory (1.12MB → 734KB), 26% fewer allocations (276 → 203)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 9% faster (111ms → 101ms), 8% less memory (35.9MB → 33.1MB), 16% fewer allocations (2556 → 2153)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization pre-allocates data structures with appropriate capacity hints based on the expected problem size. Part 1 benefits from estimating visited map size as half the grid (height×width/2) and queue size of 1000. Part 2 uses larger estimates (50000 for visited, 5000 for queue) for the infinite grid quadratic extrapolation. The remaining allocations primarily represent map bucket growth and queue slice operations that couldn&#8217;t be eliminated without algorithmic changes.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_22_sand_slabs">Day 22: Sand Slabs</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_14">Performance Optimization</h3>
+<div class="paragraph"><p>Day 22 was optimized by pre-allocating data structures and replacing allocation-heavy operations with reusable arrays.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_15">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic allocations:
+- Bricks slice without pre-allocation
+- <code>supports</code> and <code>supportedBy</code> slices without capacity hints
+- Part 2 used <code>make(map[int]bool)</code> for fallen brick tracking (one per iteration)
+- Part 2 used slice operations (<code>queue = queue[1:]</code>) causing repeated allocations</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay22Part1-16               20.4ms ± 1%     431 KiB    3140 allocs/op
+BenchmarkDay22Part2-16               71.6ms ± 2%    5983 KiB    6295 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b2">Optimization (b2)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Pre-allocate bricks</strong>: <code>make(Day22Puzzle, 0, len(lines))</code> with estimated capacity
+- <strong>Pre-allocate support slices</strong>: <code>make([]int, 0, 3)</code> for each brick&#8217;s supports/supportedBy (average ~3 connections)
+- <strong>Reusable fallen array</strong>: <code>make([]bool, len(bricks))</code> cleared and reused for all Part 2 iterations instead of map allocations
+- <strong>Array-based queue</strong>: <code>make([]int, len(bricks))</code> with head/tail pointers instead of slice append/slicing operations</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_15">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
+              │         sec/op          │   sec/op     vs base                │
+Day22Part1-16               20.40m ± 1%   20.03m ± 2%   -1.79% (p=0.009 n=10)
+Day22Part2-16               71.55m ± 2%   21.94m ± 2%  -69.33% (p=0.000 n=10)
+geomean                     38.20m        20.96m       -45.12%
+
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt        │
+              │          B/op           │     B/op      vs base                │
+Day22Part1-16              430.6Ki ± 0%   292.7Ki ± 0%  -32.03% (p=0.000 n=10)
+Day22Part2-16             5982.6Ki ± 0%   306.2Ki ± 0%  -94.88% (p=0.000 n=10)
+geomean                    1.567Mi        299.4Ki       -81.35%
+
+              │ /tmp/day22_bench_b0.txt │       /tmp/day22_bench_b2.txt       │
+              │        allocs/op        │  allocs/op   vs base                │
+Day22Part1-16               3.140k ± 0%   2.926k ± 0%   -6.82% (p=0.000 n=10)
+Day22Part2-16               6.295k ± 0%   2.928k ± 0%  -53.49% (p=0.000 n=10)
+geomean                     4.446k        2.927k       -34.16%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 2% faster (20.4ms → 20.0ms), 32% less memory (431KB → 293KB), 7% fewer allocations (3140 → 2926)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 69% faster (71.6ms → 21.9ms), 95% less memory (5983KB → 306KB), 53% fewer allocations (6295 → 2928)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization dramatically improves Part 2 performance by eliminating repeated allocations in the BFS loop. The baseline created a new map for each of <sub>1400 brick removals tested; the optimized version reuses a single bool array, clearing it with a simple loop. The head/tail pointer queue approach eliminates slice reslicing operations (<code>queue = queue[1:]</code>) that create new slice headers. Pre-allocating support relationship slices with capacity 3 (typical brick connectivity) reduces growth operations. The remaining </sub>2926 allocations in both parts represent the initial brick parsing and support relationship building - unavoidable without changing the data model.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_23_a_long_walk">Day 23: A Long Walk</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_15">Performance Optimization</h3>
+<div class="paragraph"><p>Day 23 was optimized by pre-allocating data structures and using array-based queue with head/tail pointers.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_16">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic allocations:
+- Grid slice without pre-allocation
+- <code>moves := [][2]int{}</code> created in Part 1 DFS hot loop without capacity
+- Junction and graph maps without capacity hints
+- <code>visited := make(map[pos]bool)</code> in Part 2 BFS loop without capacity
+- Queue using slice operations (<code>queue = queue[1:]</code>) creating allocations</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay23Part1-16               12.7ms ± 5%     9.67 MiB   156505 allocs/op
+BenchmarkDay23Part2-16               3.85s ± 1%      2.41 MiB    13470 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_14">Optimization (b1)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Pre-allocate grid</strong>: <code>make([][]byte, 0, len(lines))</code> calculated from input size
+- <strong>Pre-allocate moves slice</strong>: <code>make([][2]int, 0, 4)</code> in Part 1 DFS (max 4 directions is constant)
+- <strong>Pre-allocate graph structures</strong>: <code>make(map[pos][]edge, len(junctions))</code> and <code>make([]edge, 0, 4)</code> per junction, calculated from discovered junctions
+- <strong>No capacity hints for BFS</strong>: Let Go&#8217;s map and slice handle visited/queue growth dynamically to avoid over-allocation from guessed capacities</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_16">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │         sec/op          │   sec/op     vs base                │
+Day23Part1-16              12.708m ± 5%   5.920m ± 2%  -53.41% (p=0.000 n=10)
+Day23Part2-16                3.854 ± 1%    3.909 ± 2%   +1.43% (p=0.004 n=10)
+geomean                     221.3m        304.8m       -31.26%
+
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
+              │          B/op           │     B/op      vs base                │
+Day23Part1-16            9672.93Ki ± 0%   46.41Ki ± 0%  -99.52% (p=0.000 n=10)
+Day23Part2-16              2.413Mi ± 0%   2.403Mi ± 0%   -0.39% (p=0.000 n=10)
+geomean                    4.774Mi        2.571Mi       -93.09%
+
+              │ /tmp/day23_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │        allocs/op        │  allocs/op   vs base                │
+Day23Part1-16             156505.0 ± 0%    284.0 ± 0%  -99.82% (p=0.000 n=10)
+Day23Part2-16               13.47k ± 0%   13.39k ± 0%   -0.62% (p=0.000 n=10)
+geomean                     45.91k        4.049k       -95.75%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 53% faster (12.7ms → 5.92ms), 99.5% less memory (9.67MB → 46.4KB), 99.8% fewer allocations (156505 → 284)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 1.4% slower (3.85s → 3.91s), 0.4% less memory (2.41MB → 2.40MB), 0.6% fewer allocations (13470 → 13390)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization dramatically reduces Part 1&#8217;s allocation overhead by pre-allocating the moves slice (capacity 4) in the DFS hot loop, eliminating 156k allocations. Part 2&#8217;s BFS graph compression benefits from calculated pre-allocation: graph map sized to len(junctions), edge slices with capacity 4. BFS structures (visited map, queue) use default capacities to avoid over-allocation from arbitrary guesses - using height×width would waste <sub>20MB allocating for unreachable positions. Part 2 is slightly slower (</sub>56ms) due to dynamic queue growth, but memory usage is optimal. The remaining allocations represent unavoidable parsing and graph construction overhead.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_24_never_tell_me_the_odds">Day 24: Never Tell Me The Odds</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_16">Performance Optimization</h3>
+<div class="paragraph"><p>Day 24 was optimized by pre-allocating the puzzle slice.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_17">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used dynamic puzzle growth without pre-allocation:
+- <code>var puzzle Day24Puzzle</code> without capacity hint
+- Parsing was already inline (good!)</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay24Part1-16               853.5µ ± 1%    47.95 KiB    10 allocs/op
+BenchmarkDay24Part2-16               1.595ms ± 1%   47.95 KiB    10 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_15">Optimization (b1)</h4>
+<div class="paragraph"><p>Single key change:
+- <strong>Pre-allocate puzzle slice</strong>: <code>puzzle := make(Day24Puzzle, 0, len(lines))</code> with estimated capacity</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_17">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │         sec/op          │   sec/op     vs base               │
+Day24Part1-16               853.5µ ± 1%   827.9µ ± 1%  -3.00% (p=0.000 n=10)
+Day24Part2-16               1.595m ± 1%   1.572m ± 2%  -1.44% (p=0.029 n=10)
+geomean                     1.167m        1.141m       -2.22%
+
+              │ /tmp/day24_bench_b0.txt │       /tmp/day24_bench_b1.txt        │
+              │          B/op           │     B/op      vs base                │
+Day24Part1-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+Day24Part2-16              47.95Ki ± 0%   16.00Ki ± 0%  -66.63% (p=0.000 n=10)
+geomean                    47.95Ki        16.00Ki       -66.63%
+
+              │ /tmp/day24_bench_b0.txt │      /tmp/day24_bench_b1.txt       │
+              │        allocs/op        │ allocs/op   vs base                │
+Day24Part1-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+Day24Part2-16               10.000 ± 0%   1.000 ± 0%  -90.00% (p=0.000 n=10)
+geomean                      10.00        1.000       -90.00%</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 3% faster (854µs → 828µs), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+</p>
+</li>
+<li>
+<p>
+<strong>Part 2</strong>: 1.4% faster (1.60ms → 1.57ms), 67% less memory (48KB → 16KB), 90% fewer allocations (10 → 1)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization pre-allocates the puzzle slice, eliminating 9 slice growth operations during parsing. The parsing code was already optimized with inline byte-level parsing (no <code>strings.Split</code>), so the only improvement was in slice pre-allocation. Both parts share the same parsing code, resulting in identical memory and allocation reductions.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_day_25_snowverload">Day 25: Snowverload</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_performance_optimization_17">Performance Optimization</h3>
+<div class="paragraph"><p>Day 25 was optimized by eliminating <code>strings.Split</code> operations, using head/tail pointer queue, and pre-allocating data structures.</p></div>
+<div class="sect3">
+<h4 id="_baseline_b0_18">Baseline (b0)</h4>
+<div class="paragraph"><p>Initial implementation used string operations and dynamic allocations:
+- <code>strings.Split(line, ": ")</code> for parsing line structure
+- <code>strings.Fields(parts[1])</code> for parsing connections
+- Dynamic map growth without capacity hints
+- <code>queue = queue[1:]</code> in BFS creating repeated allocations</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+BenchmarkDay25Part1-16               1.39s ± 3%     308.4 MiB   64430 allocs/op</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_optimization_b1_16">Optimization (b1)</h4>
+<div class="paragraph"><p>Four key changes:
+- <strong>Inline parsing</strong>: Find colon delimiter and parse connections character-by-character without <code>strings.Split</code> or <code>strings.Fields</code>
+- <strong>Calculate edge capacity</strong>: Count edges as <code>sum(neighbor counts)/2</code> to size <code>edgeCount</code> map accurately
+- <strong>Pre-allocate with calculated sizes</strong>: <code>graph</code> (len(puzzle)), <code>visited</code> (len(graph)), <code>parent</code> (len(graph)), <code>queue</code> (len(graph))
+- <strong>Array-based BFS queue</strong>: <code>make([]string, len(graph))</code> with head/tail pointers instead of slice reslicing</p></div>
+</div>
+<div class="sect3">
+<h4 id="_results_18">Results</h4>
+<div class="listingblock">
+<div class="content">
+<pre><code>goos: linux
+goarch: amd64
+pkg: gitlab.com/jhinrichsen/adventofcode2023
+cpu: Intel(R) Xeon(R) CPU @ 2.60GHz
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │         sec/op          │   sec/op    vs base                │
+Day25Part1-16                1.390 ± 3%    1.224 ± 3%  -11.99% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt     │
+              │          B/op           │     B/op      vs base                │
+Day25Part1-16              308.4Mi ± 0%   156.1Mi ± 0%  -49.41% (p=0.000 n=10)
+
+              │ /tmp/day25_bench_b0.txt │    /tmp/day23_25_bench_final.txt    │
+              │        allocs/op        │  allocs/op   vs base                │
+Day25Part1-16               64.43k ± 0%   17.46k ± 0%  -72.89% (p=0.000 n=10)</code></pre>
+</div></div>
+<div class="paragraph"><p><strong>Key Improvements:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Part 1</strong>: 12% faster (1.39s → 1.22s), 49% less memory (308MB → 156MB), 73% fewer allocations (64430 → 17460)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The optimization eliminates string operations in parsing and replaces queue slice reslicing with head/tail pointer traversal. All capacities are calculated from actual data: edgeCount sized to actual edge count (sum of neighbor lists / 2), graph/visited/parent/queue all sized to len(graph). No arbitrary guesses - sizes are computed from the input structure. The BFS function is called ~1500 times during edge betweenness calculation, so the queue optimization (eliminating <code>queue = queue[1:]</code>) provides significant cumulative savings. The remaining 17460 allocations represent unavoidable graph construction and algorithm overhead (edge tracking, parent maps per BFS call).</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_benchmarks">Benchmarks</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>All benchmarks for Advent of Code 2023 solutions.
+All benchmarks are run strictly sequential, repeating in a loop for around 2 seconds.</p></div>
+<div class="paragraph"><p>include::benches/linux-amd64-IntelR_CoreTM_i7-14700K.txt</p></div>
+<div class="paragraph"><p><strong>Performance Highlights:</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Fastest</strong>: Day 06 Part 2 - 11.3 ns (after quadratic formula optimization)
+</p>
+</li>
+<li>
+<p>
+<strong>Zero allocations</strong>: Days 01, 02, 03, 04, 06, 07, 09
+</p>
+</li>
+<li>
+<p>
+<strong>Sub-millisecond</strong>: Days 01-09, 11
+</p>
+</li>
+<li>
+<p>
+<strong>Most challenging</strong>: Day 10 Part 2 - 221 ms, Day 12 Part 2 - 124 ms
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>Total runtime</strong>: 374822927.25 ns, 374822.927 µs, 374.823 ms, 0.374823 s</p></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated
+ 2025-11-15 11:12:23 CET
+</div>
+</div>
+</body>
+</html>
